@@ -2,7 +2,7 @@
 title: "Instructions pour les agents IA"
 description: "Règles opérationnelles de lecture et de modification du monorepo."
 created: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-08
 status: accepted
 type: reference
 tags:
@@ -39,6 +39,7 @@ Ce fichier est le **point d'entrée IA**. Ne pas charger tout `/docs` systémati
 - Session HTTP Spring Security avec protections CSRF et autorisations serveur ; **ne pas enregistrer de secrets ni jetons dans localStorage**.
 - **Tests obligatoires** adaptés : JUnit et Testcontainers côté serveur ; Vitest, Playwright, `@axe-core/playwright` et scénarios clavier/focus côté client. Axe **ne suffit pas** à démontrer WCAG AA.
 - Version Java **27** acceptée, avec mise à jour régulière et vérification de la compatibilité de la distribution Spring Boot choisie.
+- **Développement local obligatoire dans le dev container** défini sous `.devcontainer/` ; ne pas installer ou lancer les outils du projet directement sur l’hôte. Suivre [le guide](docs/how-to/dev-container.md).
 - Marquer les exemples comme exemples ; ne pas présenter des fonctionnalités non implémentées comme réalisées.
 
 ## Routage documentaire
@@ -52,6 +53,7 @@ Ce fichier est le **point d'entrée IA**. Ne pas charger tout `/docs` systémati
 | CSS | [css-conventions](docs/reference/frontend/css-conventions.md), [design-tokens](docs/reference/frontend/design-tokens.md) |
 | Accessibilité | [accessibility](docs/reference/quality/accessibility.md), [test how-to](docs/how-to/test-accessibility.md) |
 | CI / validation | [testing-standards](docs/reference/quality/testing-standards.md) |
+| Environnement de développement | [Guide dev container](docs/how-to/dev-container.md) |
 
 ## Processus de travail
 

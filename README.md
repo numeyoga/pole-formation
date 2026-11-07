@@ -2,7 +2,7 @@
 title: "Pôle formation INT — référentiel du projet"
 description: "Entrée humaine et IA vers le monorepo et les documents Diátaxis."
 created: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-08
 status: accepted
 type: index
 tags:
@@ -31,6 +31,7 @@ Application interne de centralisation du pôle formation INT : référentiels, f
 | Développer avec une IA | [AGENTS.md](AGENTS.md), puis [index documentaire](docs/README.md) |
 | Comprendre le métier | [Modèle métier](docs/reference/domain/domain-model.md), [règles](docs/reference/domain/business-rules.md), [workflows](docs/reference/domain/workflows.md) |
 | Appliquer les conventions | [Structure frontend](docs/reference/architecture/frontend-structure.md), [backend](docs/reference/architecture/backend-structure.md) et [CSS](docs/reference/frontend/css-conventions.md) |
+| Développer localement | [Guide du dev container obligatoire](docs/how-to/dev-container.md) |
 | Voir ce qui n'est pas décidé | [Registre des décisions ouvertes](docs/reference/architecture/open-questions.md) |
 | Comprendre les choix | [ADR](docs/decisions/README.md) |
 

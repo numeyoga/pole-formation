@@ -1,12 +1,12 @@
 ---
 title: "Développer dans le conteneur"
 created: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-08
 status: accepted
 type: how-to
 ---
 
-# Développer dans le conteneur
+# Comment développer dans le dev container
 
 ## Sommaire
 - [Prérequis](#prérequis)
@@ -19,6 +19,8 @@ type: how-to
 Un éditeur compatible Dev Containers et un moteur compatible Compose (Docker ou Podman avec un fournisseur Compose) sont nécessaires.
 
 ## Ouvrir l’environnement
+
+Le développement local de ce projet doit obligatoirement se faire dans ce dev container. Ne lancez pas les outils du projet directement sur l’hôte.
 
 Ouvrir le dépôt dans l’éditeur puis choisir **Reopen in Container**. L’espace de travail fournit Java 27, Node.js, Chromium et ses dépendances système via l’image Playwright 1.64.1. Le paquet `@playwright/test` 1.64.1 est installé globalement pour disposer du runner ; la dépendance du frontend devra utiliser la même version. Les ports 5173 (Vite) et 8080 (Spring Boot) sont transférés automatiquement.
 

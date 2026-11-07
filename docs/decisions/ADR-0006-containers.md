@@ -1,7 +1,7 @@
 ---
 title: "ADR 0006 — conteneur de développement et image applicative OCI"
 created: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-08
 status: accepted
 type: decision
 ---
@@ -20,7 +20,7 @@ Le développement requiert Java, Playwright et PostgreSQL dans un environnement 
 
 ## Décision
 
-Utiliser un Dev Container Compose avec Playwright/Node, Java 27 et PostgreSQL 18. Construire séparément une image OCI Java 27 à partir du JAR Spring Boot, compatible avec un UID non privilégié et arbitraire sous OpenShift.
+Rendre obligatoire le Dev Container Compose pour tout développement local ; il fournit Playwright/Node, Java 27 et PostgreSQL 18. Construire séparément une image OCI Java 27 à partir du JAR Spring Boot, compatible avec un UID non privilégié et arbitraire sous OpenShift.
 
 ## Conséquences
 
