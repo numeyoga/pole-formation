@@ -1,0 +1,286 @@
+[
+  {
+    "id": "DEC-01",
+    "description": "Hiérarchie fixe Domaine → Sous-domaine → Compétence",
+    "stories": [
+      "US-01.01",
+      "US-01.02",
+      "US-01.03",
+      "US-01.04"
+    ]
+  },
+  {
+    "id": "DEC-02",
+    "description": "Classification configurable des compétences d’un profil",
+    "stories": [
+      "US-02.02",
+      "US-02.03"
+    ]
+  },
+  {
+    "id": "DEC-03",
+    "description": "Association formation-compétence simple, sans niveau",
+    "stories": [
+      "US-03.02"
+    ]
+  },
+  {
+    "id": "DEC-04",
+    "description": "Catalogue + sessions + participations dans le MVP",
+    "stories": [
+      "US-03.01",
+      "US-05.01",
+      "US-06.02"
+    ]
+  },
+  {
+    "id": "DEC-05",
+    "description": "Aucun lien direct collaborateur-profil dans le MVP",
+    "stories": [
+      "US-06.01"
+    ]
+  },
+  {
+    "id": "DEC-06",
+    "description": "Plusieurs intervenants possibles par session",
+    "stories": [
+      "US-05.04"
+    ]
+  },
+  {
+    "id": "DEC-07",
+    "description": "Inscription, présence, absence et désistement",
+    "stories": [
+      "US-06.02",
+      "US-06.03",
+      "US-06.04"
+    ]
+  },
+  {
+    "id": "DEC-08",
+    "description": "Classification : code, libellé, ordre et activation",
+    "stories": [
+      "US-02.02"
+    ]
+  },
+  {
+    "id": "DEC-09",
+    "description": "Plusieurs créneaux distincts par session",
+    "stories": [
+      "US-05.02"
+    ]
+  },
+  {
+    "id": "DEC-10",
+    "description": "Option B pour les collaborateurs, précisée par HB-01",
+    "stories": [
+      "US-06.01"
+    ]
+  },
+  {
+    "id": "ARB-01",
+    "description": "Présence globale par session",
+    "stories": [
+      "US-06.03"
+    ]
+  },
+  {
+    "id": "ARB-02",
+    "description": "Capacité facultative, sans liste d’attente",
+    "stories": [
+      "US-05.01",
+      "US-06.02"
+    ]
+  },
+  {
+    "id": "ARB-03",
+    "description": "Intervenants affectés à la session entière",
+    "stories": [
+      "US-05.04"
+    ]
+  },
+  {
+    "id": "ARB-04",
+    "description": "Chevauchements : avertissement non bloquant",
+    "stories": [
+      "US-05.02",
+      "US-05.04",
+      "US-06.02"
+    ]
+  },
+  {
+    "id": "ARB-05",
+    "description": "Réinscription : réactiver la participation",
+    "stories": [
+      "US-06.02",
+      "US-06.04"
+    ]
+  },
+  {
+    "id": "ARB-06",
+    "description": "Clôture : participations dans des états définitifs",
+    "stories": [
+      "US-05.05"
+    ]
+  },
+  {
+    "id": "ARB-07",
+    "description": "Intervenant : ses sessions et saisie des présences",
+    "stories": [
+      "US-06.03",
+      "US-08.01"
+    ]
+  },
+  {
+    "id": "ARB-08",
+    "description": "Comptage des sessions : date du premier créneau",
+    "stories": [
+      "US-05.05",
+      "US-07.01",
+      "US-07.02"
+    ]
+  },
+  {
+    "id": "ARB-09",
+    "description": "Historique des éléments inactifs, pas de nouvelles associations",
+    "stories": [
+      "US-01.01",
+      "US-01.02",
+      "US-01.03",
+      "US-02.02",
+      "US-03.02"
+    ]
+  },
+  {
+    "id": "ARB-10",
+    "description": "Référentiel collaborateurs géré manuellement",
+    "stories": [
+      "US-06.01"
+    ]
+  },
+  {
+    "id": "OUV-01",
+    "description": "Capacité renseignée : limite stricte ; désistement libère une place",
+    "stories": [
+      "US-05.01",
+      "US-06.02",
+      "US-06.04"
+    ]
+  },
+  {
+    "id": "OUV-02",
+    "description": "Session planifiable sans intervenant",
+    "stories": [
+      "US-05.01"
+    ]
+  },
+  {
+    "id": "OUV-03",
+    "description": "Clôture autorisée sans participant",
+    "stories": [
+      "US-05.05"
+    ]
+  },
+  {
+    "id": "OUV-04",
+    "description": "Correction après clôture par gestionnaire habilité avec audit avant/après",
+    "stories": [
+      "US-06.03",
+      "US-08.02"
+    ]
+  },
+  {
+    "id": "OUV-05",
+    "description": "Intervenant voit seulement nom, prénom, identifiant si nécessaire, état",
+    "stories": [
+      "US-08.01"
+    ]
+  },
+  {
+    "id": "OUV-06",
+    "description": "Conflits : intervenants et collaborateurs, avertissements",
+    "stories": [
+      "US-05.02",
+      "US-05.04",
+      "US-06.02"
+    ]
+  },
+  {
+    "id": "OUV-07",
+    "description": "Collaborateur : identifiant professionnel unique, stable et obligatoire",
+    "stories": [
+      "US-06.01"
+    ]
+  },
+  {
+    "id": "OUV-08",
+    "description": "Réactivation formation autorisée avec contrôle de cohérence",
+    "stories": [
+      "US-03.01"
+    ]
+  },
+  {
+    "id": "OUV-09",
+    "description": "Créneaux/intervenants modifiables sur session planifiée avec audit et conflits",
+    "stories": [
+      "US-05.02",
+      "US-05.04",
+      "US-08.02"
+    ]
+  },
+  {
+    "id": "OUV-10",
+    "description": "Annulations : indicateur distinct, exclues des réalisations et présences réalisées",
+    "stories": [
+      "US-05.05",
+      "US-07.01",
+      "US-07.02"
+    ]
+  },
+  {
+    "id": "HB-01",
+    "description": "Collaborateur minimal : identifiant professionnel, nom, prénom, actif/inactif ; participations = historique",
+    "stories": [
+      "US-06.01"
+    ]
+  },
+  {
+    "id": "HB-02",
+    "description": "Intervenant sans compte possible ; compte habilité pouvant être lié à fiche",
+    "stories": [
+      "US-05.03",
+      "US-08.01"
+    ]
+  },
+  {
+    "id": "HB-03",
+    "description": "Annulation : conserver les états des participations sans transition automatique",
+    "stories": [
+      "US-05.05",
+      "US-07.01"
+    ]
+  },
+  {
+    "id": "HB-04",
+    "description": "Présences après dernier créneau ; clôture après dernier créneau et états définitifs",
+    "stories": [
+      "US-05.05",
+      "US-06.03"
+    ]
+  },
+  {
+    "id": "HB-05",
+    "description": "Créneaux modifiables en Planifiée avec audit ; aucune modification ordinaire après clôture",
+    "stories": [
+      "US-05.02",
+      "US-08.02"
+    ]
+  },
+  {
+    "id": "HB-06",
+    "description": "Réactivation formation : code unique, champs requis, absence d’incohérence bloquante ; historique maintenu",
+    "stories": [
+      "US-03.01"
+    ]
+  }
+]

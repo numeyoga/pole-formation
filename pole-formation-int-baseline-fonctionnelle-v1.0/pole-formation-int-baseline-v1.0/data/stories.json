@@ -1,0 +1,982 @@
+[
+  {
+    "ep": "EP-01",
+    "id": "US-01.01",
+    "title": "Administrer les domaines",
+    "role": "gestionnaire habilité",
+    "goal": "créer, modifier et désactiver les domaines",
+    "benefit": "structurer le référentiel",
+    "priority": "Must",
+    "deps": [
+      "US-08.01"
+    ],
+    "acs": [
+      [
+        "un code et un libellé valides",
+        "je crée un domaine",
+        "il est enregistré et consultable"
+      ],
+      [
+        "un code déjà utilisé",
+        "je tente de le réutiliser",
+        "la création est refusée avec une erreur explicite"
+      ],
+      [
+        "un domaine contenant des sous-domaines",
+        "je le désactive",
+        "les sous-domaines historiques sont conservés et aucun nouveau sous-domaine ne peut y être créé"
+      ]
+    ],
+    "rules": "INV-01, INV-14, INV-15"
+  },
+  {
+    "ep": "EP-01",
+    "id": "US-01.02",
+    "title": "Administrer les sous-domaines",
+    "role": "gestionnaire habilité",
+    "goal": "rattacher et maintenir des sous-domaines",
+    "benefit": "conserver une hiérarchie cohérente",
+    "priority": "Must",
+    "deps": [
+      "US-01.01"
+    ],
+    "acs": [
+      [
+        "un domaine actif",
+        "je crée un sous-domaine valide",
+        "il est rattaché à ce domaine et à aucun autre"
+      ],
+      [
+        "un domaine inactif",
+        "je tente de lui rattacher un sous-domaine",
+        "l’opération est refusée"
+      ],
+      [
+        "un sous-domaine déjà utilisé",
+        "je le désactive",
+        "ses compétences et liens historiques sont conservés"
+      ]
+    ],
+    "rules": "INV-01, INV-03, INV-15"
+  },
+  {
+    "ep": "EP-01",
+    "id": "US-01.03",
+    "title": "Administrer les compétences",
+    "role": "gestionnaire habilité",
+    "goal": "maintenir les compétences et leur rattachement",
+    "benefit": "alimenter profils et formations",
+    "priority": "Must",
+    "deps": [
+      "US-01.02"
+    ],
+    "acs": [
+      [
+        "un sous-domaine actif",
+        "je crée une compétence",
+        "elle est liée à ce seul sous-domaine"
+      ],
+      [
+        "une compétence utilisée par un profil ou une formation",
+        "je la désactive",
+        "ses associations historiques persistent"
+      ],
+      [
+        "une compétence inactive",
+        "je tente une nouvelle association",
+        "celle-ci est refusée"
+      ]
+    ],
+    "rules": "INV-02, INV-14, INV-15"
+  },
+  {
+    "ep": "EP-01",
+    "id": "US-01.04",
+    "title": "Explorer le référentiel",
+    "role": "utilisateur autorisé",
+    "goal": "parcourir et rechercher les compétences",
+    "benefit": "retrouver une capacité métier",
+    "priority": "Must",
+    "deps": [
+      "US-01.01",
+      "US-01.02",
+      "US-01.03"
+    ],
+    "acs": [
+      [
+        "un référentiel alimenté",
+        "j’ouvre la navigation",
+        "les trois niveaux Domaine, Sous-domaine, Compétence sont visibles"
+      ],
+      [
+        "un code ou un libellé",
+        "je lance une recherche",
+        "les résultats affichent le chemin hiérarchique"
+      ],
+      [
+        "une compétence inactive utilisée historiquement",
+        "je consulte cet historique",
+        "son libellé et son statut restent visibles"
+      ]
+    ],
+    "rules": ""
+  },
+  {
+    "ep": "EP-02",
+    "id": "US-02.01",
+    "title": "Administrer les profils d’emploi",
+    "role": "gestionnaire habilité",
+    "goal": "maintenir le référentiel des profils",
+    "benefit": "décrire les besoins de compétences",
+    "priority": "Must",
+    "deps": [
+      "US-08.01"
+    ],
+    "acs": [
+      [
+        "un profil valide",
+        "je l’enregistre",
+        "il devient consultable"
+      ],
+      [
+        "un profil associé à des compétences",
+        "je modifie son libellé",
+        "les exigences demeurent"
+      ],
+      [
+        "un profil inactif",
+        "je tente de créer une nouvelle exigence",
+        "l’opération est refusée tandis que les exigences précédentes restent consultables"
+      ]
+    ],
+    "rules": "INV-14, INV-15"
+  },
+  {
+    "ep": "EP-02",
+    "id": "US-02.02",
+    "title": "Configurer les classifications",
+    "role": "administrateur fonctionnel",
+    "goal": "gérer code, libellé, ordre et activation des classifications",
+    "benefit": "adapter les catégories d’exigences",
+    "priority": "Must",
+    "deps": [
+      "US-08.01"
+    ],
+    "acs": [
+      [
+        "un code, un libellé et un ordre valides",
+        "je crée une classification",
+        "elle peut être utilisée sur une nouvelle exigence"
+      ],
+      [
+        "une classification utilisée",
+        "je change son libellé ou son ordre",
+        "ses exigences gardent la même référence"
+      ],
+      [
+        "une classification désactivée",
+        "je crée ou reclasse une exigence",
+        "elle n’est pas sélectionnable comme nouvelle valeur"
+      ],
+      [
+        "une classification désactivée déjà utilisée",
+        "je consulte le profil historique",
+        "son ancienne valeur reste visible"
+      ]
+    ],
+    "rules": "INV-05, INV-14, INV-15"
+  },
+  {
+    "ep": "EP-02",
+    "id": "US-02.03",
+    "title": "Associer les compétences aux profils",
+    "role": "gestionnaire habilité",
+    "goal": "associer des compétences classifiées à un profil",
+    "benefit": "définir ses exigences",
+    "priority": "Must",
+    "deps": [
+      "US-01.03",
+      "US-02.01",
+      "US-02.02"
+    ],
+    "acs": [
+      [
+        "un profil, une compétence et une classification actifs",
+        "je crée une exigence",
+        "elle référence ces trois objets"
+      ],
+      [
+        "une exigence pour un même couple profil-compétence",
+        "je tente d’en créer une autre",
+        "le doublon est refusé"
+      ],
+      [
+        "une exigence existante",
+        "je change sa classification vers une autre active",
+        "l’association initiale est mise à jour sans duplication"
+      ]
+    ],
+    "rules": "INV-04, INV-05"
+  },
+  {
+    "ep": "EP-02",
+    "id": "US-02.04",
+    "title": "Consulter les exigences d’un profil",
+    "role": "utilisateur autorisé",
+    "goal": "voir et filtrer les exigences d’un profil",
+    "benefit": "comprendre les compétences attendues",
+    "priority": "Must",
+    "deps": [
+      "US-02.03"
+    ],
+    "acs": [
+      [
+        "un profil avec des exigences",
+        "je consulte sa fiche",
+        "chaque compétence est affichée avec sa classification"
+      ],
+      [
+        "plusieurs classifications",
+        "je filtre sur l’une d’elles",
+        "seules les exigences correspondantes restent visibles"
+      ],
+      [
+        "un profil sans exigence",
+        "je consulte sa fiche",
+        "un état vide explicite apparaît"
+      ]
+    ],
+    "rules": ""
+  },
+  {
+    "ep": "EP-03",
+    "id": "US-03.01",
+    "title": "Administrer les formations",
+    "role": "gestionnaire habilité",
+    "goal": "créer, modifier, archiver et réactiver des formations",
+    "benefit": "maintenir le catalogue",
+    "priority": "Must",
+    "deps": [
+      "US-08.01",
+      "US-08.02"
+    ],
+    "acs": [
+      [
+        "des données valides",
+        "je crée une formation",
+        "elle commence à l’état Brouillon"
+      ],
+      [
+        "une formation ayant des sessions",
+        "je l’archive",
+        "les sessions et participations historiques demeurent accessibles et aucune nouvelle session n’est créée"
+      ],
+      [
+        "une formation archivée",
+        "je demande sa réactivation",
+        "les champs obligatoires, le code unique et les incohérences bloquantes sont contrôlés"
+      ],
+      [
+        "une réactivation réussie",
+        "je consulte les anciennes sessions",
+        "leur historique est inchangé"
+      ]
+    ],
+    "rules": "RG-FOR-01, RG-FOR-02"
+  },
+  {
+    "ep": "EP-03",
+    "id": "US-03.02",
+    "title": "Associer formations et compétences",
+    "role": "gestionnaire habilité",
+    "goal": "relier une formation aux compétences qu’elle développe",
+    "benefit": "permettre les correspondances",
+    "priority": "Must",
+    "deps": [
+      "US-01.03",
+      "US-03.01"
+    ],
+    "acs": [
+      [
+        "une formation et une compétence actives",
+        "je crée leur association",
+        "elle est enregistrée sans niveau de maîtrise"
+      ],
+      [
+        "le couple formation-compétence existant",
+        "je tente de le dupliquer",
+        "le doublon est refusé"
+      ],
+      [
+        "une compétence inactive",
+        "je tente de l’associer nouvellement",
+        "l’opération est refusée sans effacer les liens historiques"
+      ]
+    ],
+    "rules": "INV-06, INV-15"
+  },
+  {
+    "ep": "EP-03",
+    "id": "US-03.03",
+    "title": "Rechercher les formations",
+    "role": "utilisateur autorisé",
+    "goal": "rechercher et consulter le catalogue",
+    "benefit": "connaître l’offre disponible",
+    "priority": "Must",
+    "deps": [
+      "US-03.01",
+      "US-03.02"
+    ],
+    "acs": [
+      [
+        "plusieurs formations",
+        "je recherche un code ou un intitulé",
+        "les correspondances sont listées"
+      ],
+      [
+        "une formation active sans session",
+        "je consulte sa fiche",
+        "elle reste visible et l’absence de session est signalée"
+      ],
+      [
+        "une formation archivée",
+        "je consulte l’historique",
+        "sa description et ses anciennes associations sont accessibles"
+      ]
+    ],
+    "rules": ""
+  },
+  {
+    "ep": "EP-04",
+    "id": "US-04.01",
+    "title": "Rechercher les formations d’un profil",
+    "role": "membre du pôle formation",
+    "goal": "sélectionner un profil et retrouver ses formations pertinentes",
+    "benefit": "préparer une offre adaptée",
+    "priority": "Must",
+    "deps": [
+      "US-02.03",
+      "US-03.02",
+      "US-03.03"
+    ],
+    "acs": [
+      [
+        "un profil avec des compétences",
+        "je recherche ses formations",
+        "les formations actives couvrant au moins une compétence sont retournées"
+      ],
+      [
+        "une formation couvrant plusieurs compétences du profil",
+        "la liste est affichée",
+        "elle n’apparaît qu’une fois"
+      ],
+      [
+        "une formation pertinente sans session planifiée",
+        "je vois les résultats",
+        "elle figure avec une indication d’absence de session"
+      ],
+      [
+        "aucune formation pertinente",
+        "je recherche",
+        "un état vide explicite apparaît"
+      ]
+    ],
+    "rules": "RG-COR-01"
+  },
+  {
+    "ep": "EP-04",
+    "id": "US-04.02",
+    "title": "Expliquer les correspondances",
+    "role": "membre du pôle formation",
+    "goal": "voir les compétences communes entre profil et formation",
+    "benefit": "justifier leur pertinence",
+    "priority": "Must",
+    "deps": [
+      "US-04.01"
+    ],
+    "acs": [
+      [
+        "une formation correspondant au profil",
+        "j’ouvre le détail",
+        "les compétences communes sont affichées"
+      ],
+      [
+        "des compétences communes de différentes classifications",
+        "je consulte le détail",
+        "leurs classifications dans le profil sont indiquées"
+      ],
+      [
+        "une compétence du profil sans formation active",
+        "j’ouvre les besoins non couverts",
+        "cette compétence est identifiable"
+      ],
+      [
+        "plusieurs formations pertinentes",
+        "je consulte les résultats",
+        "aucun score de maîtrise ni classement algorithmique non validé n’est inventé"
+      ]
+    ],
+    "rules": "RG-COR-01"
+  },
+  {
+    "ep": "EP-05",
+    "id": "US-05.01",
+    "title": "Créer et planifier une session",
+    "role": "gestionnaire habilité",
+    "goal": "créer et planifier une session",
+    "benefit": "organiser la réalisation d’une formation",
+    "priority": "Must",
+    "deps": [
+      "US-03.01",
+      "US-08.01"
+    ],
+    "acs": [
+      [
+        "une formation active",
+        "je crée une session",
+        "elle est enregistrée en Brouillon"
+      ],
+      [
+        "une session sans créneau",
+        "je demande Planifiée",
+        "la transition est refusée"
+      ],
+      [
+        "une session avec créneau valide mais sans intervenant",
+        "je la planifie",
+        "la transition est autorisée"
+      ],
+      [
+        "une session sans capacité renseignée",
+        "je la planifie",
+        "la capacité manquante ne bloque pas"
+      ],
+      [
+        "une capacité renseignée nulle ou négative",
+        "je l’enregistre",
+        "la validation échoue"
+      ]
+    ],
+    "rules": "RG-SES-01, RG-SES-02"
+  },
+  {
+    "ep": "EP-05",
+    "id": "US-05.02",
+    "title": "Gérer les créneaux et conflits",
+    "role": "gestionnaire habilité",
+    "goal": "gérer plusieurs créneaux et les conflits",
+    "benefit": "planifier les formations multi-journées",
+    "priority": "Must",
+    "deps": [
+      "US-05.01",
+      "US-08.02"
+    ],
+    "acs": [
+      [
+        "une session",
+        "j’ajoute des créneaux non consécutifs",
+        "ils sont conservés et présentés chronologiquement"
+      ],
+      [
+        "un créneau dont la fin est antérieure ou égale au début",
+        "je le valide",
+        "la saisie est refusée"
+      ],
+      [
+        "des créneaux se recouvrant au sein de la même session",
+        "j’ajoute le second",
+        "la saisie est refusée selon la convention de cohérence retenue"
+      ],
+      [
+        "un conflit avec une autre session pour un intervenant ou un collaborateur",
+        "je confirme la modification",
+        "un avertissement apparaît et je peux poursuivre"
+      ],
+      [
+        "une session planifiée",
+        "je change un créneau",
+        "le changement est audité et les conflits sont recalculés"
+      ],
+      [
+        "une session terminée",
+        "je tente une modification ordinaire de créneau",
+        "elle est refusée"
+      ]
+    ],
+    "rules": "RG-SES-03, RG-SES-04, RG-AUD-01"
+  },
+  {
+    "ep": "EP-05",
+    "id": "US-05.03",
+    "title": "Administrer les intervenants",
+    "role": "gestionnaire habilité",
+    "goal": "maintenir les intervenants",
+    "benefit": "préparer leurs affectations",
+    "priority": "Must",
+    "deps": [
+      "US-08.01"
+    ],
+    "acs": [
+      [
+        "des données professionnelles valides",
+        "je crée un intervenant",
+        "sa fiche est enregistrée même sans compte utilisateur"
+      ],
+      [
+        "un intervenant existant",
+        "je modifie ses coordonnées",
+        "ses affectations restent présentes"
+      ],
+      [
+        "un intervenant inactif",
+        "je tente une nouvelle affectation",
+        "elle est refusée"
+      ],
+      [
+        "un intervenant inactif historiquement affecté",
+        "je consulte une ancienne session",
+        "son affectation reste visible"
+      ]
+    ],
+    "rules": "RG-INT-01"
+  },
+  {
+    "ep": "EP-05",
+    "id": "US-05.04",
+    "title": "Affecter les intervenants",
+    "role": "gestionnaire habilité",
+    "goal": "affecter plusieurs intervenants à la session entière",
+    "benefit": "permettre la coanimation",
+    "priority": "Must",
+    "deps": [
+      "US-05.01",
+      "US-05.02",
+      "US-05.03",
+      "US-08.02"
+    ],
+    "acs": [
+      [
+        "une session et plusieurs intervenants actifs",
+        "je les affecte",
+        "ils apparaissent tous sur la session"
+      ],
+      [
+        "un intervenant déjà affecté",
+        "je tente de le réaffecter",
+        "le doublon est refusé"
+      ],
+      [
+        "une session à plusieurs créneaux",
+        "j’ajoute un intervenant",
+        "l’affectation couvre la session entière"
+      ],
+      [
+        "un intervenant déjà engagé sur un créneau concurrent",
+        "je l’affecte",
+        "un avertissement non bloquant est émis"
+      ],
+      [
+        "une session planifiée",
+        "je remplace un intervenant",
+        "l’opération est auditée et les conflits sont recalculés"
+      ]
+    ],
+    "rules": "INV-09, RG-INT-02"
+  },
+  {
+    "ep": "EP-05",
+    "id": "US-05.05",
+    "title": "Clôturer et annuler les sessions",
+    "role": "gestionnaire habilité",
+    "goal": "clôturer ou annuler une session",
+    "benefit": "tenir un état fiable de l’activité",
+    "priority": "Must",
+    "deps": [
+      "US-05.01",
+      "US-06.03",
+      "US-08.02"
+    ],
+    "acs": [
+      [
+        "une session avec au moins une participation Inscrite",
+        "je tente de la clôturer",
+        "la clôture est refusée"
+      ],
+      [
+        "une session dont le dernier créneau n’est pas terminé",
+        "je demande la clôture",
+        "elle est refusée"
+      ],
+      [
+        "une session après le dernier créneau, avec toutes les participations Présentes, Absentes ou Désistées",
+        "je la clôture",
+        "elle devient Terminée"
+      ],
+      [
+        "une session sans participant, après le dernier créneau",
+        "je la clôture",
+        "elle devient Terminée"
+      ],
+      [
+        "une session annulée",
+        "je consulte son historique",
+        "les créneaux, intervenants et états de participations inchangés restent visibles"
+      ],
+      [
+        "une session annulée",
+        "je consulte les indicateurs",
+        "elle figure dans les annulations, et non dans les réalisations"
+      ]
+    ],
+    "rules": "INV-13, INV-18, RG-SES-05"
+  },
+  {
+    "ep": "EP-06",
+    "id": "US-06.01",
+    "title": "Administrer les collaborateurs",
+    "role": "gestionnaire habilité",
+    "goal": "créer et modifier manuellement les collaborateurs",
+    "benefit": "suivre les participations",
+    "priority": "Must",
+    "deps": [
+      "US-08.01"
+    ],
+    "acs": [
+      [
+        "identifiant professionnel unique, nom et prénom valides",
+        "je crée un collaborateur",
+        "la fiche active est enregistrée"
+      ],
+      [
+        "un identifiant déjà utilisé",
+        "je tente de créer un autre collaborateur",
+        "la création est refusée"
+      ],
+      [
+        "un collaborateur avec participations",
+        "je change son nom ou prénom",
+        "les participations demeurent"
+      ],
+      [
+        "une fiche collaborateur",
+        "je l’ouvre",
+        "aucun lien direct avec ProfilEmploi n’est présent"
+      ],
+      [
+        "un collaborateur inactif",
+        "je consulte ses participations historiques",
+        "elles restent accessibles aux personnes habilitées"
+      ]
+    ],
+    "rules": "INV-11, RG-COL-01"
+  },
+  {
+    "ep": "EP-06",
+    "id": "US-06.02",
+    "title": "Inscrire et réinscrire",
+    "role": "gestionnaire habilité",
+    "goal": "inscrire ou réactiver un collaborateur",
+    "benefit": "gérer les inscriptions",
+    "priority": "Must",
+    "deps": [
+      "US-05.01",
+      "US-05.02",
+      "US-06.01",
+      "US-08.02"
+    ],
+    "acs": [
+      [
+        "une session planifiée avec place disponible et un collaborateur actif",
+        "je l’inscris",
+        "une participation Inscrite est créée"
+      ],
+      [
+        "une session à capacité atteinte",
+        "je tente une inscription",
+        "elle est refusée sans liste d’attente"
+      ],
+      [
+        "une participation existante Inscrite",
+        "je tente de l’inscrire encore",
+        "le doublon est refusé"
+      ],
+      [
+        "une participation Désistée et une place disponible",
+        "je la réactive",
+        "la même participation redevient Inscrite et la transition est auditée"
+      ],
+      [
+        "un désistement enregistré",
+        "une autre inscription est demandée",
+        "la place libérée peut être utilisée"
+      ],
+      [
+        "un collaborateur engagé sur des créneaux concurrents",
+        "je demande une inscription",
+        "un avertissement non bloquant est émis"
+      ]
+    ],
+    "rules": "INV-10, INV-17, RG-PAR-01"
+  },
+  {
+    "ep": "EP-06",
+    "id": "US-06.03",
+    "title": "Saisir et corriger les présences",
+    "role": "gestionnaire habilité ou intervenant affecté",
+    "goal": "saisir présence et absence globales",
+    "benefit": "fiabiliser la réalisation",
+    "priority": "Must",
+    "deps": [
+      "US-05.04",
+      "US-06.02",
+      "US-08.01",
+      "US-08.02"
+    ],
+    "acs": [
+      [
+        "une session dont le dernier créneau est terminé et une participation Inscrite",
+        "je la marque Présente ou Absente",
+        "l’état choisi concerne la session entière"
+      ],
+      [
+        "une session dont le dernier créneau n’est pas terminé",
+        "je tente de saisir une présence",
+        "la saisie est refusée"
+      ],
+      [
+        "un intervenant lié à un compte autorisé et affecté",
+        "il saisit la présence sur sa session",
+        "l’opération est acceptée"
+      ],
+      [
+        "un intervenant non affecté",
+        "il tente de modifier une présence",
+        "l’accès est refusé, y compris par API"
+      ],
+      [
+        "une session Terminée",
+        "un gestionnaire habilité corrige une présence",
+        "ancienne valeur, nouvelle valeur, date et auteur sont audités"
+      ],
+      [
+        "une session Terminée",
+        "un intervenant ordinaire tente une correction",
+        "elle est refusée"
+      ],
+      [
+        "une session multi-créneaux",
+        "je pointe une présence",
+        "aucune présence par créneau n’est demandée"
+      ]
+    ],
+    "rules": "RG-PAR-02, RG-AUD-01"
+  },
+  {
+    "ep": "EP-06",
+    "id": "US-06.04",
+    "title": "Gérer les désistements",
+    "role": "gestionnaire habilité",
+    "goal": "enregistrer les désistements",
+    "benefit": "préserver un historique fidèle",
+    "priority": "Must",
+    "deps": [
+      "US-06.02",
+      "US-08.02"
+    ],
+    "acs": [
+      [
+        "une participation Inscrite",
+        "je constate un désistement",
+        "elle devient Désistée"
+      ],
+      [
+        "une session avec capacité atteinte",
+        "une participation passe à Désistée",
+        "une place redevient disponible"
+      ],
+      [
+        "une participation Désistée",
+        "je consulte l’historique",
+        "l’inscription initiale reste consultable"
+      ],
+      [
+        "un désistement suivi d’une réactivation",
+        "je consulte l’audit",
+        "les deux transitions apparaissent sur la même participation"
+      ],
+      [
+        "un désistement",
+        "je consulte les statistiques",
+        "il n’est pas compté comme absence"
+      ]
+    ],
+    "rules": "INV-17, RG-PAR-03"
+  },
+  {
+    "ep": "EP-07",
+    "id": "US-07.01",
+    "title": "Consulter le tableau de bord",
+    "role": "membre du pôle formation",
+    "goal": "visualiser l’activité globale",
+    "benefit": "piloter l’offre et les réalisations",
+    "priority": "Must",
+    "deps": [
+      "US-03.01",
+      "US-05.05",
+      "US-06.02",
+      "US-06.03",
+      "US-06.04"
+    ],
+    "acs": [
+      [
+        "des formations et sessions",
+        "j’ouvre le tableau de bord",
+        "formations actives et sessions ventilées par état sont visibles"
+      ],
+      [
+        "une période de reporting",
+        "je filtre les indicateurs",
+        "chaque session relève de la période de son premier créneau"
+      ],
+      [
+        "des participations",
+        "je consulte les effectifs",
+        "Inscrite, Présente, Absente et Désistée sont distingués"
+      ],
+      [
+        "une session Annulée",
+        "je consulte les statistiques",
+        "elle est isolée dans les annulations et exclue des réalisations et présences réalisées"
+      ],
+      [
+        "une période sans donnée",
+        "j’affiche le tableau de bord",
+        "un zéro ou état vide cohérent apparaît"
+      ]
+    ],
+    "rules": "RG-PIL-01, RG-PIL-02"
+  },
+  {
+    "ep": "EP-07",
+    "id": "US-07.02",
+    "title": "Analyser l’activité détaillée",
+    "role": "membre du pôle formation",
+    "goal": "filtrer l’activité par formation, période et état",
+    "benefit": "analyser des réalisations",
+    "priority": "Should",
+    "deps": [
+      "US-07.01"
+    ],
+    "acs": [
+      [
+        "plusieurs sessions",
+        "je filtre par période, formation ou état",
+        "seules les sessions correspondantes restent visibles"
+      ],
+      [
+        "une session sélectionnée",
+        "j’ouvre le détail",
+        "ses créneaux, intervenants et effectifs par état sont affichés"
+      ],
+      [
+        "une session traversant deux périodes",
+        "je consulte les indicateurs",
+        "elle est comptée une seule fois à partir du premier créneau"
+      ],
+      [
+        "une session Annulée",
+        "je consulte le détail",
+        "son annulation est clairement identifiée"
+      ]
+    ],
+    "rules": "RG-PIL-01"
+  },
+  {
+    "ep": "EP-08",
+    "id": "US-08.01",
+    "title": "Gérer les accès et habilitations",
+    "role": "utilisateur de l’application",
+    "goal": "accéder uniquement aux fonctions autorisées",
+    "benefit": "protéger les données métier",
+    "priority": "Must",
+    "deps": [],
+    "acs": [
+      [
+        "une personne non authentifiée",
+        "elle tente d’accéder à une ressource protégée",
+        "l’accès est refusé"
+      ],
+      [
+        "un gestionnaire habilité",
+        "il effectue une opération correspondant à ses droits",
+        "elle est autorisée"
+      ],
+      [
+        "un intervenant avec compte lié à sa fiche",
+        "il consulte ses sessions",
+        "il ne voit que ses sessions affectées"
+      ],
+      [
+        "un intervenant affecté",
+        "il consulte la liste des participants",
+        "seuls nom, prénom, identifiant si nécessaire et état de participation sont exposés"
+      ],
+      [
+        "un intervenant non affecté",
+        "il tente de lire ou modifier les participations",
+        "l’API refuse l’accès"
+      ],
+      [
+        "un intervenant sans droits de gestion",
+        "il modifie un référentiel",
+        "l’opération est refusée"
+      ]
+    ],
+    "rules": "RG-SEC-01, RG-SEC-02"
+  },
+  {
+    "ep": "EP-08",
+    "id": "US-08.02",
+    "title": "Auditer les changements sensibles",
+    "role": "administrateur ou gestionnaire habilité",
+    "goal": "retracer les modifications critiques",
+    "benefit": "justifier et corriger les données",
+    "priority": "Must",
+    "deps": [
+      "US-08.01"
+    ],
+    "acs": [
+      [
+        "une présence corrigée après clôture",
+        "je la sauvegarde",
+        "ancien état, nouvel état, auteur et date sont conservés"
+      ],
+      [
+        "un créneau modifié sur une session Planifiée",
+        "je valide le changement",
+        "les données avant/après nécessaires sont auditées"
+      ],
+      [
+        "une affectation d’intervenant remplacée",
+        "je sauvegarde",
+        "les anciennes et nouvelles affectations sont auditables"
+      ],
+      [
+        "une participation Désistée puis réactivée",
+        "je consulte l’audit",
+        "les deux événements sont attachés à la même participation"
+      ],
+      [
+        "un utilisateur non autorisé",
+        "il tente d’accéder à l’audit",
+        "l’accès est refusé"
+      ],
+      [
+        "une opération métier refusée",
+        "sa validation échoue",
+        "aucun événement d’audit ne la présente comme réalisée"
+      ]
+    ],
+    "rules": "INV-19, RG-AUD-01"
+  }
+]
