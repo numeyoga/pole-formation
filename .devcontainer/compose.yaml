@@ -1,0 +1,36 @@
+services:
+  workspace:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - ..:/workspaces/pole-formation:cached
+    command: sleep infinity
+    init: true
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: pole_formation_dev
+      PGUSER: pole_formation
+      PGPASSWORD: pole_formation_dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/pole_formation_dev
+      SPRING_DATASOURCE_USERNAME: pole_formation
+      SPRING_DATASOURCE_PASSWORD: pole_formation_dev
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: pole_formation_dev
+      POSTGRES_USER: pole_formation
+      POSTGRES_PASSWORD: pole_formation_dev
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pole_formation -d pole_formation_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  postgres-data:
