@@ -28,7 +28,7 @@ Cet accord valide fonctionnellement les premières livraisons présentées. Il e
 |---|---|---|
 | Devcontainer Podman | `27679e0`, rapport de validation du devcontainer | Socle accepté dans son périmètre Podman |
 | US-08.01 — Accès et habilitations | `9f2d2d4`, huit critères du rapport US-08.01 | Terminée : vérification et validation AA déclarées par le représentant du projet, voir ci-dessous |
-| US-08.02 — Journal des changements sensibles | Fondations `9f2d2d4`, livraison complète dans le commit US-08.02 | Validation métier explicite ; contrôles humains d’accessibilité non attestés |
+| US-08.02 — Journal des changements sensibles | Fondations `9f2d2d4`, livraison complète `6925193` | Validation métier explicite ; contrôles humains d’accessibilité non attestés |
 
 Les autres stories du backlog ne sont pas déclarées développées par cet accord.
 
@@ -46,7 +46,7 @@ Le 2026-11-08, après mise à disposition du journal et communication des compte
 
 Cet accord valide la recette métier de US-08.02 dans son périmètre local : journal, habilitations, filtres, pagination et données avant/après décrites dans le [rapport de livraison](us-08-02-validation.md). Il ne déclare pas l’exécution individuelle d’un zoom à 200 %, d’un essai avec lecteur d’écran ou d’un nouveau scan AA pour cet écran. Ces contrôles restent suivis séparément, sans réutiliser le résultat du scan de US-08.01 comme preuve du journal.
 
-Les régressions de US-08.01 ont été vérifiées dans la même livraison : 24 tests serveur, deux tests de mapping et sept parcours Chromium réussis. Le rattachement technique au nouveau commit ne modifie pas l’accord métier antérieur de US-08.01.
+Les régressions de US-08.01 ont été vérifiées dans la même livraison `6925193` : 24 tests serveur, deux tests de mapping et sept parcours Chromium réussis. Le rattachement technique au nouveau commit ne modifie pas l’accord métier antérieur de US-08.01.
 
 ## Limites des preuves
 

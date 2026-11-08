@@ -12,15 +12,16 @@
   "US-08.01": {
     "implementation": "complete",
     "commits": ["9f2d2d4"],
-    "validated_commit": "9f2d2d4",
+    "validated_commit": "6925193",
     "code_paths": ["backend/", "frontend/", "api/"],
     "report": "docs/reference/quality/us-08-01-validation.md",
     "remaining": [],
     "acceptance": {"required": true, "evidence": "docs/reference/quality/acceptance-2026-11-08.md"}
   },
   "US-08.02": {
-    "implementation": "partial",
-    "commits": ["9f2d2d4"],
+    "implementation": "complete",
+    "commits": ["9f2d2d4", "6925193"],
+    "validated_commit": "6925193",
     "code_paths": ["backend/", "frontend/", "api/"],
     "report": "docs/reference/quality/us-08-02-validation.md",
     "remaining": ["Zoom navigateur à 200 % du journal", "Essai du journal avec lecteur d’écran"],
