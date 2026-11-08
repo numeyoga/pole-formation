@@ -2,7 +2,7 @@
 title: "Référence"
 description: "Contrats, conventions et faits normatifs."
 created: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-08
 status: accepted
 type: index
 tags:
@@ -15,6 +15,8 @@ tags:
 - [Structure backend](architecture/backend-structure.md)
 - [Structure frontend](architecture/frontend-structure.md)
 - [Contrat API](architecture/api-contract.md)
+- [Rôles et permissions](architecture/roles-permissions.md)
+- [Validation US-08.01](quality/us-08-01-validation.md)
 - [Décisions ouvertes](architecture/open-questions.md)
 - [Périmètre MVP](domain/scope.md)
 - [Glossaire](domain/glossary.md)

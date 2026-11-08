@@ -2,7 +2,7 @@
 title: "Journal des décisions (ADR)"
 description: "Décisions structurantes et alternatives."
 created: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-08
 status: accepted
 type: index
 tags:
@@ -17,3 +17,4 @@ tags:
 - [ADR 0004 – Suivi option B](ADR-0004-option-b.md)
 - [ADR 0005 – Contrats et sécurité](ADR-0005-api-security.md)
 - [ADR 0006 – Conteneurs de développement et applicatif](ADR-0006-containers.md)
+- [ADR 0007 – Bootstrap et habilitations](ADR-0007-bootstrap-habilitations.md)

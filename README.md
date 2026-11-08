@@ -14,7 +14,7 @@ tags:
 
 Application interne de centralisation du pôle formation INT : référentiels, formations, sessions, participations et pilotage de l'activité formation.
 
-> **Statut du référentiel** : architecture technique acceptée ; certaines règles métier et intégrations restent à confirmer. Le contenu décrit une **cible**, pas une application déjà implémentée.
+> **Statut** : le devcontainer et la première tranche d’accès et habilitations sont implémentés. Le reste du MVP décrit une cible ; certaines règles métier et intégrations restent à confirmer. Voir le [guide de lancement](docs/how-to/run-local-app.md) et le [périmètre livré](docs/reference/quality/us-08-01-validation.md).
 
 ## Sommaire
 

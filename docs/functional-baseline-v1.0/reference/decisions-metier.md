@@ -1,8 +1,8 @@
 ---
 title: "Registre des décisions métier validées"
 created: 2026-11-07
-updated: 2026-11-07
-version: "1.0.0"
+updated: 2026-11-08
+version: "1.1.0"
 status: "baseline-v1.0"
 diataxis: "reference"
 ---
@@ -57,6 +57,7 @@ Les 36 lignes ci-dessous regroupent **10 décisions de modèle**, **10 arbitrage
 | HB-04 | Présences après dernier créneau ; clôture après dernier créneau et états définitifs |
 | HB-05 | Créneaux modifiables en Planifiée avec audit ; aucune modification ordinaire après clôture |
 | HB-06 | Réactivation formation : code unique, champs requis, absence d’incohérence bloquante ; historique maintenu |
+| SEC-01 | Précision validée le 2026-11-08 : trois rôles fixes, intervenant, gestionnaire et administrateur fonctionnel. L’administrateur fonctionnel spécialise le gestionnaire habilité de OUV-04 : corrections après clôture avec audit, configuration des classifications et attribution des rôles lui sont réservées. La [matrice](../../reference/architecture/roles-permissions.md) fait autorité pour cette répartition. |
 
 ## Principes de gouvernance
 

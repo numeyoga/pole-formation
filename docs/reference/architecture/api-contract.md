@@ -2,7 +2,7 @@
 title: "Contrat API et sécurité HTTP"
 description: "Frontière REST, DTO, erreurs et sécurité de session."
 created: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-08
 status: accepted
 type: reference
 tags:
@@ -25,7 +25,7 @@ tags:
 - DTO publics adaptés aux cas d'utilisation ; pas d'exposition directe des entités domaine/JPA.
 - Identifiants opaques, dates ISO 8601 explicites, pagination filtrage et tri définis contractuellement.
 - Le frontend transforme DTO → modèles de présentation ; le backend est autorité sur règles et données.
-- Les noms/endpoints précis restent **à concevoir**, ne pas déduire `/api/formations` comme contrat déjà publié.
+- Les endpoints d’accès et habilitations sont définis dans le [contrat OpenAPI](../../../api/openapi.yaml). Les endpoints des autres stories restent à concevoir.
 
 ## Erreurs
 
@@ -38,7 +38,7 @@ tags:
 - Spring Security + **session HTTP serveur**, cookie `HttpOnly`, `Secure` en HTTPS, `SameSite` adapté ; protection CSRF pour les requêtes mutantes.
 - Authentification via fournisseur d'identité entreprise **à confirmer** ; ne pas bâtir de stockage de mot de passe local par défaut.
 - Contrôles côté backend pour chaque opération ; masquage UI ne constitue jamais une autorisation.
-- Politique de rôles/habilitations détaillée encore à arbitrer ; voir [open questions](open-questions.md).
+- Rôles distingués : intervenant, gestionnaire, administrateur fonctionnel. La [répartition détaillée des permissions](roles-permissions.md) est validée pour le MVP ; l’identité de production reste ouverte.
 
 ## Déploiement
 

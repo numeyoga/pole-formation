@@ -12,6 +12,7 @@ type: reference
 
 - [Résultats observés](#résultats-observés)
 - [Limites](#limites)
+- [Préparation de US-08.01](#préparation-de-us-0801)
 
 ## Résultats observés
 
@@ -33,4 +34,12 @@ Le script reproductible est décrit dans le [guide](../../how-to/dev-container.m
 
 ## Limites
 
-La variante Docker n’a pas été exécutée. Il n’existe encore aucun build applicatif ni test métier. L’accès à un moteur de conteneurs depuis le workspace pour Testcontainers reste à configurer et valider au bootstrap. Les versions observées ne constituent pas un verrouillage des futures dépendances applicatives.
+La variante Docker n’a pas été exécutée. Le bootstrap applicatif et les tests Testcontainers ont depuis été réalisés dans la variante Podman avec montage du socket du moteur ; voir [US-08.01](us-08-01-validation.md). Les versions applicatives sont verrouillées dans les manifests et lockfiles.
+
+## Préparation de US-08.01
+
+L’ordre du [lot 0](../../functional-baseline-v1.0/reference/lots-developpement.md) commence par les habilitations et les fondations de l’audit. Les comptes de test locaux, réservés au développement, ont été autorisés par le représentant du projet le 2026-11-08 ; le fournisseur d’identité de production reste ouvert.
+
+Un rôle **Administrateur fonctionnel** a été ajouté à la demande du représentant du projet le 2026-11-08. La [matrice validée](../architecture/roles-permissions.md) distingue gestion courante et permissions supplémentaires, notamment les corrections après clôture avec audit. Elle remplace la proposition initiale de droits du gestionnaire. Les restrictions de l’intervenant restent celles de RG-SEC-01/02 et des critères de US-08.01.
+
+La matrice a été validée et implémentée ; les choix de bootstrap figurent dans [ADR 0007](../../decisions/ADR-0007-bootstrap-habilitations.md). Le [rapport de livraison](us-08-01-validation.md) détaille les critères testés et les limites restantes.

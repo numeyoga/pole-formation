@@ -1,3 +1,9 @@
 services:
   workspace:
     userns_mode: keep-id:uid=1001,gid=1001
+    volumes:
+      - ${XDG_RUNTIME_DIR}/podman/podman.sock:/var/run/docker.sock
+    environment:
+      DOCKER_HOST: unix:///var/run/docker.sock
+      TESTCONTAINERS_HOST_OVERRIDE: host.containers.internal
+      TESTCONTAINERS_RYUK_DISABLED: "true"

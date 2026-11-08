@@ -55,4 +55,6 @@ Supprimer les données locales avec `podman compose -f .devcontainer/compose.yam
 
 ## Limites actuelles
 
-Le dépôt ne contient pas encore les sources frontend/backend ni leurs manifests de build. Le conteneur prépare l’environnement, mais ne lance pas encore l’application.
+Les sources et manifests frontend/backend existent pour US-08.01. Le conteneur ne lance pas automatiquement l’application : suivre le [guide de lancement](run-local-app.md).
+
+La variante Podman fournit l’accès au socket du moteur pour Testcontainers ; une reconstruction est nécessaire pour ajouter ce montage à un workspace existant. La variante Docker et l’accès Testcontainers sous Docker restent à vérifier.

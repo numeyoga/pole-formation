@@ -1,8 +1,8 @@
 ---
 title: "Backlog fonctionnel MVP — 26 user stories"
 created: 2026-11-07
-updated: 2026-11-07
-version: "1.0.0"
+updated: 2026-11-08
+version: "1.1.0"
 status: "baseline-v1.0"
 diataxis: "reference"
 ---
@@ -427,7 +427,7 @@ diataxis: "reference"
 ### US-08.01 — Gérer les accès et habilitations
 
 **Priorité :** Must. **Dépendances :** aucune (socle fonctionnel).  
-**Références métier :** RG-SEC-01, RG-SEC-02.  
+**Références métier :** RG-SEC-01, RG-SEC-02, SEC-01.
 
 > En tant que utilisateur de l’application, je veux accéder uniquement aux fonctions autorisées afin de protéger les données métier.
 
@@ -439,6 +439,10 @@ diataxis: "reference"
 4. **Étant donné** un intervenant affecté, **lorsque** il consulte la liste des participants, **alors** seuls nom, prénom, identifiant si nécessaire et état de participation sont exposés.
 5. **Étant donné** un intervenant non affecté, **lorsque** il tente de lire ou modifier les participations, **alors** l’API refuse l’accès.
 6. **Étant donné** un intervenant sans droits de gestion, **lorsque** il modifie un référentiel, **alors** l’opération est refusée.
+7. **Étant donné** un gestionnaire ordinaire, **lorsque** il configure une classification, attribue un rôle ou corrige une présence après clôture, **alors** l’opération est refusée ; l’administrateur fonctionnel est autorisé sous réserve des invariants et de l’audit requis.
+8. **Étant donné** un administrateur fonctionnel, **lorsque** il remplace le rôle d’un compte existant, **alors** le changement est audité avant/après et les nouvelles permissions s’appliquent à la prochaine opération, y compris dans une session déjà ouverte.
+
+La [validation de livraison](../../reference/quality/us-08-01-validation.md) distingue la portée actuelle des permissions prévues pour les futures stories.
 
 ### US-08.02 — Auditer les changements sensibles
 

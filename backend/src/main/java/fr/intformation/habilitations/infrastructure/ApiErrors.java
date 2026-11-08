@@ -1,0 +1,17 @@
+package fr.intformation.habilitations.infrastructure;
+
+import fr.intformation.habilitations.application.AccessService;
+import fr.intformation.habilitations.domain.AccessPolicy.*;
+import org.springframework.http.*;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+@RestControllerAdvice
+public class ApiErrors {
+    @ExceptionHandler(Forbidden.class) ProblemDetail forbidden() { return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN,"Accès refusé."); }
+    @ExceptionHandler(AccessService.NotFound.class) ProblemDetail missing() { return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,"Ressource introuvable."); }
+    @ExceptionHandler(Conflict.class) ProblemDetail conflict(Conflict error) { return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,error.getMessage()); }
+    @ExceptionHandler({IllegalArgumentException.class, HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
+    ProblemDetail invalid() { return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,"Requête invalide."); }
+}

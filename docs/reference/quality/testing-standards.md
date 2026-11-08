@@ -2,7 +2,7 @@
 title: "Stratégie de tests et qualité"
 description: "Pyramide de tests, exigences CI et définition de terminé."
 created: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-08
 status: accepted
 type: reference
 tags:
@@ -23,7 +23,7 @@ tags:
 - **Unitaires** : JUnit + AssertJ ; Mockito pour les dépendances nécessaires, sans mocker des valeurs/domaine pur.
 - **Intégration** : Testcontainers + PostgreSQL réel ; migrations Flyway testées ; tests de ports/adaptateurs ; contrats API et erreurs.
 - **Métier** : tests explicites RG-001 à RG-010, notamment non-inférence de compétences individuelles.
-- Distinguer tests rapides des tests avec base ; commandes Maven/Gradle à fixer lors du bootstrap.
+- Distinguer tests rapides des tests avec base ; Maven Wrapper est retenu. `./mvnw test` exécute JUnit et PostgreSQL Testcontainers depuis `/backend`, dans le devcontainer.
 
 ## Frontend
 
@@ -46,3 +46,5 @@ tags:
 Pipeline cible : format/lint → TypeScript typecheck → Vitest → build frontend → tests backend → intégrations Testcontainers → Playwright/axe → validation docs (frontmatter/liens). L'ordre et les commandes exactes sont à configurer au bootstrap.
 
 **Ne jamais affirmer « tests passés » sans exécution effective** ; les prototypes documentaires ne sont pas des tests réels. Voir [accessibilité](accessibility.md) et [guide de test](../../how-to/test-accessibility.md).
+
+Les commandes exécutables du bootstrap et les prérequis Testcontainers figurent dans le [guide de lancement](../../how-to/run-local-app.md). Le [rapport US-08.01](us-08-01-validation.md) détaille la classification sécurité, les niveaux de tests, les contrôles de mutation et les limites de validation.

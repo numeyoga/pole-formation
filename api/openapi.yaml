@@ -1,0 +1,224 @@
+openapi: 3.1.0
+info:
+  title: Pôle formation — accès et habilitations
+  version: 0.1.0
+servers:
+  - url: /
+security:
+  - session: []
+paths:
+  /api/auth/csrf:
+    get:
+      security: []
+      responses:
+        '200':
+          description: Jeton CSRF à renouveler après connexion et déconnexion
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [token, headerName]
+                properties:
+                  token: {type: string}
+                  headerName: {type: string}
+  /api/auth/login:
+    post:
+      security: []
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username: {type: string}
+                password: {type: string, format: password}
+      responses:
+        '204': {description: Session ouverte, cookie renouvelé}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/auth/logout:
+    post:
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      responses:
+        '204': {description: Session invalidée}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/auth/me:
+    get:
+      responses:
+        '200':
+          description: Identité et permissions courantes
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [username, role, permissions]
+                properties:
+                  username: {type: string}
+                  role: {$ref: '#/components/schemas/Role'}
+                  permissions: {type: array, items: {type: string}}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/sessions:
+    get:
+      responses:
+        '200':
+          description: Sessions accessibles, triées par titre puis identifiant
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/Session'}
+        '401': {$ref: '#/components/responses/Error'}
+  /api/sessions/{id}/participants:
+    parameters: [{$ref: '#/components/parameters/SessionId'}]
+    get:
+      responses:
+        '200':
+          description: Projection minimale des participants, triée par nom, prénom et identifiant
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/Participant'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+  /api/sessions/{id}/participants/{participationId}/presence:
+    parameters:
+      - {$ref: '#/components/parameters/SessionId'}
+      - name: participationId
+        in: path
+        required: true
+        schema: {type: string, format: uuid}
+    put:
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [state]
+              properties:
+                state: {type: string, enum: [PRESENTE, ABSENTE]}
+      responses:
+        '204': {description: Présence enregistrée, correction clôturée auditée atomiquement}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/habilitations/comptes:
+    get:
+      responses:
+        '200':
+          description: Comptes et rôle courant, triés par identifiant
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [username, role]
+                  properties:
+                    username: {type: string}
+                    role: {$ref: '#/components/schemas/Role'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/habilitations/comptes/{username}/role:
+    parameters:
+      - name: username
+        in: path
+        required: true
+        schema: {type: string}
+    put:
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role: {$ref: '#/components/schemas/Role'}
+      responses:
+        '204': {description: Rôle modifié avec audit, effectif dès la prochaine opération}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+  /api/referentiels/domaines/{id}:
+    parameters: [{$ref: '#/components/parameters/SessionId'}]
+    put:
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody: {$ref: '#/components/requestBodies/Label'}
+      responses:
+        '204': {description: Libellé du domaine modifié}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+  /api/referentiels/classifications/{id}:
+    parameters: [{$ref: '#/components/parameters/SessionId'}]
+    put:
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody: {$ref: '#/components/requestBodies/Label'}
+      responses:
+        '204': {description: Libellé de classification modifié}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+components:
+  securitySchemes:
+    session: {type: apiKey, in: cookie, name: JSESSIONID}
+  parameters:
+    SessionId: {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+    Csrf: {name: X-CSRF-TOKEN, in: header, required: true, schema: {type: string}}
+  requestBodies:
+    Label:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [label]
+            properties:
+              label: {type: string, minLength: 1, maxLength: 200}
+  responses:
+    Error:
+      description: Erreur HTTP sans détail technique interne
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [status]
+            properties:
+              type: {type: string}
+              title: {type: string}
+              status: {type: integer}
+              detail: {type: string}
+  schemas:
+    Role: {type: string, enum: [INTERVENANT, GESTIONNAIRE, ADMINISTRATEUR_FONCTIONNEL]}
+    Session:
+      type: object
+      required: [id, title, state, lastSlotEnd]
+      properties:
+        id: {type: string, format: uuid}
+        title: {type: string}
+        state: {type: string, enum: [BROUILLON, PLANIFIEE, TERMINEE, ANNULEE]}
+        lastSlotEnd: {type: [string, 'null'], format: date-time}
+    Participant:
+      type: object
+      required: [id, firstName, lastName, professionalId, state]
+      additionalProperties: false
+      properties:
+        id: {type: string, format: uuid, description: Identifiant de participation nécessaire aux actions}
+        firstName: {type: string}
+        lastName: {type: string}
+        professionalId: {type: string}
+        state: {type: string, enum: [INSCRITE, PRESENTE, ABSENTE, DESISTEE]}

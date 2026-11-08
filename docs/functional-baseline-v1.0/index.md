@@ -1,8 +1,8 @@
 ---
 title: "Documentation fonctionnelle — Index"
 created: 2026-11-07
-updated: 2026-11-07
-version: "1.0.0"
+updated: 2026-11-08
+version: "1.1.0"
 status: "baseline-v1.0"
 diataxis: "reference"
 ---
@@ -10,6 +10,8 @@ diataxis: "reference"
 # Documentation fonctionnelle — Index
 
 Documentation du MVP, organisée selon les quatre usages de Diátaxis.
+
+Révision 1.1.0 du 2026-11-08 : la décision SEC-01 précise les trois rôles et les permissions réservées à l’administrateur fonctionnel ; les critères de US-08.01 et leur traçabilité sont complétés. Le chemin de la baseline reste stable.
 
 ## Comprendre (Explanation)
 

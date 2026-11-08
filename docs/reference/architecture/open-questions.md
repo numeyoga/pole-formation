@@ -2,7 +2,7 @@
 title: "Registre des décisions ouvertes"
 description: "Questions à trancher et conventions provisoires sans fausse validation."
 created: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-08
 status: proposed
 type: reference
 tags:
@@ -23,9 +23,9 @@ tags:
 | Sujet | État | Position de travail | Déclencheur |
 |---|---|---|---|
 | Fournisseur d'identité | Ouvert | Spring Security session, SSO si disponible | Avant authentification réelle |
-| Rôles et permissions | Ouvert | Pôle formation / intervenants à préciser | Avant accès aux dossiers collaborateurs |
+| Rôles et permissions | Matrice arbitrée | [Trois rôles fixes et matrice validée](roles-permissions.md) ; provisionnement de production ouvert | Avant authentification de production |
 | Données personnelles, confidentialité, conservation | Ouvert | Minimisation, traçabilité, contrôle d'accès | Avant stockage de données réelles |
-| Versions exactes Spring Boot/Slab/Lit/Node/PostgreSQL | Ouvert | Choisir versions stables compatibles et verrouiller manifests | Bootstrap |
+| Versions exactes Spring Boot/Slab/Lit/Node/PostgreSQL | Bootstrap réalisé | [Versions applicatives verrouillées](../../decisions/ADR-0007-bootstrap-habilitations.md) ; Slab différé jusqu’à un besoin complexe | Premier usage Slab / mises à jour |
 | Sens métier détaillé des classifications d'exigence | Ouvert | Codes et libellés configurables ; ne pas fixer de sémantique sans validation | Configuration du référentiel |
 | Identités et unicité des référentiels | Ouvert | IDs stables et archivage, contraintes à valider | Migrations initiales |
 
@@ -38,8 +38,8 @@ tags:
 | Compatibilité détaillée Slab/Lit et interfaces de personnalisation | À vérifier par prototype | Garder l'adaptation minimale | Avant première feature Slab |
 | Modalités d'édition concurrente | Ouvert | Prévoir conflit/version optimiste si cas réel | Édition partagée |
 | Notifications, audit formel, import/export | Ouvert | Pas de promesse MVP au-delà de l'historique métier | Besoin utilisateur |
-| Choix Maven/Gradle et gestionnaire JS | Ouvert | Standard le plus simple pour l'équipe | Bootstrap |
-| Répartition exacte des modules backend | Ouvert | Découpage illustratif catalogue/parcours/activités | Première fonctionnalité |
+| Choix Maven/Gradle et gestionnaire JS | Arbitré | Maven Wrapper et npm, [ADR 0007](../../decisions/ADR-0007-bootstrap-habilitations.md) | Réévaluation si besoin démontré |
+| Répartition exacte des modules backend | Partiellement arbitré | Module `habilitations` implémenté ; modules métier suivants à préciser par feature | Fonctionnalités suivantes |
 | Présence par créneau, listes d'attente et attestations | Évolution future | Le MVP suit la présence globale à la session | Extension périmètre |
 | Stratégie i18n | Partiellement ouverte | Français initial, ressources centralisées | Avant ajout seconde langue |
 

@@ -1,8 +1,8 @@
 ---
 title: "Matrice de traçabilité"
 created: 2026-11-07
-updated: 2026-11-07
-version: "1.0.0"
+updated: 2026-11-08
+version: "1.1.0"
 status: "baseline-v1.0"
 diataxis: "reference"
 ---
@@ -58,6 +58,7 @@ Cette table relie les décisions explicitement validées aux fonctionnalités v�
 | HB-04 | US-05.05, US-06.03 |
 | HB-05 | US-05.02, US-08.02 |
 | HB-06 | US-03.01 |
+| SEC-01 | US-02.02, US-06.03, US-08.01, US-08.02 |
 
 ## Matrice story → dépendances et priorité
 
@@ -87,7 +88,7 @@ Cette table relie les décisions explicitement validées aux fonctionnalités v�
 | US-06.04 | EP-06 | Must | US-06.02, US-08.02 | 5 |
 | US-07.01 | EP-07 | Must | US-03.01, US-05.05, US-06.02, US-06.03, US-06.04 | 5 |
 | US-07.02 | EP-07 | Should | US-07.01 | 4 |
-| US-08.01 | EP-08 | Must | — | 6 |
+| US-08.01 | EP-08 | Must | — | 8 |
 | US-08.02 | EP-08 | Must | US-08.01 | 6 |
 
 ## Invariants ↔ recettes transversales

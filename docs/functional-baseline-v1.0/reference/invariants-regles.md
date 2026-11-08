@@ -1,8 +1,8 @@
 ---
 title: "Invariants et règles de gestion"
 created: 2026-11-07
-updated: 2026-11-07
-version: "1.0.0"
+updated: 2026-11-08
+version: "1.1.0"
 status: "baseline-v1.0"
 diataxis: "reference"
 ---
@@ -67,6 +67,7 @@ diataxis: "reference"
 | RG-PAR-03 | Inscrite, Présente, Absente, Désistée ; désistement distinct de l’absence, pas de nouvelle participation en cas de réactivation. | Validée |
 | RG-SEC-01 | Intervenant connecté : accès aux sessions affectées, saisie de présences autorisée après dernier créneau, sans correction post-clôture ordinaire. | Validée / déduite |
 | RG-SEC-02 | Données participants visibles aux intervenants : nom, prénom, identifiant professionnel si nécessaire, état de participation. | Validée |
+| RG-SEC-03 | Trois rôles selon SEC-01 : l’administrateur fonctionnel dispose des droits de gestion et des permissions réservées de correction après clôture, configuration des classifications et attribution des rôles. Les invariants métier restent applicables. | Validée le 2026-11-08 |
 | RG-AUD-01 | Corrections de présences après clôture et modifications de créneaux/intervenants sur session Planifiée sont auditées ; pas de faux succès. | Validée / convention transactionnelle |
 | RG-PIL-01 | Comptage des sessions selon la date du premier créneau, pas de double comptage inter-période. | Validée |
 | RG-PIL-02 | Annulations ventilées à part et exclues des sessions et présences réalisées. | Validée |
