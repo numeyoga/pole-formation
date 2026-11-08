@@ -54,7 +54,7 @@ Les tests ne couvrent pas l’éditeur d’exigences, l’administration des cla
 
 Le représentant du projet a accepté la livraison locale le 2026-11-08 : « je valide », après remise en service sur 8080. Voir la [preuve d’acceptation](acceptance-2026-11-08.md#validation-de-us-0201). Les scénarios humains individuels ne sont pas détaillés. L’examen d’accessibilité avec lecteur d’écran et zoom navigateur 200 % reste à effectuer ; axe et les scénarios clavier automatisés ne démontrent pas à eux seuls WCAG AA.
 
-Le code local n’est pas commité ; aucun hash antérieur n’est présenté comme preuve de cette livraison. Le manifeste reste `partial` jusqu’au versionnement de la livraison et à l’enregistrement du commit testé, conformément au [guide de suivi](../../how-to/track-development.md). Cette réserve de traçabilité ne signale pas une fonctionnalité omise dans US-02.01.
+La livraison est versionnée dans `0b538a48a3f35a7df065dba25e1c4b184c7ac455`. Ce commit contient le code validé par les exécutions rapportées ci-dessus, sans modification applicative entre ces validations et le commit. Le manifeste déclare `implementation: complete` et rattache la preuve technique à cette révision, conformément au [guide de suivi](../../how-to/track-development.md). L’acceptation métier est enregistrée ; seul l’examen humain d’accessibilité non détaillé reste suivi séparément.
 
 [DEF-010](../../../revue/defauts/2026-11-08-DEF-010-import-composant.md) trace l’import de composant supprimé à la compilation, corrigé par un import à effet de bord et couvert par le parcours de navigation.
 

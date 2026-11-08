@@ -39,7 +39,7 @@ Cet accord valide fonctionnellement les premières livraisons présentées. Il e
 | US-01.03 — Administrer les compétences | `44d06d0` | Livraison locale acceptée et clôturée sur validation utilisateur |
 | US-01.04 — Explorer le référentiel | `44d06d0` | Livraison locale acceptée et clôturée sur validation utilisateur |
 
-| US-02.01 — Administrer les profils d’emploi | Copie de travail locale non commitée, voir identification ci-dessous | Livraison locale acceptée ; rattachement au commit de livraison restant à enregistrer |
+| US-02.01 — Administrer les profils d’emploi | `0b538a4` | Livraison locale acceptée ; examen humain d’accessibilité restant documenté |
 
 Les autres stories du backlog ne sont pas déclarées développées par cet accord.
 
@@ -103,7 +103,7 @@ Le 2026-11-08, après présentation du bilan de US-02.01 et remise en service de
 
 Cet accord accepte la livraison locale des profils d’emploi décrite dans le [rapport](us-02-01-validation.md) : création, consultation, modification, désactivation, unicité des codes et conservation des exigences. L’utilisateur ne détaille pas les scénarios exécutés individuellement ; aucune recette détaillée, vérification au lecteur d’écran ou au zoom 200 % n’est inventée.
 
-La livraison acceptée est la copie de travail contenant US-02.01, basée sur `dd10bd00073d66dbd2d32fe8c2f37e349780a96c` avec ses modifications locales. Ce hash de base ne désigne pas le code livré. Le JAR exécuté sur 8080 lors de l’acceptation a pour SHA-256 `f7af9bb7ed0ae4ec8c09aa8b56acf3a65f0bcf6437b0f0be71610f39e89b12c2`. Son commit de livraison reste à créer et à renseigner dans le manifeste ; l’acceptation n’est pas artificiellement rattachée au commit de base.
+La livraison acceptée est la copie de travail contenant US-02.01, ensuite versionnée sans modification applicative dans `0b538a48a3f35a7df065dba25e1c4b184c7ac455`. Le JAR exécuté sur 8080 lors de l’acceptation a pour SHA-256 `f7af9bb7ed0ae4ec8c09aa8b56acf3a65f0bcf6437b0f0be71610f39e89b12c2`. Le manifeste rattache désormais l’acceptation et la preuve technique à ce commit de livraison.
 
 L’acceptation métier est enregistrée. L’examen humain d’accessibilité non détaillé reste un contrôle distinct. Cet accord ne valide aucune autre story de l’epic des profils.
 

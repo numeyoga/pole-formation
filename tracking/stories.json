@@ -150,7 +150,7 @@
     ]
   },
   "US-02.01": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -158,12 +158,15 @@
     ],
     "report": "docs/reference/quality/us-02-01-validation.md",
     "remaining": [
-      "Versionner la livraison et enregistrer le hash du commit testé avant de déclarer implementation: complete.",
       "Examen humain d’accessibilité (lecteur d’écran, zoom navigateur 200 %), non détaillé dans l’acceptation métier."
     ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
-    }
+    },
+    "commits": [
+      "0b538a48a3f35a7df065dba25e1c4b184c7ac455"
+    ],
+    "validated_commit": "0b538a48a3f35a7df065dba25e1c4b184c7ac455"
   }
 }
