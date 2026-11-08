@@ -1,0 +1,15 @@
+{
+  "name": "Pôle formation INT (Podman rootless)",
+  "dockerComposeFile": ["../compose.yaml", "../compose.podman.yaml"],
+  "service": "workspace",
+  "workspaceFolder": "/workspaces/pole-formation",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "27"
+    }
+  },
+  "forwardPorts": [5173, 8080],
+  "remoteUser": "pwuser",
+  "updateRemoteUserUID": false,
+  "shutdownAction": "stopCompose"
+}

@@ -1,5 +1,6 @@
 services:
   workspace:
+    image: localhost/pole-formation-devcontainer:local
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
@@ -26,7 +27,7 @@ services:
       POSTGRES_USER: pole_formation
       POSTGRES_PASSWORD: pole_formation_dev
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U pole_formation -d pole_formation_dev"]
       interval: 5s
