@@ -50,6 +50,10 @@ Le profil `dev` fournit des **comptes et données fictifs de démonstration**, s
 
 Le profil par défaut ne charge ni ces comptes ni les données fictives. Les modifications de rôle sont persistées : redémarrer l’application ne réinitialise pas les habilitations. Restaurer les rôles via `admin` après un essai. Le provisionnement de production reste à définir.
 
+Avec `admin` ou `gestionnaire`, consulter **Journal des changements sensibles**, puis filtrer par type ou session. Avec `admin`, ouvrir « Exemple — Session clôturée » et changer effectivement la présence de Camille Exemple : le journal affiche la correction avec auteur, date UTC et états avant/après. Un enregistrement du même état n’ajoute pas de changement fictif.
+
+Pour retrouver les deux événements d’une participation, choisir le type « Participations » et renseigner son identifiant dans le filtre d’objet. Les désistements/réactivations et modifications de planning sont actuellement accessibles par les endpoints du [contrat d’audit](../../api/audit.openapi.yaml) ; leurs formulaires complets seront ajoutés dans les stories correspondantes. Les événements antérieurs restent conservés après redémarrage.
+
 ## Exécuter les validations
 
 Depuis la racine du dépôt, avec l’application lancée sur 8080 pour Playwright :

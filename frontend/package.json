@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "generate:api": "openapi-typescript ../api/openapi.yaml -o src/shared/http/generated.ts",
+    "generate:api": "openapi-typescript ../api/openapi.yaml -o src/shared/http/generated.ts && openapi-typescript ../api/audit.openapi.yaml -o src/shared/http/audit-generated.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run src",
     "test:e2e": "playwright test",

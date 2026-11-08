@@ -2,7 +2,7 @@
 title: "Documentation fonctionnelle — Index"
 created: 2026-11-07
 updated: 2026-11-08
-version: "1.1.0"
+version: "1.2.0"
 status: "baseline-v1.0"
 diataxis: "reference"
 ---
@@ -11,7 +11,7 @@ diataxis: "reference"
 
 Documentation du MVP, organisée selon les quatre usages de Diátaxis.
 
-Révision 1.1.0 du 2026-11-08 : la décision SEC-01 précise les trois rôles et les permissions réservées à l’administrateur fonctionnel ; les critères de US-08.01 et leur traçabilité sont complétés. Le chemin de la baseline reste stable.
+Révision 1.2.0 du 2026-11-08 : AUD-02 valide les intervalles demi-ouverts, l’absence de chevauchement interne à une session et la consommation de places par Présente/Absente. La révision 1.1.0 avait précisé les trois rôles avec SEC-01. Le chemin de la baseline reste stable.
 
 ## Comprendre (Explanation)
 

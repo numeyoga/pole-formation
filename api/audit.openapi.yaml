@@ -1,0 +1,133 @@
+openapi: 3.1.0
+info:
+  title: Pôle formation — journal et changements sensibles
+  version: 0.2.0
+servers: [{url: /}]
+security: [{session: []}]
+paths:
+  /api/audit:
+    get:
+      description: Gestionnaires et administrateurs uniquement. Ordre décroissant de séquence ; curseur exclusif, sans total instable.
+      parameters:
+        - {name: subjectType, in: query, schema: {type: string, enum: [COMPTE, PARTICIPATION, CRENEAU, AFFECTATIONS]}}
+        - {name: subjectId, in: query, schema: {type: string, minLength: 1, maxLength: 100}}
+        - {name: sessionId, in: query, schema: {type: string, format: uuid}}
+        - {name: beforeSequence, in: query, schema: {type: string, pattern: '^[1-9][0-9]*$', maxLength: 19}}
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+      responses:
+        '200':
+          description: Page du journal ; les données avant/après sont des instantanés immuables pour l’API
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, nextCursor]
+                properties:
+                  items: {type: array, items: {$ref: '#/components/schemas/Event'}}
+                  nextCursor: {type: [string, 'null'], pattern: '^[1-9][0-9]*$'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/sessions/{session}/creneaux/{slot}:
+    parameters:
+      - {$ref: '#/components/parameters/Session'}
+      - {name: slot, in: path, required: true, schema: {type: string, format: uuid}}
+    put:
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [startsAt, endsAt]
+              properties:
+                startsAt: {type: string, format: date-time}
+                endsAt: {type: string, format: date-time}
+                confirmConflicts: {type: boolean, default: false}
+      responses:
+        '204': {description: Créneau modifié et audité atomiquement}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/sessions/{session}/intervenants:
+    parameters: [{$ref: '#/components/parameters/Session'}]
+    put:
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [instructorIds]
+              properties:
+                instructorIds: {type: array, uniqueItems: true, items: {type: string, format: uuid}}
+                confirmConflicts: {type: boolean, default: false}
+      responses:
+        '204': {description: Affectations remplacées et auditées atomiquement}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/sessions/{session}/participants/{participation}/etat:
+    parameters:
+      - {$ref: '#/components/parameters/Session'}
+      - {name: participation, in: path, required: true, schema: {type: string, format: uuid}}
+    put:
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [state]
+              properties:
+                state: {type: string, enum: [INSCRITE, DESISTEE]}
+                confirmConflicts: {type: boolean, default: false}
+      responses:
+        '204': {description: Désistement ou réactivation sur la même participation, avec audit}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+components:
+  securitySchemes:
+    session: {type: apiKey, in: cookie, name: JSESSIONID}
+  parameters:
+    Csrf: {name: X-CSRF-TOKEN, in: header, required: true, schema: {type: string}}
+    Session: {name: session, in: path, required: true, schema: {type: string, format: uuid}}
+  responses:
+    Error:
+      description: Erreur ; un conflit de planning signale confirmationRequired et conflictingSessionIds. Aucun succès d’audit n’est écrit en cas de refus.
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [status]
+            properties:
+              status: {type: integer}
+              title: {type: string}
+              detail: {type: string}
+              confirmationRequired: {type: boolean}
+              conflictingSessionIds: {type: array, items: {type: string, format: uuid}}
+  schemas:
+    Event:
+      type: object
+      required: [sequence, id, occurredAt, actor, action, subjectType, subjectId, sessionId, before, after]
+      properties:
+        sequence: {type: string, pattern: '^[1-9][0-9]*$'}
+        id: {type: string, format: uuid}
+        occurredAt: {type: string, format: date-time}
+        actor: {type: string}
+        action: {type: string}
+        subjectType: {type: string, enum: [COMPTE, PARTICIPATION, CRENEAU, AFFECTATIONS]}
+        subjectId: {type: string}
+        sessionId: {type: [string, 'null'], format: uuid}
+        before: {type: object, additionalProperties: true}
+        after: {type: object, additionalProperties: true}

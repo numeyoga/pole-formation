@@ -28,7 +28,7 @@ test('keyboard login, scoped sessions, participants, axe and logout',async({page
   await expect(page.getByRole('heading',{name:'Participants — Exemple — Accueil',exact:true})).toBeFocused();
   await expect(page.getByText(/Camille Exemple · EXEMPLE-001/)).toBeVisible();
   await page.getByRole('button',{name:'Marquer Camille Exemple présente',exact:true}).click();
-  await expect(page.getByRole('status')).toHaveText('Modification enregistrée.');
+  await expect(page.getByRole('status',{name:'État de l’opération'})).toHaveText('Modification enregistrée.');
   expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
   const cookies=await page.context().cookies();
   expect(cookies.find(cookie=>cookie.name==='JSESSIONID')?.httpOnly).toBe(true);
@@ -55,13 +55,13 @@ test('administrator can review and confirm roles, dialog supports Escape and res
   expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
   await page.keyboard.press('Escape');await expect(save).toBeFocused();
   await save.click();await page.getByRole('button',{name:'Confirmer',exact:true}).click();
-  await expect(page.getByRole('status')).toHaveText('Modification enregistrée.');
+  await expect(page.getByRole('status',{name:'État de l’opération'})).toHaveText('Modification enregistrée.');
   await expect(page.getByLabel('Rôle de sans-affectation',{exact:true})).toHaveValue('GESTIONNAIRE');
   await expect(page.getByRole('heading',{name:'Habilitations',exact:true})).toBeFocused();
   // Restore the fictional account for subsequent runs.
   await page.getByLabel('Rôle de sans-affectation',{exact:true}).selectOption('INTERVENANT');
   await save.click();await page.getByRole('button',{name:'Confirmer',exact:true}).click();
-  await expect(page.getByRole('status')).toHaveText('Modification enregistrée.');
+  await expect(page.getByRole('status',{name:'État de l’opération'})).toHaveText('Modification enregistrée.');
   await expect(page.getByLabel('Rôle de sans-affectation',{exact:true})).toHaveValue('INTERVENANT');
 });
 test('empty state, reload, expired session and narrow viewport',async({page})=>{

@@ -2,7 +2,7 @@
 title: "Règles de gestion et invariants"
 description: "Règles acceptées, règles candidates et interdictions MVP."
 created: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-08
 status: accepted
 type: reference
 tags:
@@ -34,7 +34,7 @@ tags:
 
 ## Règles proposées à confirmer
 
-Les conventions de conception qui ne sont pas des décisions métier restent identifiées dans les [réserves de la baseline](../../functional-baseline-v1.0/reference/reserves-conventions.md). En particulier, le non-chevauchement de créneaux d'une même session, l'effet d'une réduction de capacité et les choix de fuseau horaire ne doivent pas être présentés comme des arbitrages validés.
+Les conventions de conception qui ne sont pas des décisions métier restent identifiées dans les [réserves de la baseline](../../functional-baseline-v1.0/reference/reserves-conventions.md). L’effet d’une réduction de capacité et les choix de fuseau horaire restent proposés. Le non-chevauchement interne, les intervalles demi-ouverts et la consommation de places par Présente/Absente sont désormais validés par AUD-02.
 
 ## Matrice MVP / futur
 

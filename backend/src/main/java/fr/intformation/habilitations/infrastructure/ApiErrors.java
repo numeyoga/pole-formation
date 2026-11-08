@@ -9,6 +9,11 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @RestControllerAdvice
 public class ApiErrors {
+    @ExceptionHandler(fr.intformation.audit.domain.ChangeRules.PlanningConflict.class)
+    ProblemDetail planning(fr.intformation.audit.domain.ChangeRules.PlanningConflict error) {
+        var problem=ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,error.getMessage());
+        problem.setProperty("confirmationRequired",true);problem.setProperty("conflictingSessionIds",error.sessions());return problem;
+    }
     @ExceptionHandler(Forbidden.class) ProblemDetail forbidden() { return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN,"Accès refusé."); }
     @ExceptionHandler(AccessService.NotFound.class) ProblemDetail missing() { return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,"Ressource introuvable."); }
     @ExceptionHandler(Conflict.class) ProblemDetail conflict(Conflict error) { return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,error.getMessage()); }

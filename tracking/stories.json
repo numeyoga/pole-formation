@@ -21,9 +21,9 @@
   "US-08.02": {
     "implementation": "partial",
     "commits": ["9f2d2d4"],
-    "code_paths": ["backend/"],
-    "report": "docs/reference/quality/us-08-01-validation.md",
-    "remaining": ["Fondations seulement : compléter les critères d’audit de US-08.02"],
-    "acceptance": {"required": true, "evidence": null}
+    "code_paths": ["backend/", "frontend/", "api/"],
+    "report": "docs/reference/quality/us-08-02-validation.md",
+    "remaining": ["Zoom navigateur à 200 % du journal", "Essai du journal avec lecteur d’écran"],
+    "acceptance": {"required": true, "evidence": "docs/reference/quality/acceptance-2026-11-08.md"}
   }
 }

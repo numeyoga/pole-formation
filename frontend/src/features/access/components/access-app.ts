@@ -2,11 +2,13 @@ import { LitElement, css, html, nothing } from 'lit';
 import { api, ApiError } from '../adapters/access-api';
 import type { Identity, SessionView, ParticipantView, AccountView, Role } from '../presentation/models';
 import { messages as m, roles, states } from '../../../shared/i18n/fr';
+import '../../audit/components/audit-log';
 
 export class AccessApp extends LitElement {
   static properties = {
     identity:{state:true}, sessions:{state:true}, selected:{state:true}, participants:{state:true}, accounts:{state:true},
     busy:{state:true}, error:{state:true}, notice:{state:true}, initialized:{state:true},
+    auditRevision:{state:true},
   };
   declare identity: Identity|null;
   declare sessions: SessionView[];
@@ -17,9 +19,10 @@ export class AccessApp extends LitElement {
   declare error:string;
   declare notice:string;
   declare initialized:boolean;
+  declare auditRevision:number;
   constructor() {
     super(); this.identity=null;this.sessions=[];this.selected=null;this.participants=[];this.accounts=[];
-    this.busy=false;this.error='';this.notice='';this.initialized=false;
+    this.busy=false;this.error='';this.notice='';this.initialized=false;this.auditRevision=0;
   }
   static styles = css`
     :host { display:block; }
@@ -62,6 +65,7 @@ export class AccessApp extends LitElement {
   private async refresh() {
     this.identity=await api.me();this.sessions=await api.sessions();
     this.accounts=this.identity.permissions.includes('WRITE_ROLES')?await api.accounts():[];
+    this.auditRevision++;
   }
   private async restore() {
     await this.run(async()=>{
@@ -82,7 +86,7 @@ export class AccessApp extends LitElement {
   }
   private async presence(participant:ParticipantView,state:'PRESENTE'|'ABSENTE') {
     if(!this.selected)return;const session=this.selected;
-    await this.run(async()=>{await api.presence(session.id,participant.id,state);this.participants=await api.participants(session.id);this.notice=m.saved;});
+    await this.run(async()=>{await api.presence(session.id,participant.id,state);this.participants=await api.participants(session.id);this.notice=m.saved;this.auditRevision++;});
   }
   private async changeRole(event:SubmitEvent,account:AccountView) {
     event.preventDefault();const form=event.currentTarget as HTMLFormElement;const data=new FormData(form);const role=String(data.get('role')) as Role;
@@ -99,7 +103,7 @@ export class AccessApp extends LitElement {
     return html`
       <header><h1>${m.title}</h1>${this.identity?html`<p>${this.identity.username} — ${roles[this.identity.role]}</p><button ?disabled=${this.busy} @click=${this.logout}>${m.logout}</button>`:nothing}</header>
       ${this.error?html`<div role="alert" tabindex="-1">${this.error}</div><button ?disabled=${this.busy} @click=${this.restore}>${m.retry}</button>`:nothing}
-      <p role="status">${this.busy?m.loading:this.notice}</p>
+      <p role="status" aria-label="État de l’opération">${this.busy?m.loading:this.notice}</p>
       ${!this.initialized?nothing:!this.identity?html`
         <section aria-labelledby="login-title"><h2 id="login-title">Connexion</h2>
           <form @submit=${this.login} aria-busy=${this.busy}>
@@ -120,6 +124,7 @@ export class AccessApp extends LitElement {
           <label for=${`role-${account.username}`}>Rôle de ${account.username}</label><select id=${`role-${account.username}`} name="role" .value=${account.role}>${(Object.keys(roles) as Role[]).map(role=>html`<option value=${role} ?selected=${account.role===role}>${roles[role]}</option>`)}</select>
           <button ?disabled=${this.busy}>Enregistrer le rôle de ${account.username}</button>
         </form></li>`)}</ul></section>`:nothing}
+        ${this.identity.permissions.includes('READ_AUDIT')?html`<audit-log .revision=${this.auditRevision} .sessions=${this.sessions}></audit-log>`:nothing}
       `}
       <dialog id="confirm-role" aria-labelledby="confirm-title" aria-describedby="confirm-description"><form method="dialog"><h2 id="confirm-title">${m.confirm}</h2><p id="confirm-description"></p><div class="actions"><button value="cancel" autofocus>${m.cancel}</button><button value="confirm">Confirmer</button></div></form></dialog>
     `;

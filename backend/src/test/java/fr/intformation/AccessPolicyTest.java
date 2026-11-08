@@ -14,7 +14,7 @@ class AccessPolicyTest {
     @Test void fixed_roles_match_the_validated_permissions() {
         assertThat(Arrays.stream(Permission.values()).filter(p->policy.permits(instructor,p))).containsExactlyInAnyOrder(Permission.READ_SESSIONS,Permission.READ_PARTICIPANTS,Permission.WRITE_PRESENCE);
         var manager=new Actor("gestionnaire",Role.GESTIONNAIRE,null);
-        assertThat(Arrays.stream(Permission.values()).filter(p->policy.permits(manager,p))).containsExactlyInAnyOrder(Permission.READ_SESSIONS,Permission.READ_PARTICIPANTS,Permission.WRITE_PRESENCE,Permission.WRITE_REFERENTIAL,Permission.READ_REPORTING);
+        assertThat(Arrays.stream(Permission.values()).filter(p->policy.permits(manager,p))).containsExactlyInAnyOrder(Permission.READ_SESSIONS,Permission.READ_PARTICIPANTS,Permission.WRITE_PRESENCE,Permission.WRITE_REFERENTIAL,Permission.READ_REPORTING,Permission.READ_AUDIT,Permission.MANAGE_SESSION,Permission.MANAGE_PARTICIPATION);
         assertThat(Arrays.stream(Permission.values()).allMatch(p->policy.permits(admin,p))).isTrue();
     }
     @Test void administrator_cannot_bypass_last_slot_or_cancellation() {

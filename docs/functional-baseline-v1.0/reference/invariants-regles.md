@@ -2,7 +2,7 @@
 title: "Invariants et règles de gestion"
 created: 2026-11-07
 updated: 2026-11-08
-version: "1.1.0"
+version: "1.2.0"
 status: "baseline-v1.0"
 diataxis: "reference"
 ---
@@ -54,7 +54,7 @@ diataxis: "reference"
 | RG-FOR-02 | L’archivage/réactivation conserve les associations et sessions historiques. | Validée |
 | RG-SES-01 | Une session peut être planifiée sans intervenant et sans capacité indiquée. | Validée |
 | RG-SES-02 | Capacité renseignée = entier positif, limite stricte ; refus d’inscription ou réactivation au-delà. Désistée libère une place. | Validée (principe) ; convention numérique déduite |
-| RG-SES-03 | Créneaux distincts ; début < fin. Pas de chevauchement interne à une session. | Proposition de cohérence pour chevauchement interne |
+| RG-SES-03 | Créneaux distincts ; début < fin. Pas de chevauchement interne à une session. | Validée par AUD-02 le 2026-11-08 |
 | RG-SES-04 | Conflits d’intervenants ou collaborateurs sur sessions concomitantes : avertissement, non blocage. | Validée |
 | RG-SES-05 | Clôture après dernier créneau ; toutes les participations doivent être dans un état définitif ; possible avec zéro participant. | Validée |
 | RG-SES-06 | Modification de créneaux d’une session Planifiée : contrôlée et auditée ; après clôture, pas de modification ordinaire. | Validée |
@@ -74,11 +74,11 @@ diataxis: "reference"
 
 ## Calcul de capacité
 
-Places occupées = nombre de participations `Inscrite` + `Présente` + `Absente`. `Désistée` libère une place. Cette convention évite que la saisie de présence libère rétroactivement une place. La capacité absente signifie absence de limite ; une capacité renseignée impose la limite stricte. Une réduction de capacité sous le nombre de places occupées est refusée (conséquence proposée).
+Places occupées = nombre de participations `Inscrite` + `Présente` + `Absente`, selon AUD-02 validé le 2026-11-08. `Désistée` libère une place. La saisie de présence ne libère donc pas rétroactivement de place. La capacité absente signifie absence de limite ; une capacité renseignée impose la limite stricte. Une réduction de capacité sous le nombre de places occupées est refusée (conséquence proposée).
 
 ## Détection de chevauchement
 
-Pour deux intervalles `[début1, fin1)` et `[début2, fin2)` : conflit si `début1 < fin2 && début2 < fin1`. Deux créneaux contigus ne se chevauchent pas. Entre sessions, le conflit intervenant/collaborateur génère un avertissement que l'utilisateur peut confirmer. L'interdiction du chevauchement **au sein d'une même session** est une convention proposée, et non un arbitrage explicite.
+Pour deux intervalles `[début1, fin1)` et `[début2, fin2)` : conflit si `début1 < fin2 && début2 < fin1`. Deux créneaux contigus ne se chevauchent pas. Entre sessions, le conflit intervenant/collaborateur génère un avertissement que l'utilisateur peut confirmer. L’interdiction du chevauchement **au sein d’une même session** et les intervalles demi-ouverts sont validés par AUD-02.
 
 ## Temps et indicateurs
 

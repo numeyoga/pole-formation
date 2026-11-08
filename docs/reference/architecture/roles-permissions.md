@@ -37,6 +37,7 @@ L’administrateur fonctionnel dispose des droits du gestionnaire et de permissi
 | Configurer les classifications d’exigence | Non | Non | Oui |
 | Attribuer ou remplacer le rôle d’un compte existant | Non | Non | Oui, avec audit avant/après |
 | Consulter le pilotage | Non | Oui | Oui |
+| Consulter le journal des changements sensibles | Non | Oui | Oui |
 
 Les deux premières lignes désignent la gestion courante ; la configuration des classifications fait l’objet de la permission distincte indiquée dans le tableau. La décision SEC-01 du registre métier précise le « gestionnaire habilité » de OUV-04 par une spécialisation, l’administrateur fonctionnel.
 

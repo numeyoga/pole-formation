@@ -1,0 +1,14 @@
+ALTER TABLE training_session ADD COLUMN capacity integer CHECK (capacity > 0);
+ALTER TABLE instructor ADD COLUMN active boolean NOT NULL DEFAULT true;
+ALTER TABLE collaborator ADD COLUMN active boolean NOT NULL DEFAULT true;
+ALTER TABLE access_audit ADD COLUMN sequence bigint GENERATED ALWAYS AS IDENTITY;
+ALTER TABLE access_audit ADD COLUMN subject_type varchar(30);
+ALTER TABLE access_audit ADD COLUMN session_id uuid;
+UPDATE access_audit SET subject_type = CASE WHEN action='CORRECTION_PRESENCE' THEN 'PARTICIPATION' ELSE 'COMPTE' END;
+UPDATE access_audit a SET session_id=p.session_id FROM participation p WHERE a.subject_type='PARTICIPATION' AND a.target=p.id::text;
+ALTER TABLE access_audit ALTER COLUMN subject_type SET NOT NULL;
+ALTER TABLE access_audit ALTER COLUMN before_value TYPE jsonb USING jsonb_build_object(CASE WHEN action='CHANGEMENT_ROLE' THEN 'role' ELSE 'state' END,before_value);
+ALTER TABLE access_audit ALTER COLUMN after_value TYPE jsonb USING jsonb_build_object(CASE WHEN action='CHANGEMENT_ROLE' THEN 'role' ELSE 'state' END,after_value);
+CREATE UNIQUE INDEX access_audit_sequence ON access_audit(sequence);
+CREATE INDEX access_audit_subject ON access_audit(subject_type,target,sequence DESC);
+CREATE INDEX access_audit_session ON access_audit(session_id,sequence DESC);

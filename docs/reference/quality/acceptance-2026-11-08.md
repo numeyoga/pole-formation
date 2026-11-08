@@ -13,6 +13,7 @@ type: reference
 - [Accord enregistré](#accord-enregistré)
 - [Portée et statut](#portée-et-statut)
 - [Validation complémentaire de US-08.01](#validation-complémentaire-de-us-0801)
+- [Validation métier de US-08.02](#validation-métier-de-us-0802)
 - [Limites des preuves](#limites-des-preuves)
 
 ## Accord enregistré
@@ -27,7 +28,7 @@ Cet accord valide fonctionnellement les premières livraisons présentées. Il e
 |---|---|---|
 | Devcontainer Podman | `27679e0`, rapport de validation du devcontainer | Socle accepté dans son périmètre Podman |
 | US-08.01 — Accès et habilitations | `9f2d2d4`, huit critères du rapport US-08.01 | Terminée : vérification et validation AA déclarées par le représentant du projet, voir ci-dessous |
-| Fondations d’audit de US-08.02 | Incluses dans `9f2d2d4` | Aucune clôture : la story complète reste partielle |
+| US-08.02 — Journal des changements sensibles | Fondations `9f2d2d4`, livraison complète dans le commit US-08.02 | Validation métier explicite ; contrôles humains d’accessibilité non attestés |
 
 Les autres stories du backlog ne sont pas déclarées développées par cet accord.
 
@@ -39,10 +40,18 @@ Cette confirmation complète l’accord métier initial et clôture le suivi de 
 
 Les écarts de contraste AAA sont une observation non bloquante pour l’objectif WCAG 2.2 AA du projet. Aucun passage à une exigence AAA ni correction de contraste n’a été demandé.
 
+## Validation métier de US-08.02
+
+Le 2026-11-08, après mise à disposition du journal et communication des comptes de connexion, le représentant du projet a déclaré : « US validée ».
+
+Cet accord valide la recette métier de US-08.02 dans son périmètre local : journal, habilitations, filtres, pagination et données avant/après décrites dans le [rapport de livraison](us-08-02-validation.md). Il ne déclare pas l’exécution individuelle d’un zoom à 200 %, d’un essai avec lecteur d’écran ou d’un nouveau scan AA pour cet écran. Ces contrôles restent suivis séparément, sans réutiliser le résultat du scan de US-08.01 comme preuve du journal.
+
+Les régressions de US-08.01 ont été vérifiées dans la même livraison : 24 tests serveur, deux tests de mapping et sept parcours Chromium réussis. Le rattachement technique au nouveau commit ne modifie pas l’accord métier antérieur de US-08.01.
+
 ## Limites des preuves
 
 Le rapport brut du plugin, son périmètre détaillé et sa version n’ont pas été fournis. Les méthodes de vérification humaine, notamment zoom et lecteur d’écran, n’ont pas été détaillées dans cette confirmation ; leur exécution individuelle n’est pas affirmée. La clôture repose sur l’acceptation explicite de la story et le résultat AA rapporté, sans certification indépendante de conformité par l’agent.
 
 Les évolutions des hooks du devcontainer sont validées séparément par les tests du suivi, l’installation dans le workspace courant et le smoke test de l’environnement avant commit. Le fournisseur d’identité de production et la variante Docker restent hors du périmètre local validé.
 
-Références : [validation du devcontainer](dev-container-validation.md), [validation US-08.01](us-08-01-validation.md), [suivi](../development-tracking.md).
+Références : [validation du devcontainer](dev-container-validation.md), [validation US-08.01](us-08-01-validation.md), [validation US-08.02](us-08-02-validation.md), [suivi](../development-tracking.md).

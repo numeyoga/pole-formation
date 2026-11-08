@@ -2,7 +2,7 @@
 title: "Matrice de traçabilité"
 created: 2026-11-07
 updated: 2026-11-08
-version: "1.1.0"
+version: "1.2.0"
 status: "baseline-v1.0"
 diataxis: "reference"
 ---
@@ -59,6 +59,7 @@ Cette table relie les décisions explicitement validées aux fonctionnalités v�
 | HB-05 | US-05.02, US-08.02 |
 | HB-06 | US-03.01 |
 | SEC-01 | US-02.02, US-06.03, US-08.01, US-08.02 |
+| AUD-02 | US-05.02, US-06.02, US-06.03, US-08.02 |
 
 ## Matrice story → dépendances et priorité
 

@@ -19,3 +19,4 @@ tags:
 - [ADR 0006 – Conteneurs de développement et applicatif](ADR-0006-containers.md)
 - [ADR 0007 – Bootstrap et habilitations](ADR-0007-bootstrap-habilitations.md)
 - [ADR 0008 – Suivi du développement](ADR-0008-development-tracking.md)
+- [ADR 0009 – Journal transactionnel](ADR-0009-transactional-audit.md)

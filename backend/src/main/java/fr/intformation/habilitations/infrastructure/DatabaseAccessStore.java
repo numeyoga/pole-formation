@@ -3,6 +3,7 @@ package fr.intformation.habilitations.infrastructure;
 import fr.intformation.habilitations.application.*;
 import fr.intformation.habilitations.domain.AccessPolicy;
 import fr.intformation.habilitations.domain.AccessPolicy.*;
+import fr.intformation.audit.infrastructure.PostgresAuditLog;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,8 +15,9 @@ import java.util.*;
 public class DatabaseAccessStore implements AccessStore {
     private final JdbcClient db;
     private final AccountRepository accounts;
+    private final PostgresAuditLog audit;
     private final AccessPolicy policy = new AccessPolicy();
-    public DatabaseAccessStore(JdbcClient db, AccountRepository accounts) { this.db = db; this.accounts=accounts; }
+    public DatabaseAccessStore(JdbcClient db, AccountRepository accounts, PostgresAuditLog audit) { this.db = db; this.accounts=accounts; this.audit=audit; }
     public Actor actor(String username) {
         AccountEntity account=accounts.findById(username).orElseThrow(Forbidden::new);
         return new Actor(account.username,Role.valueOf(account.role),account.instructorId);
@@ -53,8 +55,9 @@ public class DatabaseAccessStore implements AccessStore {
         String before = db.sql("SELECT state FROM participation WHERE id=:id AND session_id=:session FOR UPDATE")
             .param("id", participationId).param("session", sessionId).query(String.class).optional().orElseThrow(AccessService.NotFound::new);
         if (before.equals("DESISTEE")) throw new Conflict("Une participation désistée doit être réactivée avant la saisie.");
+        if (before.equals(state)) return;
         db.sql("UPDATE participation SET state=:state WHERE id=:id").param("state", state).param("id", participationId).update();
-        if (session(sessionId).state().equals("TERMINEE")) audit(actor, "CORRECTION_PRESENCE", participationId.toString(), before, state, now);
+        if (session(sessionId).state().equals("TERMINEE")) audit.record(actor.username(),"CORRECTION_PRESENCE","PARTICIPATION",participationId.toString(),sessionId,Map.of("state",before),Map.of("state",state),now);
     }
     private void lockSession(UUID id) {
         db.sql("SELECT id FROM training_session WHERE id=:id FOR UPDATE").param("id", id).query(UUID.class).optional().orElseThrow(AccessService.NotFound::new);
@@ -69,12 +72,8 @@ public class DatabaseAccessStore implements AccessStore {
     @Transactional
     public void changeRole(Actor actor, String username, Role role, Instant now) {
         String before = db.sql("SELECT role FROM app_account WHERE username=:username FOR UPDATE").param("username",username).query(String.class).optional().orElseThrow(AccessService.NotFound::new);
+        if (before.equals(role.name())) return;
         db.sql("UPDATE app_account SET role=:role WHERE username=:username").param("role",role.name()).param("username",username).update();
-        audit(actor,"CHANGEMENT_ROLE",username,before,role.name(),now);
-    }
-    private void audit(Actor actor, String action, String target, String before, String after, Instant now) {
-        db.sql("INSERT INTO access_audit VALUES (:id,:at,:actor,:action,:target,:before,:after)")
-            .param("id",UUID.randomUUID()).param("at",Timestamp.from(now)).param("actor",actor.username()).param("action",action)
-            .param("target",target).param("before",before).param("after",after).update();
+        audit.record(actor.username(),"CHANGEMENT_ROLE","COMPTE",username,null,Map.of("role",before),Map.of("role",role.name()),now);
     }
 }

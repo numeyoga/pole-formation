@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public final class AccessPolicy {
     public enum Role { INTERVENANT, GESTIONNAIRE, ADMINISTRATEUR_FONCTIONNEL }
-    public enum Permission { READ_SESSIONS, READ_PARTICIPANTS, WRITE_PRESENCE, WRITE_REFERENTIAL, WRITE_CLASSIFICATION, WRITE_ROLES, CORRECT_PRESENCE, READ_REPORTING }
+    public enum Permission { READ_SESSIONS, READ_PARTICIPANTS, WRITE_PRESENCE, WRITE_REFERENTIAL, WRITE_CLASSIFICATION, WRITE_ROLES, CORRECT_PRESENCE, READ_REPORTING, READ_AUDIT, MANAGE_SESSION, MANAGE_PARTICIPATION }
     public record Actor(String username, Role role, UUID instructorId) {}
     public record Session(UUID id, String title, String state, Instant lastSlotEnd) {}
     public static final class Forbidden extends RuntimeException {}
