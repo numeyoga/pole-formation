@@ -32,7 +32,7 @@ Cet accord valide fonctionnellement les premières livraisons présentées. Il e
 | US-08.01 — Accès et habilitations | `9f2d2d4`, huit critères du rapport US-08.01 | Terminée : vérification et validation AA déclarées par le représentant du projet, voir ci-dessous |
 | US-08.02 — Journal des changements sensibles | Fondations `9f2d2d4`, livraison complète `6925193` | Livraison locale acceptée et clôturée sur confirmation finale utilisateur |
 | US-01.01 — Administrer les domaines | `fdc6d04` | Livraison locale acceptée et clôturée sur validation utilisateur |
-| US-01.02 — Administrer les sous-domaines | Commit de livraison référencé dans `tracking/stories.json` | Livraison locale acceptée et clôturée sur validation utilisateur |
+| US-01.02 — Administrer les sous-domaines | `7ee132f` | Livraison locale acceptée et clôturée sur validation utilisateur |
 
 Les autres stories du backlog ne sont pas déclarées développées par cet accord.
 
@@ -70,7 +70,7 @@ Le 2026-11-08, après mise à disposition de l’écran des sous-domaines et du 
 
 Cet accord accepte la livraison locale de US-01.02 : création, modification, désactivation, filtre par domaine, unicité globale des codes et conservation des compétences historiques, décrites dans le [rapport de validation](us-01-02-validation.md). Les règles de champs et de parent fixé à la création avaient été validées explicitement sous REF-02.
 
-Les régressions des habilitations, du journal et des domaines ont été vérifiées dans la même livraison : 40 tests serveur, quatre tests de mapping et quinze parcours Chromium réussis. Le rattachement technique de ces stories à cette révision ne modifie pas leurs acceptations métier antérieures.
+Les régressions des habilitations, du journal et des domaines ont été vérifiées dans la même livraison `7ee132f` : 40 tests serveur, quatre tests de mapping et quinze parcours Chromium réussis. Le rattachement technique de ces stories à cette révision ne modifie pas leurs acceptations métier antérieures.
 
 Cet accord ne détaille pas de nouveau scan humain AA/AAA, d’essai individuel de zoom ou de lecteur d’écran ; leur exécution n’est pas affirmée. Les limites de preuve du rapport demeurent documentées. L’administration complète des compétences reste US-01.03.
 

@@ -12,7 +12,7 @@
   "US-08.01": {
     "implementation": "complete",
     "commits": ["9f2d2d4"],
-    "validated_commit": "fdc6d04",
+    "validated_commit": "7ee132f",
     "code_paths": ["backend/", "frontend/", "api/"],
     "report": "docs/reference/quality/us-08-01-validation.md",
     "remaining": [],
@@ -21,7 +21,7 @@
   "US-08.02": {
     "implementation": "complete",
     "commits": ["9f2d2d4", "6925193"],
-    "validated_commit": "fdc6d04",
+    "validated_commit": "7ee132f",
     "code_paths": ["backend/", "frontend/", "api/"],
     "report": "docs/reference/quality/us-08-02-validation.md",
     "remaining": [],
@@ -30,18 +30,19 @@
   "US-01.01": {
     "implementation": "complete",
     "commits": ["fdc6d04"],
-    "validated_commit": "fdc6d04",
+    "validated_commit": "7ee132f",
     "code_paths": ["backend/", "frontend/", "api/"],
     "report": "docs/reference/quality/us-01-01-validation.md",
     "remaining": [],
     "acceptance": {"required": true, "evidence": "docs/reference/quality/acceptance-2026-11-08.md"}
   },
   "US-01.02": {
-    "implementation": "partial",
-    "commits": ["fdc6d04"],
+    "implementation": "complete",
+    "commits": ["fdc6d04", "7ee132f"],
+    "validated_commit": "7ee132f",
     "code_paths": ["backend/", "frontend/", "api/"],
     "report": "docs/reference/quality/us-01-02-validation.md",
-    "remaining": ["Implémentation locale vérifiée ; commit de livraison et recette utilisateur à enregistrer"],
-    "acceptance": {"required": true, "evidence": null}
+    "remaining": [],
+    "acceptance": {"required": true, "evidence": "docs/reference/quality/acceptance-2026-11-08.md"}
   }
 }
