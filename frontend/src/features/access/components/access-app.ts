@@ -3,6 +3,9 @@ import { api, ApiError } from '../adapters/access-api';
 import type { Identity, SessionView, ParticipantView, AccountView, Role } from '../presentation/models';
 import { messages as m, roles, states } from '../../../shared/i18n/fr';
 import '../../audit/components/audit-log';
+import '../../domains/components/domains-panel';
+import type { DomainsPanel } from '../../domains/components/domains-panel';
+import type { AuditLog } from '../../audit/components/audit-log';
 
 export class AccessApp extends LitElement {
   static properties = {
@@ -101,7 +104,12 @@ export class AccessApp extends LitElement {
   }
   render() {
     return html`
-      <header><h1>${m.title}</h1>${this.identity?html`<p>${this.identity.username} — ${roles[this.identity.role]}</p><button ?disabled=${this.busy} @click=${this.logout}>${m.logout}</button>`:nothing}</header>
+      <header><h1>${m.title}</h1>${this.identity?html`<p>${this.identity.username} — ${roles[this.identity.role]}</p><button ?disabled=${this.busy} @click=${this.logout}>${m.logout}</button>
+        <nav class="actions" aria-label="Sections de l’application">
+          ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<DomainsPanel>('domains-panel')?.focusHeading()}>Domaines</button>`:nothing}
+          <button @click=${()=>this.focusElement('#sessions-title')}>Sessions</button>
+          ${this.identity.permissions.includes('READ_AUDIT')?html`<button @click=${()=>this.renderRoot.querySelector<AuditLog>('audit-log')?.focusHeading()}>Journal</button>`:nothing}
+        </nav>`:nothing}</header>
       ${this.error?html`<div role="alert" tabindex="-1">${this.error}</div><button ?disabled=${this.busy} @click=${this.restore}>${m.retry}</button>`:nothing}
       <p role="status" aria-label="État de l’opération">${this.busy?m.loading:this.notice}</p>
       ${!this.initialized?nothing:!this.identity?html`
@@ -112,6 +120,7 @@ export class AccessApp extends LitElement {
             <button data-primary ?disabled=${this.busy}>${m.login}</button>
           </form>
         </section>`:html`
+        ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<domains-panel></domains-panel>`:nothing}
         <section aria-labelledby="sessions-title"><h2 id="sessions-title" tabindex="-1">${m.sessions}</h2>
           ${this.sessions.length?html`<ul>${this.sessions.map(session=>html`<li><button ?disabled=${this.busy} @click=${()=>this.select(session)}>${session.title}</button> <span class="muted">${states[session.state]}</span></li>`)}</ul>`:html`<p>${m.empty}</p>`}
         </section>

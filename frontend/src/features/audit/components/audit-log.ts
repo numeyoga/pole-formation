@@ -39,6 +39,7 @@ export class AuditLog extends LitElement {
   `;
   protected updated(changes:PropertyValues){if(changes.has('revision'))void this.load(false,false);}
   disconnectedCallback(){super.disconnectedCallback();this.requestId++;}
+  async focusHeading(){await this.updateComplete;this.renderRoot.querySelector<HTMLElement>('#audit-title')?.focus();}
   private async load(append=false,focus=true){
     const request=++this.requestId;this.busy=true;this.error='';
     if(!append){this.items=[];this.nextCursor=null;this.loaded=false;}
@@ -61,7 +62,7 @@ export class AuditLog extends LitElement {
     void this.load();
   }
   render(){return html`
-    <section aria-labelledby="audit-title"><h2 id="audit-title">Journal des changements sensibles</h2>
+    <section aria-labelledby="audit-title"><h2 id="audit-title" tabindex="-1">Journal des changements sensibles</h2>
       <form @submit=${this.submit}>
         <label for="audit-type">Type d’objet</label><select id="audit-type" name="type">
           <option value="">Tous les types</option>

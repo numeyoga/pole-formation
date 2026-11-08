@@ -2,7 +2,7 @@
 title: "Réserves documentaires et conventions de conception"
 created: 2026-11-07
 updated: 2026-11-08
-version: "1.2.0"
+version: "1.3.0"
 status: "baseline-v1.0"
 diataxis: "reference"
 ---
@@ -23,7 +23,7 @@ Le document initial « Pôle formation INT — Contexte et spécification métie
 
 ## Conventions proposées (non arbitrages supplémentaires)
 
-1. Les codes de référentiel sont uniques dans leur type ; les ID techniques ne changent pas.
+1. Pour les domaines, l’unicité et la normalisation sont validées par REF-01 ; pour les autres types de référentiels, les modalités détaillées restent à arbitrer. Les ID techniques ne changent pas.
 3. Une session sans créneau ne peut passer de Brouillon à Planifiée.
 4. Les états de Formation et Session proposés sont Brouillon/Active/Archivée et Brouillon/Planifiée/Terminée/Annulée.
 6. Une réduction de capacité au-dessous du nombre de places occupées est refusée.

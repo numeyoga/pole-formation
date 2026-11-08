@@ -18,6 +18,7 @@ tags:
 - [Rôles et permissions](architecture/roles-permissions.md)
 - [Validation US-08.01](quality/us-08-01-validation.md)
 - [Validation US-08.02](quality/us-08-02-validation.md)
+- [Validation US-01.01](quality/us-01-01-validation.md)
 - [Suivi de l’avancement](development-tracking.md)
 - [Décisions ouvertes](architecture/open-questions.md)
 - [Périmètre MVP](domain/scope.md)

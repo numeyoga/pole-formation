@@ -13,7 +13,7 @@ public interface AccessStore {
     boolean assigned(UUID sessionId, UUID instructorId);
     List<Participant> participants(UUID sessionId);
     void presence(Actor actor, UUID sessionId, UUID participationId, String state, Instant now);
-    void renameReference(UUID id, String label, boolean classification);
+    void renameClassification(UUID id, String label);
     List<Account> accounts();
     void changeRole(Actor actor, String username, Role role, Instant now);
 }

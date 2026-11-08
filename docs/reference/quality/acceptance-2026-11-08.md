@@ -14,6 +14,7 @@ type: reference
 - [Portée et statut](#portée-et-statut)
 - [Validation complémentaire de US-08.01](#validation-complémentaire-de-us-0801)
 - [Validation métier de US-08.02](#validation-métier-de-us-0802)
+- [Validation de US-01.01](#validation-de-us-0101)
 - [Limites des preuves](#limites-des-preuves)
 
 ## Accord enregistré
@@ -29,6 +30,7 @@ Cet accord valide fonctionnellement les premières livraisons présentées. Il e
 | Devcontainer Podman | `27679e0`, rapport de validation du devcontainer | Socle accepté dans son périmètre Podman |
 | US-08.01 — Accès et habilitations | `9f2d2d4`, huit critères du rapport US-08.01 | Terminée : vérification et validation AA déclarées par le représentant du projet, voir ci-dessous |
 | US-08.02 — Journal des changements sensibles | Fondations `9f2d2d4`, livraison complète `6925193` | Livraison locale acceptée et clôturée sur confirmation finale utilisateur |
+| US-01.01 — Administrer les domaines | Commit de livraison référencé dans `tracking/stories.json` | Livraison locale acceptée et clôturée sur validation utilisateur |
 
 Les autres stories du backlog ne sont pas déclarées développées par cet accord.
 
@@ -49,6 +51,16 @@ Cet accord valide la recette métier de US-08.02 dans son périmètre local : jo
 Le représentant du projet a ensuite confirmé : « je valide, passe à la user story suivante ». Cette acceptation finale clôture US-08.02 et autorise le passage à US-01.01. Elle ne détaille pas les méthodes de contrôle : aucun essai individuel de zoom ou de lecteur d’écran ni scan supplémentaire n’est présenté comme exécuté par l’agent. Les limites de preuve restent consignées, sans être confondues avec un refus d’acceptation de la livraison.
 
 Les régressions de US-08.01 ont été vérifiées dans la même livraison `6925193` : 24 tests serveur, deux tests de mapping et sept parcours Chromium réussis. Le rattachement technique au nouveau commit ne modifie pas l’accord métier antérieur de US-08.01.
+
+## Validation de US-01.01
+
+Le 2026-11-08, après mise à disposition de l’écran des domaines et du bilan de validation, le représentant du projet a confirmé : « ça a l'air bien, je valide ».
+
+Cet accord accepte la livraison locale de US-01.01 : création, modification, désactivation, unicité des codes et conservation des sous-domaines décrites dans le [rapport de validation](us-01-01-validation.md). Les règles des codes et champs avaient été validées au préalable sous REF-01.
+
+La clôture repose sur cette acceptation explicite et les preuves techniques consignées. Aucun nouveau scan AA, essai individuel de zoom ou lecteur d’écran n’a été détaillé dans cet accord ; leur exécution n’est pas inventée. Les limites de preuve restent documentées, sans être confondues avec un refus d’acceptation de la livraison.
+
+Les régressions des habilitations et du journal ont également été vérifiées dans cette livraison : 33 tests serveur, trois tests de mapping et onze parcours Chromium réussis, plus un passage ciblé final sur le tableau étroit et les dialogues. Le nouveau rattachement technique ne modifie pas les acceptations métier antérieures. Les fondations de US-01.02 ne constituent pas sa livraison complète.
 
 ## Limites des preuves
 

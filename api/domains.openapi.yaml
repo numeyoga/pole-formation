@@ -1,0 +1,173 @@
+openapi: 3.1.0
+info: {title: Pôle formation — domaines, version: 0.3.0}
+servers: [{url: /}]
+security: [{session: []}]
+paths:
+  /api/referentiels/domaines:
+    get:
+      parameters:
+        - {name: page, in: query, schema: {type: integer, minimum: 0, default: 0}}
+        - {name: size, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+      responses:
+        '200':
+          description: Tous les domaines, actifs et désactivés, triés par code sans casse puis identifiant
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, page, size]
+                properties:
+                  items: {type: array, items: {$ref: '#/components/schemas/Domain'}}
+                  total: {type: integer}
+                  page: {type: integer}
+                  size: {type: integer}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+    post:
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, label]
+              properties:
+                code: {type: string, minLength: 1, maxLength: 64}
+                label: {type: string, minLength: 1, maxLength: 200}
+      responses:
+        '201':
+          description: Domaine créé actif
+          headers:
+            Location: {schema: {type: string}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Domain'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/referentiels/domaines/{id}:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      responses:
+        '200':
+          description: Fiche conservée même après désactivation
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Domain'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+    put:
+      description: Modifier code et libellé. Les clients actuels envoient la version pour prévenir un écrasement ; le PUT historique avec seul libellé est conservé.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [label]
+              properties:
+                code: {type: string, minLength: 1, maxLength: 64}
+                label: {type: string, minLength: 1, maxLength: 200}
+                version: {type: integer, format: int64, minimum: 0}
+      responses:
+        '204': {description: Domaine modifié, identité et activation conservées}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/referentiels/domaines/{id}/desactivation:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    post:
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [version]
+              properties:
+                version: {type: integer, format: int64, minimum: 0}
+      responses:
+        '204': {description: Domaine désactivé sans suppression des sous-domaines ni libération du code}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/referentiels/domaines/{id}/sous-domaines:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      responses:
+        '200':
+          description: Sous-domaines historiques du parent, sans suppression liée à sa désactivation
+          content:
+            application/json:
+              schema: {type: array, items: {$ref: '#/components/schemas/Child'}}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+    post:
+      description: Raccordement minimal pour prouver le contrôle du parent actif ; l’administration complète relève de US-01.02.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [label]
+              properties:
+                label: {type: string, minLength: 1, maxLength: 200}
+      responses:
+        '201':
+          description: Sous-domaine rattaché à un parent actif
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Child'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+components:
+  securitySchemes:
+    session: {type: apiKey, in: cookie, name: JSESSIONID}
+  parameters:
+    Id: {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+    Csrf: {name: X-CSRF-TOKEN, in: header, required: true, schema: {type: string}}
+  responses:
+    Error:
+      description: Erreur explicite de format, droit, doublon, parent inactif ou version périmée
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [status]
+            properties:
+              status: {type: integer}
+              detail: {type: string}
+              fieldErrors: {type: object, additionalProperties: {type: string}}
+  schemas:
+    Domain:
+      type: object
+      required: [id, code, label, active, version]
+      properties:
+        id: {type: string, format: uuid}
+        code: {type: string}
+        label: {type: string}
+        active: {type: boolean}
+        version: {type: integer, format: int64}
+    Child:
+      type: object
+      required: [id, domainId, label]
+      properties:
+        id: {type: string, format: uuid}
+        domainId: {type: string, format: uuid}
+        label: {type: string}

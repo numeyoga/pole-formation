@@ -27,7 +27,7 @@ tags:
 | Données personnelles, confidentialité, conservation | Ouvert | Minimisation, traçabilité, contrôle d'accès | Avant stockage de données réelles |
 | Versions exactes Spring Boot/Slab/Lit/Node/PostgreSQL | Bootstrap réalisé | [Versions applicatives verrouillées](../../decisions/ADR-0007-bootstrap-habilitations.md) ; Slab différé jusqu’à un besoin complexe | Premier usage Slab / mises à jour |
 | Sens métier détaillé des classifications d'exigence | Ouvert | Codes et libellés configurables ; ne pas fixer de sémantique sans validation | Configuration du référentiel |
-| Identités et unicité des référentiels | Ouvert | IDs stables et archivage, contraintes à valider | Migrations initiales |
+| Identités et unicité des référentiels | Partiellement arbitré | Domaines : REF-01 validée, codes uniques sans casse même après désactivation ; détails des autres référentiels à confirmer | Première migration de chaque référentiel |
 
 ## Priorité moyenne
 
@@ -36,7 +36,7 @@ tags:
 | Gestion des activités du pôle (actions, échéances, décisions) | Hors baseline v1.0 / à cadrer | Ne pas la confondre avec le pilotage des sessions et participations couvert par EP-07 | Arbitrage du périmètre fonctionnel |
 | Tableaux complexes | Ouvert | HTML natif, TanStack si besoin prouvé | Premier tableau difficile |
 | Compatibilité détaillée Slab/Lit et interfaces de personnalisation | À vérifier par prototype | Garder l'adaptation minimale | Avant première feature Slab |
-| Modalités d'édition concurrente | Ouvert | Prévoir conflit/version optimiste si cas réel | Édition partagée |
+| Modalités d'édition concurrente | Partiellement arbitré | Domaines : version transmise par les nouveaux formulaires, conflit 409 si périmée ; ancien PUT libellé compatible sans précondition. Autres écrans à préciser | Édition partagée |
 | Notifications, audit formel, import/export | Ouvert | Pas de promesse MVP au-delà de l'historique métier | Besoin utilisateur |
 | Choix Maven/Gradle et gestionnaire JS | Arbitré | Maven Wrapper et npm, [ADR 0007](../../decisions/ADR-0007-bootstrap-habilitations.md) | Réévaluation si besoin démontré |
 | Répartition exacte des modules backend | Partiellement arbitré | Module `habilitations` implémenté ; modules métier suivants à préciser par feature | Fonctionnalités suivantes |

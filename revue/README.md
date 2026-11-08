@@ -14,3 +14,4 @@ Le [suivi](suivi.md) contient les statuts courants et la [checklist](checklist-p
 | [DEF-002](defauts/2026-11-08-DEF-002-feedback-habilitations.md) | 2026-11-08 | Libellés et confirmation asynchrone des rôles | Parcours navigateur avec opérations successives | corrigé, inclus dans le commit US-08.01 |
 | [DEF-003](defauts/2026-11-08-DEF-003-confirmation-optionnelle.md) | 2026-11-08 | Confirmation optionnelle refusée à la désérialisation | Tests HTTP avec champs optionnels absents | corrigé, inclus dans le commit US-08.02 |
 | [DEF-004](defauts/2026-11-08-DEF-004-filtre-comptes.md) | 2026-11-08 | Option Comptes absente du filtre du journal | Parcours navigateur avec sélection effective | corrigé, inclus dans le commit US-08.02 |
+| [DEF-005](defauts/2026-11-08-DEF-005-etat-dom-natif.md) | 2026-11-08 | Collision d’un état Lit avec HTMLElement.children | TypeScript strict a bloqué le build | corrigé, inclus dans le commit US-01.01 |

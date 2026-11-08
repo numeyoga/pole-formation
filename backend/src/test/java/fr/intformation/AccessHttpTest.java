@@ -74,6 +74,73 @@ class AccessHttpTest {
     String people(String session) { return "/api/sessions/"+session+"/participants"; }
     String presence(String session,String participation) { return people(session)+"/"+participation+"/presence"; }
 
+    @Test void manager_can_create_and_read_a_domain() throws Exception {
+        var manager=as("gestionnaire");
+        String code="DOM-"+java.util.UUID.randomUUID();
+        var created=manager.call("POST","/api/referentiels/domaines","{\"code\":\" "+code+" \",\"label\":\" Domaine de test \"}",true);
+        assertThat(created.statusCode()).isEqualTo(201);
+        var domain=json.readTree(created.body());
+        assertThat(domain.get("code").asString()).isEqualTo(code);
+        assertThat(domain.get("label").asString()).isEqualTo("Domaine de test");
+        assertThat(domain.get("active").asBoolean()).isTrue();
+        assertThat(manager.get("/api/referentiels/domaines/"+domain.get("id").asString()).statusCode()).isEqualTo(200);
+    }
+
+    @Test void domain_codes_are_unique_ignoring_case_and_remain_reserved_after_deactivation() throws Exception {
+        var manager=as("gestionnaire");String code="UNIQUE-"+java.util.UUID.randomUUID();
+        var created=manager.call("POST","/api/referentiels/domaines","{\"code\":\""+code+"\",\"label\":\"Premier\"}",true);
+        assertThat(created.statusCode()).isEqualTo(201);var domain=json.readTree(created.body());
+        var duplicate=manager.call("POST","/api/referentiels/domaines","{\"code\":\" "+code.toLowerCase(java.util.Locale.ROOT)+" \",\"label\":\"Second\"}",true);
+        assertThat(duplicate.statusCode()).isEqualTo(409);assertThat(duplicate.body()).contains("fieldErrors","code","déjà utilisé");
+        assertThat(manager.call("POST","/api/referentiels/domaines/"+domain.get("id").asString()+"/desactivation","{\"version\":"+domain.get("version").asLong()+"}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST","/api/referentiels/domaines","{\"code\":\""+code+"\",\"label\":\"Réutilisation\"}",true).statusCode()).isEqualTo(409);
+        assertThat(json.readTree(manager.get("/api/referentiels/domaines/"+domain.get("id").asString()).body()).get("active").asBoolean()).isFalse();
+    }
+
+    @Test void domain_edit_keeps_identity_and_rejects_stale_versions() throws Exception {
+        var manager=as("gestionnaire");String code="EDIT-"+java.util.UUID.randomUUID();
+        var created=manager.call("POST","/api/referentiels/domaines","{\"code\":\""+code+"\",\"label\":\"Avant\"}",true);
+        assertThat(created.statusCode()).isEqualTo(201);var domain=json.readTree(created.body());String path="/api/referentiels/domaines/"+domain.get("id").asString();
+        assertThat(manager.put(path,"{\"code\":\""+code+"-B\",\"label\":\"Après\",\"version\":"+domain.get("version").asLong()+"}").statusCode()).isEqualTo(204);
+        var changed=json.readTree(manager.get(path).body());assertThat(changed.get("id")).isEqualTo(domain.get("id"));assertThat(changed.get("label").asString()).isEqualTo("Après");
+        assertThat(changed.get("version").asLong()).isGreaterThan(domain.get("version").asLong());
+        assertThat(manager.put(path,"{\"label\":\"Écrasement\",\"version\":"+domain.get("version").asLong()+"}").statusCode()).isEqualTo(409);
+        assertThat(json.readTree(manager.get(path).body()).get("label").asString()).isEqualTo("Après");
+    }
+
+    @Test void deactivated_domain_keeps_its_children_and_rejects_new_attachments() throws Exception {
+        var manager=as("gestionnaire");String code="PARENT-"+java.util.UUID.randomUUID();
+        var domain=json.readTree(manager.call("POST","/api/referentiels/domaines","{\"code\":\""+code+"\",\"label\":\"Parent\"}",true).body());
+        String path="/api/referentiels/domaines/"+domain.get("id").asString();
+        var child=manager.call("POST",path+"/sous-domaines","{\"label\":\"Sous-domaine historique\"}",true);assertThat(child.statusCode()).isEqualTo(201);
+        String childId=json.readTree(child.body()).get("id").asString();
+        assertThat(manager.call("POST",path+"/desactivation","{\"version\":"+domain.get("version").asLong()+"}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST",path+"/sous-domaines","{\"label\":\"Nouveau\"}",true).statusCode()).isEqualTo(409);
+        var historical=json.readTree(manager.get(path+"/sous-domaines").body());assertThat(historical.size()).isEqualTo(1);assertThat(historical.get(0).get("id").asString()).isEqualTo(childId);
+    }
+
+    @Test void domains_validate_fields_and_deny_access_to_instructors() throws Exception {
+        var manager=as("gestionnaire");
+        assertThat(manager.call("POST","/api/referentiels/domaines","{\"code\":\"   \",\"label\":\"Test\"}",true).statusCode()).isEqualTo(400);
+        assertThat(manager.call("POST","/api/referentiels/domaines","{\"code\":\""+"X".repeat(65)+"\",\"label\":\"Test\"}",true).statusCode()).isEqualTo(400);
+        assertThat(manager.call("POST","/api/referentiels/domaines","{\"code\":\"VALID\",\"label\":\" \"}",true).statusCode()).isEqualTo(400);
+        assertThat(manager.get("/api/referentiels/domaines?size=101").statusCode()).isEqualTo(400);
+        var instructor=as("intervenant");
+        assertThat(instructor.get("/api/referentiels/domaines").statusCode()).isEqualTo(403);
+        assertThat(instructor.call("POST","/api/referentiels/domaines","{\"code\":\"INTERDIT\",\"label\":\"Interdit\"}",true).statusCode()).isEqualTo(403);
+        assertThat(new Browser().get("/api/referentiels/domaines").statusCode()).isEqualTo(401);
+    }
+
+    @Test void concurrent_domain_creations_cannot_duplicate_a_code() throws Exception {
+        var manager=as("gestionnaire");var admin=as("admin");String code="RACE-"+java.util.UUID.randomUUID();
+        var start=new java.util.concurrent.CountDownLatch(1);
+        try(var pool=java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()){
+            var first=pool.submit(()->{start.await();return manager.call("POST","/api/referentiels/domaines","{\"code\":\""+code+"\",\"label\":\"Premier\"}",true).statusCode();});
+            var second=pool.submit(()->{start.await();return admin.call("POST","/api/referentiels/domaines","{\"code\":\""+code.toLowerCase(java.util.Locale.ROOT)+"\",\"label\":\"Second\"}",true).statusCode();});
+            start.countDown();assertThat(List.of(first.get(10,java.util.concurrent.TimeUnit.SECONDS),second.get(10,java.util.concurrent.TimeUnit.SECONDS))).containsExactlyInAnyOrder(201,409);
+        }
+    }
+
     @Test void audit_is_readable_by_management_and_denied_to_instructors() throws Exception {
         var admin=as("admin");
         assertThat(admin.put("/api/habilitations/comptes/gestionnaire/role","{\"role\":\"INTERVENANT\"}").statusCode()).isEqualTo(204);

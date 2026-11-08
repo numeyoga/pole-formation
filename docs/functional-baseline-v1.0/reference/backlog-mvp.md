@@ -2,7 +2,7 @@
 title: "Backlog fonctionnel MVP — 26 user stories"
 created: 2026-11-07
 updated: 2026-11-08
-version: "1.1.0"
+version: "1.3.0"
 status: "baseline-v1.0"
 diataxis: "reference"
 ---
@@ -75,7 +75,7 @@ diataxis: "reference"
 ### US-01.01 — Administrer les domaines
 
 **Priorité :** Must. **Dépendances :** [US-08.01](#us-0801-gérer-les-accès-et-habilitations).  
-**Références métier :** INV-01, INV-14, INV-15.  
+**Références métier :** INV-01, INV-14, INV-15, REF-01.
 
 > En tant que gestionnaire habilité, je veux créer, modifier et désactiver les domaines afin de structurer le référentiel.
 

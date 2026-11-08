@@ -34,10 +34,10 @@ public final class AccessService {
         // The store locks the session and rechecks temporal/state conditions in the transaction.
         store.presence(actor, id, participationId, state, clock.instant());
     }
-    public void rename(String username, UUID id, String label, boolean classification) {
-        policy.require(actor(username), classification ? Permission.WRITE_CLASSIFICATION : Permission.WRITE_REFERENTIAL);
+    public void renameClassification(String username, UUID id, String label) {
+        policy.require(actor(username), Permission.WRITE_CLASSIFICATION);
         if (label == null || label.isBlank() || label.length() > 200) throw new IllegalArgumentException("Libellé requis, 200 caractères maximum.");
-        store.renameReference(id, label.strip(), classification);
+        store.renameClassification(id, label.strip());
     }
     public List<AccessStore.Account> accounts(String username) {
         policy.require(actor(username), Permission.WRITE_ROLES); return store.accounts();

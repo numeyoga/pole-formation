@@ -26,5 +26,21 @@
     "report": "docs/reference/quality/us-08-02-validation.md",
     "remaining": [],
     "acceptance": {"required": true, "evidence": "docs/reference/quality/acceptance-2026-11-08.md"}
+  },
+  "US-01.01": {
+    "implementation": "partial",
+    "commits": [],
+    "code_paths": ["backend/", "frontend/", "api/"],
+    "report": "docs/reference/quality/us-01-01-validation.md",
+    "remaining": [],
+    "acceptance": {"required": true, "evidence": "docs/reference/quality/acceptance-2026-11-08.md"}
+  },
+  "US-01.02": {
+    "implementation": "partial",
+    "commits": [],
+    "code_paths": ["backend/src/main/java/fr/intformation/referentiel/", "backend/src/main/resources/db/migration/"],
+    "report": "docs/reference/quality/us-01-01-validation.md",
+    "remaining": ["Raccordement minimal du parent actif seulement ; compléter codes, désactivation et administration des sous-domaines"],
+    "acceptance": {"required": true, "evidence": null}
   }
 }

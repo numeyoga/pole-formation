@@ -21,6 +21,7 @@
   --focus-base: .1875rem;
   --width-page: 68rem;
   --width-control: 25rem;
+  --width-table: 46rem;
   --height-control: 2.75rem;
   --opacity-muted: .6;
   --color-background: var(--palette-slate-50);
@@ -47,6 +48,7 @@
   --control-radius: var(--radius-base);
   --control-height: var(--height-control);
   --control-width: var(--width-control);
+  --table-min-width: var(--width-table);
   --border-width: var(--border-base);
   --focus-width: var(--focus-base);
   --layout-width: var(--width-page);

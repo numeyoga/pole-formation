@@ -14,7 +14,7 @@ tags:
 
 Application interne de centralisation du pôle formation INT : référentiels, formations, sessions, participations et pilotage de l'activité formation.
 
-> **Statut** : le devcontainer, la tranche d’accès et habilitations et le journal des changements sensibles sont implémentés localement. Le reste du MVP décrit une cible ; certaines règles métier et intégrations restent à confirmer. Voir le [guide de lancement](docs/how-to/run-local-app.md), le [périmètre des habilitations](docs/reference/quality/us-08-01-validation.md) et le [rapport du journal](docs/reference/quality/us-08-02-validation.md).
+> **Statut** : le devcontainer, les habilitations, le journal des changements sensibles et la gestion des domaines sont implémentés localement. Le reste du MVP décrit une cible ; certaines règles métier et intégrations restent à confirmer. Voir le [guide de lancement](docs/how-to/run-local-app.md), le [périmètre des habilitations](docs/reference/quality/us-08-01-validation.md), le [rapport du journal](docs/reference/quality/us-08-02-validation.md) et le [rapport des domaines](docs/reference/quality/us-01-01-validation.md).
 
 ## Sommaire
 
