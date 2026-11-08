@@ -32,6 +32,7 @@ Application interne de centralisation du pôle formation INT : référentiels, f
 | Comprendre le métier | [Modèle métier](docs/reference/domain/domain-model.md), [règles](docs/reference/domain/business-rules.md), [workflows](docs/reference/domain/workflows.md) |
 | Appliquer les conventions | [Structure frontend](docs/reference/architecture/frontend-structure.md), [backend](docs/reference/architecture/backend-structure.md) et [CSS](docs/reference/frontend/css-conventions.md) |
 | Développer localement | [Guide du dev container obligatoire](docs/how-to/dev-container.md) |
+| Suivre l’avancement | [Registre généré](docs/generated/development-progress.md), [fonctionnement et preuves](docs/reference/development-tracking.md) |
 | Voir ce qui n'est pas décidé | [Registre des décisions ouvertes](docs/reference/architecture/open-questions.md) |
 | Comprendre les choix | [ADR](docs/decisions/README.md) |
 

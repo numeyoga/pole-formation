@@ -5,3 +5,5 @@ frontend/test-results/
 frontend/playwright-report/
 *.log
 .env
+docs/generated/
+__pycache__/

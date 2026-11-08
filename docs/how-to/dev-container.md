@@ -27,6 +27,8 @@ Ouvrir le dépôt dans l’éditeur puis choisir **Reopen in Container**. L’es
 
 Avec Docker, utiliser `.devcontainer/devcontainer.json`. Avec Podman rootless, sélectionner la configuration `.devcontainer/podman/devcontainer.json` : elle ajoute le mapping `keep-id` vers l’UID/GID 1001 de `pwuser`. Ce mapping conserve les droits du propriétaire du dépôt sans changer ceux des fichiers de l’hôte.
 
+La création du workspace active automatiquement les hooks et génère le [registre d’avancement](../generated/development-progress.md). Pour un workspace déjà créé, suivre le [guide du suivi](track-development.md#activer-le-suivi).
+
 ## Vérifier l’environnement
 
 Dans le terminal du devcontainer, exécuter :

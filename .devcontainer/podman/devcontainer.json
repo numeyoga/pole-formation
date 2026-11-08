@@ -10,6 +10,7 @@
   },
   "forwardPorts": [5173, 8080],
   "remoteUser": "pwuser",
+  "postCreateCommand": "python3 scripts/progress.py install",
   "updateRemoteUserUID": false,
   "shutdownAction": "stopCompose"
 }

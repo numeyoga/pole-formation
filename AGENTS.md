@@ -41,6 +41,7 @@ Ce fichier est le **point d'entrée IA**. Ne pas charger tout `/docs` systémati
 - Version Java **27** acceptée, avec mise à jour régulière et vérification de la compatibilité de la distribution Spring Boot choisie.
 - **Développement local obligatoire dans le dev container** défini sous `.devcontainer/` ; ne pas installer ou lancer les outils du projet directement sur l’hôte. Suivre [le guide](docs/how-to/dev-container.md).
 - Marquer les exemples comme exemples ; ne pas présenter des fonctionnalités non implémentées comme réalisées.
+- **Suivi d’avancement** : consulter le [registre généré](docs/generated/development-progress.md) et suivre le [guide](docs/how-to/track-development.md). Les commits applicatifs mentionnent une story du backlog. Après validation, enregistrer les preuves et le reste à faire dans `tracking/stories.json` ; ne jamais inventer une recette humaine ni éditer la vue générée. Les hooks gèrent le rafraîchissement automatique.
 
 ## Routage documentaire
 
@@ -53,6 +54,7 @@ Ce fichier est le **point d'entrée IA**. Ne pas charger tout `/docs` systémati
 | CSS | [css-conventions](docs/reference/frontend/css-conventions.md), [design-tokens](docs/reference/frontend/design-tokens.md) |
 | Accessibilité | [accessibility](docs/reference/quality/accessibility.md), [test how-to](docs/how-to/test-accessibility.md) |
 | CI / validation | [testing-standards](docs/reference/quality/testing-standards.md) |
+| Avancement / clôture d’une story | [Suivi du développement](docs/how-to/track-development.md) |
 | Environnement de développement | [Guide dev container](docs/how-to/dev-container.md) |
 
 ## Processus de travail

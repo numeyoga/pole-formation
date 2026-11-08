@@ -1,0 +1,3 @@
+#!/bin/sh
+set -eu
+exec scripts/in-devcontainer.sh python3 scripts/progress.py update

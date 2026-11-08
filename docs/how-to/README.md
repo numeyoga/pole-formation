@@ -15,4 +15,5 @@ tags:
 - [Tester l’accessibilité](test-accessibility.md)
 - [Développer dans le conteneur](dev-container.md)
 - [Lancer et vérifier la première fonctionnalité](run-local-app.md)
+- [Suivre et clôturer une story](track-development.md)
 - [Construire et lancer l’image applicative](build-deploy-container.md)

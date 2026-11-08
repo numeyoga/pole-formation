@@ -17,6 +17,7 @@ tags:
 - [Contrat API](architecture/api-contract.md)
 - [Rôles et permissions](architecture/roles-permissions.md)
 - [Validation US-08.01](quality/us-08-01-validation.md)
+- [Suivi de l’avancement](development-tracking.md)
 - [Décisions ouvertes](architecture/open-questions.md)
 - [Périmètre MVP](domain/scope.md)
 - [Glossaire](domain/glossary.md)

@@ -2,7 +2,7 @@
 title: "Index de la documentation"
 description: "Navigation progressive selon les quatre types Diátaxis et les ADR."
 created: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-08
 status: accepted
 type: index
 tags:
@@ -20,6 +20,7 @@ Les documents séparent **apprentissage**, **action**, **information** et **comp
 | Réussir une tâche ponctuelle | [Guides pratiques](how-to/README.md) |
 | Consulter contrats, règles et structures | [Référence](reference/README.md) |
 | Spécifications fonctionnelles MVP | [Baseline fonctionnelle v1.0](functional-baseline-v1.0/index.md) |
+| Avancement du développement | [Registre généré](generated/development-progress.md), [statuts et preuves](reference/development-tracking.md) |
 | Comprendre pourquoi les choix sont faits | [Explications](explanation/README.md) |
 | Historique des décisions | [ADR](decisions/README.md) |
 

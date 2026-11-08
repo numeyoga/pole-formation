@@ -62,7 +62,7 @@ Le frontend teste le mapping DTO → présentation avec Vitest. Les parcours Pla
 - Clavier/focus : Tab, Enter, Escape, focus sur erreur, après connexion et déconnexion, entrée et sortie du dialogue vérifiés.
 - Inspection visuelle des captures administrateur à 2048 et 375 pixels : contrôles lisibles, retours à la ligne corrects ; absence de débordement vérifiée à 2048, 1024 et 375 pixels. Un vrai zoom navigateur 200 % et un essai humain avec lecteur d’écran restent à effectuer.
 
-Les huit critères disposent ainsi d’une implémentation et d’une preuve automatisée dans le périmètre local. La recette métier humaine et les contrôles d’accessibilité manuels restants ne sont pas déclarés exécutés.
+Les huit critères disposent ainsi d’une implémentation et d’une preuve automatisée dans le périmètre local. L’[accord utilisateur du 2026-11-08](acceptance-2026-11-08.md) enregistre désormais la validation métier. Les contrôles d’accessibilité manuels restants ne sont pas déclarés exécutés.
 
 ## Limites
 

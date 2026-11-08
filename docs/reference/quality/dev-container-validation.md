@@ -32,6 +32,8 @@ Validation effectuée le 2026-11-08 avec Podman rootless, Docker Compose 5.0.2 e
 
 Le script reproductible est décrit dans le [guide](../../how-to/dev-container.md). Les défauts du premier démarrage figurent au [registre](../../../revue/README.md).
 
+Le 2026-11-08, l’ajout de l’installation automatique du suivi en `postCreateCommand` a été vérifié : installation effective des hooks dans le workspace courant, relais depuis l’hôte, sept tests CLI avec dépôts Git temporaires et nouveau smoke test Java, Node, Chromium et connexion TCP à PostgreSQL réussis. Les sources techniques de cette évolution sont celles du commit référencé dans `validated_commit` pour `TECH-DEVCONTAINER` ; ce rattachement n’étend pas la validation à Docker.
+
 ## Limites
 
 La variante Docker n’a pas été exécutée. Le bootstrap applicatif et les tests Testcontainers ont depuis été réalisés dans la variante Podman avec montage du socket du moteur ; voir [US-08.01](us-08-01-validation.md). Les versions applicatives sont verrouillées dans les manifests et lockfiles.

@@ -1,0 +1,29 @@
+{
+  "TECH-DEVCONTAINER": {
+    "title": "Environnement de développement Podman",
+    "implementation": "complete",
+    "commits": ["27679e0"],
+    "validated_commit": "9f2d2d4",
+    "code_paths": [".devcontainer/"],
+    "report": "docs/reference/quality/dev-container-validation.md",
+    "remaining": [],
+    "acceptance": {"required": false, "reason": "Socle technique vérifié sous Podman ; Docker hors périmètre validé.", "evidence": "docs/reference/quality/acceptance-2026-11-08.md"}
+  },
+  "US-08.01": {
+    "implementation": "complete",
+    "commits": ["9f2d2d4"],
+    "validated_commit": "9f2d2d4",
+    "code_paths": ["backend/", "frontend/", "api/"],
+    "report": "docs/reference/quality/us-08-01-validation.md",
+    "remaining": ["Zoom navigateur à 200 %", "Essai avec lecteur d’écran"],
+    "acceptance": {"required": true, "evidence": "docs/reference/quality/acceptance-2026-11-08.md"}
+  },
+  "US-08.02": {
+    "implementation": "partial",
+    "commits": ["9f2d2d4"],
+    "code_paths": ["backend/"],
+    "report": "docs/reference/quality/us-08-01-validation.md",
+    "remaining": ["Fondations seulement : compléter les critères d’audit de US-08.02"],
+    "acceptance": {"required": true, "evidence": null}
+  }
+}
