@@ -62,6 +62,6 @@ Les preuves initiales se rapportent aux commits déjà validés. Si du code évo
 
 La vue porte sur le code commité, pas sur toutes les modifications locales. Les branches antérieures à l’installation du dispositif, les hooks désactivés ou contournés et les machines n’ayant pas activé les hooks n’ont pas cette garantie de rafraîchissement. Le HEAD affiché permet d’identifier une vue périmée. Une archive sans historique Git ne fournit pas les informations nécessaires.
 
-L’[accord utilisateur du 2026-11-08](quality/acceptance-2026-11-08.md) valide métier US-08.01 ; les essais de zoom et lecteur d’écran restent ouverts. Le SSO de production n’est pas inclus dans cette première livraison locale.
+La [validation complémentaire du 2026-11-08](quality/acceptance-2026-11-08.md) clôture US-08.01 sur acceptation utilisateur et résultat AA rapporté. Les limites des preuves et les écarts AAA non bloquants restent consignés. Le SSO de production n’est pas inclus dans cette première livraison locale.
 
 Procédures : [mettre à jour le suivi](../how-to/track-development.md). Décision : [ADR 0008](../decisions/ADR-0008-development-tracking.md).

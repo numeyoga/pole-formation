@@ -15,7 +15,7 @@
     "validated_commit": "9f2d2d4",
     "code_paths": ["backend/", "frontend/", "api/"],
     "report": "docs/reference/quality/us-08-01-validation.md",
-    "remaining": ["Zoom navigateur à 200 %", "Essai avec lecteur d’écran"],
+    "remaining": [],
     "acceptance": {"required": true, "evidence": "docs/reference/quality/acceptance-2026-11-08.md"}
   },
   "US-08.02": {

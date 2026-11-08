@@ -60,9 +60,9 @@ Le frontend teste le mapping DTO → présentation avec Vitest. Les parcours Pla
 
 - Playwright Chromium : 4 parcours réussis, zéro retry. Axe : aucune violation sur connexion, erreur d’authentification, participants et dialogue ouvert.
 - Clavier/focus : Tab, Enter, Escape, focus sur erreur, après connexion et déconnexion, entrée et sortie du dialogue vérifiés.
-- Inspection visuelle des captures administrateur à 2048 et 375 pixels : contrôles lisibles, retours à la ligne corrects ; absence de débordement vérifiée à 2048, 1024 et 375 pixels. Un vrai zoom navigateur 200 % et un essai humain avec lecteur d’écran restent à effectuer.
+- Inspection visuelle des captures administrateur à 2048 et 375 pixels : contrôles lisibles, retours à la ligne corrects ; absence de débordement vérifiée à 2048, 1024 et 375 pixels. Les essais individuels de zoom navigateur 200 % et de lecteur d’écran n’ont pas été attestés séparément.
 
-Les huit critères disposent ainsi d’une implémentation et d’une preuve automatisée dans le périmètre local. L’[accord utilisateur du 2026-11-08](acceptance-2026-11-08.md) enregistre désormais la validation métier. Les contrôles d’accessibilité manuels restants ne sont pas déclarés exécutés.
+Les huit critères disposent ainsi d’une implémentation et d’une preuve automatisée dans le périmètre local. Le représentant du projet a ensuite confirmé sa vérification de la story et rapporte un scan pour.dev satisfaisant pour WCAG 2.2 AA. Cette [validation complémentaire du 2026-11-08](acceptance-2026-11-08.md#validation-complémentaire-de-us-0801) clôture la livraison locale ; les écarts de contraste AAA rapportés ne bloquent pas l’objectif AA.
 
 ## Limites
 
@@ -70,6 +70,6 @@ Le fournisseur d’identité, le provisionnement et les politiques de conservati
 
 Les invariants des stories à venir (capacité, concurrence d’inscription, gestion complète des classifications et référentiels) ne sont pas réputés testés ici. Les sessions et données minimales ajoutées pour le contrôle d’accès devront évoluer avec ces stories.
 
-L’analyse axe et les scénarios clavier ne démontrent pas à eux seuls WCAG 2.2 AA. Aucun essai avec lecteur d’écran humain n’a été réalisé dans cette session. Docker et le déploiement de production ne sont pas validés par cette recette.
+L’analyse axe et les scénarios clavier ne démontrent pas à eux seuls WCAG 2.2 AA. Le scan complémentaire et l’acceptation sont rapportés par le représentant du projet ; le rapport brut et les méthodes manuelles détaillées ne sont pas disponibles. Aucun essai avec lecteur d’écran n’a été exécuté par l’agent. Docker et le déploiement de production ne sont pas validés par cette recette.
 
 Commandes et comptes fictifs : [guide de lancement](../../how-to/run-local-app.md). Décisions techniques : [ADR 0007](../../decisions/ADR-0007-bootstrap-habilitations.md).
