@@ -30,7 +30,7 @@ Cet accord valide fonctionnellement les premières livraisons présentées. Il e
 | Devcontainer Podman | `27679e0`, rapport de validation du devcontainer | Socle accepté dans son périmètre Podman |
 | US-08.01 — Accès et habilitations | `9f2d2d4`, huit critères du rapport US-08.01 | Terminée : vérification et validation AA déclarées par le représentant du projet, voir ci-dessous |
 | US-08.02 — Journal des changements sensibles | Fondations `9f2d2d4`, livraison complète `6925193` | Livraison locale acceptée et clôturée sur confirmation finale utilisateur |
-| US-01.01 — Administrer les domaines | Commit de livraison référencé dans `tracking/stories.json` | Livraison locale acceptée et clôturée sur validation utilisateur |
+| US-01.01 — Administrer les domaines | `fdc6d04` | Livraison locale acceptée et clôturée sur validation utilisateur |
 
 Les autres stories du backlog ne sont pas déclarées développées par cet accord.
 
@@ -60,7 +60,7 @@ Cet accord accepte la livraison locale de US-01.01 : création, modification, d�
 
 La clôture repose sur cette acceptation explicite et les preuves techniques consignées. Aucun nouveau scan AA, essai individuel de zoom ou lecteur d’écran n’a été détaillé dans cet accord ; leur exécution n’est pas inventée. Les limites de preuve restent documentées, sans être confondues avec un refus d’acceptation de la livraison.
 
-Les régressions des habilitations et du journal ont également été vérifiées dans cette livraison : 33 tests serveur, trois tests de mapping et onze parcours Chromium réussis, plus un passage ciblé final sur le tableau étroit et les dialogues. Le nouveau rattachement technique ne modifie pas les acceptations métier antérieures. Les fondations de US-01.02 ne constituent pas sa livraison complète.
+Les régressions des habilitations et du journal ont également été vérifiées dans cette livraison `fdc6d04` : 33 tests serveur, trois tests de mapping et onze parcours Chromium réussis, plus un passage ciblé final sur le tableau étroit et les dialogues. Le nouveau rattachement technique ne modifie pas les acceptations métier antérieures. Les fondations de US-01.02 ne constituent pas sa livraison complète.
 
 ## Limites des preuves
 

@@ -12,7 +12,7 @@
   "US-08.01": {
     "implementation": "complete",
     "commits": ["9f2d2d4"],
-    "validated_commit": "6925193",
+    "validated_commit": "fdc6d04",
     "code_paths": ["backend/", "frontend/", "api/"],
     "report": "docs/reference/quality/us-08-01-validation.md",
     "remaining": [],
@@ -21,15 +21,16 @@
   "US-08.02": {
     "implementation": "complete",
     "commits": ["9f2d2d4", "6925193"],
-    "validated_commit": "6925193",
+    "validated_commit": "fdc6d04",
     "code_paths": ["backend/", "frontend/", "api/"],
     "report": "docs/reference/quality/us-08-02-validation.md",
     "remaining": [],
     "acceptance": {"required": true, "evidence": "docs/reference/quality/acceptance-2026-11-08.md"}
   },
   "US-01.01": {
-    "implementation": "partial",
-    "commits": [],
+    "implementation": "complete",
+    "commits": ["fdc6d04"],
+    "validated_commit": "fdc6d04",
     "code_paths": ["backend/", "frontend/", "api/"],
     "report": "docs/reference/quality/us-01-01-validation.md",
     "remaining": [],
@@ -37,7 +38,7 @@
   },
   "US-01.02": {
     "implementation": "partial",
-    "commits": [],
+    "commits": ["fdc6d04"],
     "code_paths": ["backend/src/main/java/fr/intformation/referentiel/", "backend/src/main/resources/db/migration/"],
     "report": "docs/reference/quality/us-01-01-validation.md",
     "remaining": ["Raccordement minimal du parent actif seulement ; compléter codes, désactivation et administration des sous-domaines"],
