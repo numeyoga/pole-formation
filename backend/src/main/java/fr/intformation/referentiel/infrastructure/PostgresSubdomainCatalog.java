@@ -16,9 +16,10 @@ public class PostgresSubdomainCatalog implements SubdomainCatalog {
     private final JdbcClient db;
     private final SubdomainRepository subdomains;
     private final DomainRepository domains;
+    private final fr.intformation.referentiel.application.CompetencyCatalog competencies;
     private static final String SELECT="SELECT s.id,s.domain_id,s.code,s.label,s.active,s.version,d.code AS domain_code,d.label AS domain_label,d.active AS domain_active FROM subdomain_reference s JOIN domain_reference d ON d.id=s.domain_id";
     private static final RowMapper<Entry> ROW=(rs,i)->new Entry(rs.getObject("id",UUID.class),rs.getObject("domain_id",UUID.class),rs.getString("code"),rs.getString("label"),rs.getBoolean("active"),rs.getLong("version"),rs.getString("domain_code"),rs.getString("domain_label"),rs.getBoolean("domain_active"));
-    public PostgresSubdomainCatalog(JdbcClient db,SubdomainRepository subdomains,DomainRepository domains){this.db=db;this.subdomains=subdomains;this.domains=domains;}
+    public PostgresSubdomainCatalog(JdbcClient db,SubdomainRepository subdomains,DomainRepository domains,fr.intformation.referentiel.application.CompetencyCatalog competencies){this.db=db;this.subdomains=subdomains;this.domains=domains;this.competencies=competencies;}
     private TrainingSubdomain value(SubdomainEntity entity){return new TrainingSubdomain(entity.id,entity.domainId,entity.code,entity.label,entity.active,entity.version);}
     private void save(SubdomainEntity entity){
         try{subdomains.saveAndFlush(entity);}catch(DataIntegrityViolationException error){
@@ -56,13 +57,12 @@ public class PostgresSubdomainCatalog implements SubdomainCatalog {
         return db.sql(SELECT+" WHERE s.domain_id=:parent ORDER BY lower(s.label),s.id").param("parent",domainId).query(ROW).list();
     }
     public List<Competency> competencies(UUID id){
-        get(id);return db.sql("SELECT id,subdomain_id,label FROM competency_reference WHERE subdomain_id=:id ORDER BY label,id").param("id",id)
-            .query((rs,i)->new Competency(rs.getObject(1,UUID.class),rs.getObject(2,UUID.class),rs.getString(3))).list();
+        get(id);return db.sql("SELECT id,subdomain_id,label,code,active,version FROM competency_reference WHERE subdomain_id=:id ORDER BY label,id").param("id",id)
+            .query((rs,i)->new Competency(rs.getObject(1,UUID.class),rs.getObject(2,UUID.class),rs.getString(3),rs.getString(4),rs.getBoolean(5),rs.getLong(6))).list();
     }
     @Transactional
     public Competency addCompetency(UUID id,String label){
-        var parent=subdomains.findLocked(id).orElseThrow(NotFound::new);value(parent).requireActive();
-        var child=new Competency(UUID.randomUUID(),id,label);
-        db.sql("INSERT INTO competency_reference (id,subdomain_id,label) VALUES (:id,:parent,:label)").param("id",child.id()).param("parent",id).param("label",label).update();return child;
+        var child=competencies.create(new TrainingCompetency(UUID.randomUUID(),id,"MIG-"+UUID.randomUUID(),label,true,0));
+        return new Competency(child.id(),child.subdomainId(),child.label(),child.code(),child.active(),child.version());
     }
 }

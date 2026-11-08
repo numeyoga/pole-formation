@@ -17,3 +17,5 @@ tags:
 - [Lancer et vérifier la première fonctionnalité](run-local-app.md)
 - [Suivre et clôturer une story](track-development.md)
 - [Construire et lancer l’image applicative](build-deploy-container.md)
+
+- [Développer localement avec Mise et Podman](local-development.md)

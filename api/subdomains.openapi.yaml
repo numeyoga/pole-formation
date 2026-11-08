@@ -87,7 +87,7 @@ paths:
         '403': {$ref: '#/components/responses/Error'}
         '404': {$ref: '#/components/responses/Error'}
     post:
-      description: Raccordement minimal pour US-01.02, uniquement sous un sous-domaine actif. L’administration complète des compétences relève de US-01.03.
+      description: Création compatible par libellé sous un sous-domaine actif ; reçoit un code technique unique MIG-…. Passe par le même service que US-01.03.
       parameters: [{$ref: '#/components/parameters/Csrf'}]
       requestBody: {required: true, content: {application/json: {schema: {type: object, required: [label], properties: {label: {type: string, minLength: 1, maxLength: 200}}}}}}
       responses:
@@ -136,11 +136,14 @@ components:
         selectableForCreation: {type: boolean}
     Competency:
       type: object
-      required: [id, subdomainId, label]
+      required: [id, subdomainId, label, code, active, version]
       properties:
         id: {type: string, format: uuid}
         subdomainId: {type: string, format: uuid}
         label: {type: string}
+        code: {type: string}
+        active: {type: boolean}
+        version: {type: integer, minimum: 0}
     Subdomain:
       type: object
       required: [id, domainId, code, label, active, version, domainCode, domainLabel, domainActive]

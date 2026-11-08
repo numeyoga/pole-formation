@@ -2,7 +2,7 @@
 title: "Backlog fonctionnel MVP — 26 user stories"
 created: 2026-11-07
 updated: 2026-11-08
-version: "1.4.0"
+version: "1.5.0"
 status: "baseline-v1.0"
 diataxis: "reference"
 ---
@@ -101,7 +101,7 @@ diataxis: "reference"
 ### US-01.03 — Administrer les compétences
 
 **Priorité :** Must. **Dépendances :** [US-01.02](#us-0102-administrer-les-sous-domaines).  
-**Références métier :** INV-02, INV-14, INV-15.  
+**Références métier :** INV-02, INV-14, INV-15, REF-03.
 
 > En tant que gestionnaire habilité, je veux maintenir les compétences et leur rattachement afin de alimenter profils et formations.
 

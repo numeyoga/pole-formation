@@ -2,7 +2,7 @@
 title: "Registre des décisions métier validées"
 created: 2026-11-07
 updated: 2026-11-08
-version: "1.4.0"
+version: "1.5.0"
 status: "baseline-v1.0"
 diataxis: "reference"
 ---
@@ -17,7 +17,7 @@ diataxis: "reference"
 
 ## Registre des décisions validées
 
-Les 40 lignes ci-dessous regroupent **10 décisions de modèle**, **10 arbitrages ARB**, **10 arbitrages OUV**, **6 arbitrages HB** et **4 précisions SEC/AUD/REF**. L'identifiant et la formulation sont les unités de traçabilité.
+Les 41 lignes ci-dessous regroupent **10 décisions de modèle**, **10 arbitrages ARB**, **10 arbitrages OUV**, **6 arbitrages HB** et **5 précisions SEC/AUD/REF**. L'identifiant et la formulation sont les unités de traçabilité.
 
 | ID | Décision validée |
 |---|---|
@@ -61,6 +61,7 @@ Les 40 lignes ci-dessous regroupent **10 décisions de modèle**, **10 arbitrage
 | AUD-02 | Conventions validées explicitement le 2026-11-08 pour US-08.02 : aucun chevauchement au sein d’une session ; intervalles demi-ouverts, donc créneaux consécutifs autorisés ; Présente et Absente continuent à consommer une place. Les conflits entre sessions restent non bloquants après confirmation. |
 | REF-01 | Domaines, règles validées explicitement le 2026-11-08 : code de 1 à 64 caractères, espaces de début/fin retirés, unicité sans casse parmi tous les domaines, y compris désactivés ; libellé de 1 à 200 caractères ; code modifiable sous réserve d’unicité. L’identité technique reste stable. |
 | REF-02 | Sous-domaines, règles validées explicitement le 2026-11-08 : mêmes limites et normalisation que les domaines, code unique sans casse dans tout le référentiel des sous-domaines, y compris désactivés ; code modifiable sous réserve d’unicité. Le domaine parent est fixé à la création ; les modifications portent sur code et libellé. L’identité technique et les liens historiques restent stables. |
+| REF-03 | Compétences, règles validées explicitement le 2026-11-08 (« oui, les même règles ») : code de 1 à 64 caractères, espaces externes retirés, unicité globale sans casse parmi toutes les compétences, y compris désactivées ; code modifiable sous réserve d’unicité. Libellé de 1 à 200 caractères, espaces externes retirés. Sous-domaine parent fixé à la création ; identité technique et liens historiques conservés. Désactivation sans suppression ni réactivation dans US-01.03. |
 
 ## Principes de gouvernance
 

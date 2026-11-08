@@ -68,12 +68,12 @@ test('manager creates edits and deactivates a subdomain while retaining its comp
   await editing.getByLabel('Code',{exact:true}).fill(code+'-B');await editing.getByLabel('Libellé',{exact:true}).fill(label+' modifié');await editing.getByRole('button',{name:'Enregistrer le sous-domaine',exact:true}).click();
   await expect(panel.getByRole('status',{name:'État des sous-domaines'})).toHaveText('Sous-domaine enregistré.');
   expect((await page.request.post(`/api/referentiels/sous-domaines/${created.id}/competences`,{headers,data:{label:'Compétence historique de recette'}})).status()).toBe(201);
-  const row=panel.getByRole('row').filter({hasText:label+' modifié'});await row.getByText(`Compétences de ${label} modifié`,{exact:true}).click();await expect(row.getByText('Compétence historique de recette',{exact:true})).toBeVisible();
+  const row=panel.getByRole('row').filter({hasText:label+' modifié'});await row.getByText(`Compétences de ${label} modifié`,{exact:true}).click();await expect(row.getByText('Compétence historique de recette — Actif',{exact:true})).toBeVisible();
   const disable=row.getByRole('button',{name:`Désactiver ${label} modifié`,exact:true});await disable.click();const confirmation=page.getByRole('dialog',{name:'Désactiver un sous-domaine',exact:true});
   await expect(confirmation.getByRole('button',{name:'Annuler',exact:true})).toBeFocused();await page.keyboard.press('Escape');await expect(disable).toBeFocused();await disable.click();
   await confirmation.getByRole('button',{name:'Confirmer la désactivation du sous-domaine',exact:true}).click();await expect(panel.getByRole('status',{name:'État des sous-domaines'})).toContainText('Sous-domaine désactivé.');
   await expect(row.getByRole('cell',{name:'Désactivé',exact:true})).toBeVisible();await expect(disable).toBeDisabled();
-  await row.getByText(`Compétences de ${label} modifié`,{exact:true}).click();await expect(row.getByText('Compétence historique de recette',{exact:true})).toBeVisible();
+  await row.getByText(`Compétences de ${label} modifié`,{exact:true}).click();await expect(row.getByText('Compétence historique de recette — Actif',{exact:true})).toBeVisible();
   await panel.getByLabel('Filtrer par domaine parent',{exact:true}).selectOption(inactive.id);await expect(panel.getByText('Aucun sous-domaine.',{exact:true})).toBeVisible();
   await create.click();await expect(editor.getByLabel('Domaine parent',{exact:true})).toHaveValue('');await page.keyboard.press('Escape');
 });

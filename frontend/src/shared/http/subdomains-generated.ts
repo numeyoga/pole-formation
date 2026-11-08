@@ -279,7 +279,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** @description Raccordement minimal pour US-01.02, uniquement sous un sous-domaine actif. L’administration complète des compétences relève de US-01.03. */
+        /** @description Création compatible par libellé sous un sous-domaine actif ; reçoit un code technique unique MIG-…. Passe par le même service que US-01.03. */
         post: {
             parameters: {
                 query?: never;
@@ -355,6 +355,9 @@ export interface components {
             /** Format: uuid */
             subdomainId: string;
             label: string;
+            code: string;
+            active: boolean;
+            version: number;
         };
         Subdomain: {
             /** Format: uuid */

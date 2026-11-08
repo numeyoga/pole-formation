@@ -15,6 +15,11 @@ training_domain = root / "src/main/java/fr/intformation/referentiel/domain/Train
 subdomain_service = root / "src/main/java/fr/intformation/referentiel/application/SubdomainService.java"
 subdomain_catalog = root / "src/main/java/fr/intformation/referentiel/infrastructure/PostgresSubdomainCatalog.java"
 training_subdomain = root / "src/main/java/fr/intformation/referentiel/domain/TrainingSubdomain.java"
+competency_service = root / "src/main/java/fr/intformation/referentiel/application/CompetencyService.java"
+competency_catalog = root / "src/main/java/fr/intformation/referentiel/infrastructure/PostgresCompetencyCatalog.java"
+training_competency = root / "src/main/java/fr/intformation/referentiel/domain/TrainingCompetency.java"
+explorer_service = root / "src/main/java/fr/intformation/referentiel/application/ReferenceExplorerService.java"
+explorer_catalog = root / "src/main/java/fr/intformation/referentiel/infrastructure/PostgresReferenceExplorerCatalog.java"
 mutants = [
     (policy, "if (actor.role() == Role.INTERVENANT &&", "if (false &&", "AccessHttpTest#guessing_another_session_or_participation_cannot_bypass_assignment", "fr.intformation.AccessHttpTest"),
     (policy, "case GESTIONNAIRE -> permission !=", "case GESTIONNAIRE -> true || permission !=", "AccessPolicyTest#fixed_roles_match_the_validated_permissions", "fr.intformation.AccessPolicyTest"),
@@ -32,11 +37,36 @@ mutants = [
     (training_subdomain, "if(expected!=version)", "if(false && expected!=version)", "AccessHttpTest#manager_can_create_edit_and_deactivate_a_subdomain_without_losing_competencies", "fr.intformation.AccessHttpTest"),
     (training_subdomain, "if(parent!=null && !domainId.equals(parent))", "if(false && parent!=null && !domainId.equals(parent))", "AccessHttpTest#manager_can_create_edit_and_deactivate_a_subdomain_without_losing_competencies", "fr.intformation.AccessHttpTest"),
     (training_subdomain, "if(!active)", "if(false && !active)", "AccessHttpTest#manager_can_create_edit_and_deactivate_a_subdomain_without_losing_competencies", "fr.intformation.AccessHttpTest"),
+    (competency_service, "policy.require(accounts.actor(user),AccessPolicy.Permission.WRITE_REFERENTIAL);", "/* competency permission removed */", "AccessHttpTest#competency_api_enforces_permissions_csrf_and_immediate_revocation", "fr.intformation.AccessHttpTest"),
+    (competency_catalog, 'String filter=subdomainId==null?"":" WHERE c.subdomain_id=:parent";', 'String filter=subdomainId==null?"":" WHERE c.subdomain_id<>:parent";', "AccessHttpTest#competency_catalog_paginates_and_filters_while_retaining_inactive_parents", "fr.intformation.AccessHttpTest"),
+    (competency_catalog, '.param("offset",(long)page*size)', '.param("offset",0L)', "AccessHttpTest#competency_catalog_paginates_and_filters_while_retaining_inactive_parents", "fr.intformation.AccessHttpTest"),
+    (competency_catalog, 'new TrainingSubdomain(parent.id,parent.domainId,parent.code,parent.label,parent.active,parent.version).requireActive();', '/* inactive parent accepted */', "AccessHttpTest#competency_fields_versions_and_inactive_parents_are_checked", "fr.intformation.AccessHttpTest"),
+    (training_competency, "if(expected!=version)", "if(false && expected!=version)", "AccessHttpTest#competency_edit_and_deactivation_preserve_identity_parent_and_legacy_history", "fr.intformation.AccessHttpTest"),
+    (training_competency, "if(parent!=null && !subdomainId.equals(parent))", "if(false && parent!=null && !subdomainId.equals(parent))", "AccessHttpTest#competency_edit_and_deactivation_preserve_identity_parent_and_legacy_history", "fr.intformation.AccessHttpTest"),
+    (training_competency, "if(!active)", "if(false && !active)", "AccessHttpTest#association_boundary_rejects_inactive_competencies_without_losing_history", "fr.intformation.AccessHttpTest"),
+    (explorer_service, "policy.require(accounts.actor(user),AccessPolicy.Permission.WRITE_REFERENTIAL);", "/* explorer permission removed */", "AccessHttpTest#explorer_search_enforces_permissions_revocation_and_input_limits", "fr.intformation.AccessHttpTest"),
+    (explorer_catalog, "position(lower(:query) in lower(c.code))>0", "position(lower(:query) in lower(c.code))<=0", "AccessHttpTest#explorer_search_matches_literal_code_and_label_and_paginates", "fr.intformation.AccessHttpTest"),
+    (explorer_catalog, '.param("offset",(long)page*size)', '.param("offset",0L)', "AccessHttpTest#explorer_search_matches_literal_code_and_label_and_paginates", "fr.intformation.AccessHttpTest"),
+    (explorer_catalog, 'rs.getBoolean(12)', 'true', "AccessHttpTest#explorer_search_keeps_inactive_competencies_and_the_full_historical_path", "fr.intformation.AccessHttpTest"),
 ]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("--subdomains", action="store_true", help="Run only mutations affecting subdomain behavior")
-if parser.parse_args().subdomains:
+scopes = parser.add_mutually_exclusive_group()
+scopes.add_argument("--subdomains", action="store_true", help="Run only mutations affecting subdomain behavior")
+scopes.add_argument("--competencies", action="store_true", help="Run only mutations affecting competency behavior")
+scopes.add_argument("--explorer", action="store_true", help="Run only mutations affecting reference exploration")
+parser.add_argument("--list", action="store_true", help="List selected controls without modifying sources or running Maven")
+args = parser.parse_args()
+if args.explorer:
+    mutants = [item for item in mutants if item[0] in (explorer_service, explorer_catalog)]
+elif args.competencies:
+    mutants = [item for item in mutants if item[0] in (competency_service, competency_catalog, training_competency)]
+elif args.subdomains:
     mutants = [item for item in mutants if item[0] in (subdomain_service, subdomain_catalog, training_subdomain)]
+if not mutants:
+    raise SystemExit("No mutation selected; refusing an empty validation.")
+if args.list:
+    print("\n".join(item[3] for item in mutants))
+    raise SystemExit(0)
 for source, before, after, test, suite in mutants:
     original = source.read_text()
     assert original.count(before) == 1, f"Mutation anchor changed: {source}"

@@ -24,5 +24,5 @@ export const subdomainsApi={
   async create(domainId:string,code:string,label:string){return subdomainView(await unwrap(await client.POST('/api/referentiels/sous-domaines',{params:{header:await csrfHeaders()},body:{domainId,code,label}})));},
   async update(item:SubdomainView,code:string,label:string){await unwrap(await client.PUT('/api/referentiels/sous-domaines/{id}',{params:{path:{id:item.id},header:await csrfHeaders()},body:{code,label,version:item.version}}));},
   async deactivate(item:SubdomainView){await unwrap(await client.POST('/api/referentiels/sous-domaines/{id}/desactivation',{params:{path:{id:item.id},header:await csrfHeaders()},body:{version:item.version}}));},
-  async competencies(id:string):Promise<CompetencyView[]>{return (await unwrap(await client.GET('/api/referentiels/sous-domaines/{id}/competences',{params:{path:{id}}}))).map(({id,label})=>({id,label}));},
+  async competencies(id:string):Promise<CompetencyView[]>{return (await unwrap(await client.GET('/api/referentiels/sous-domaines/{id}/competences',{params:{path:{id}}}))).map(({id,label,active})=>({id,label,status:active?'Actif':'Désactivé'}));},
 };

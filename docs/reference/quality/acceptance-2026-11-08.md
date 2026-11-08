@@ -16,6 +16,7 @@ type: reference
 - [Validation métier de US-08.02](#validation-métier-de-us-0802)
 - [Validation de US-01.01](#validation-de-us-0101)
 - [Validation de US-01.02](#validation-de-us-0102)
+- [Validation de US-01.03](#validation-de-us-0103)
 - [Limites des preuves](#limites-des-preuves)
 
 ## Accord enregistré
@@ -73,6 +74,14 @@ Cet accord accepte la livraison locale de US-01.02 : création, modification, d�
 Les régressions des habilitations, du journal et des domaines ont été vérifiées dans la même livraison `7ee132f` : 40 tests serveur, quatre tests de mapping et quinze parcours Chromium réussis. Le rattachement technique de ces stories à cette révision ne modifie pas leurs acceptations métier antérieures.
 
 Cet accord ne détaille pas de nouveau scan humain AA/AAA, d’essai individuel de zoom ou de lecteur d’écran ; leur exécution n’est pas affirmée. Les limites de preuve du rapport demeurent documentées. L’administration complète des compétences reste US-01.03.
+
+## Validation de US-01.03
+
+Le 2026-11-08, après présentation de l’administration des compétences et du bilan technique (49 tests serveur, cinq tests Vitest, 18 parcours Playwright et sept mutations), le représentant du projet a déclaré : « je valide. Arrête de développer dans le dev container, installe ce qu’il faut avec Mise (jdx) puis continue le développement ».
+
+Cet accord accepte la livraison locale décrite dans le [rapport US-01.03](us-01-03-validation.md), dont création, modification, désactivation, parent fixé à la création et unicité globale des codes. Il autorise le passage à US-01.04 et le changement d’environnement décrit dans ADR 0013. La validation ne décrit pas d’essai individuel de zoom, lecteur d’écran ou scan humain ; aucune exécution de ces contrôles n’est inventée.
+
+La livraison acceptée était locale et non commitée. Sa révision est enregistrée dans `tracking/stories.json` lors de son versionnement. Les associations réelles profil/formation restent celles de US-02.03 et US-03.02 ; leur absence actuelle ne devient pas une fonctionnalité livrée par cet accord.
 
 ## Limites des preuves
 

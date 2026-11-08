@@ -17,24 +17,22 @@ type: how-to
 
 ## Préparer
 
-Ouvrir le dépôt dans le [devcontainer](dev-container.md). Avec Podman rootless, utiliser la configuration `podman/devcontainer.json` et reconstruire le conteneur après une modification de ses montages. Le socket Podman doit être actif sur l’hôte ; il est nécessaire aux tests Testcontainers.
+Préparer le [développement local avec Mise et services Podman](local-development.md). Les outils tournent sur l’hôte ; PostgreSQL et Chromium restent dans leurs conteneurs partagés. Le socket Podman doit être actif pour Testcontainers.
 
 ## Construire et lancer
 
-Toutes les commandes suivantes s’exécutent dans le devcontainer, depuis la racine du dépôt :
+Depuis la racine du dépôt, utiliser Mise pour les outils locaux :
 
 ```bash
-npm --prefix frontend ci
-npm --prefix frontend run generate:api
-npm --prefix frontend run build
-cd backend
-./mvnw package
-java -jar target/pole-formation-0.1.0-SNAPSHOT.jar --spring.profiles.active=dev
+mise run setup
+mise run db:up
+mise run build
+mise run dev
 ```
 
 Ouvrir le port transféré **8080**. L’interface et l’API sont servies par Spring Boot sous la même origine. Arrêter l’application avec Ctrl+C.
 
-Pour travailler sur le frontend avec rechargement automatique, lancer `npm --prefix frontend run dev` dans un autre terminal. Le port 5173 utilise un proxy `/api` vers le backend sur 8080.
+Pour travailler sur le frontend avec rechargement automatique, lancer `mise exec -- npm --prefix frontend run dev` dans un autre terminal. Le port 5173 utilise un proxy `/api` vers le backend sur 8080.
 
 ## Se connecter
 
@@ -54,6 +52,10 @@ Avec `gestionnaire` ou `admin`, utiliser le bouton **Domaines** pour rejoindre l
 
 Utiliser **Sous-domaines**, puis sélectionner un domaine dans le filtre pour consulter sa liste. Cliquer sur **Créer un sous-domaine**, choisir un parent actif, saisir code et libellé, puis enregistrer. En modification, changer code/libellé ; le domaine parent reste fixé à la création. Pour désactiver, confirmer le dialogue puis ouvrir « Compétences de… » : les compétences déjà rattachées restent consultables. Le code d’un sous-domaine désactivé ne peut pas être réutilisé, même dans un autre domaine.
 
+Utiliser **Compétences**, filtrer par sous-domaine, puis **Créer une compétence** sous un parent actif. Saisir code et libellé. La modification conserve le parent ; la désactivation conserve la fiche et son historique, avec un code toujours réservé. Les anciens codes `MIG-…` sont modifiables.
+
+Utiliser **Explorer le référentiel**, puis développer un domaine et un sous-domaine pour afficher les compétences. Pour une recherche, saisir un code ou un libellé de compétence puis **Rechercher les compétences** : chaque résultat présente le chemin complet et le statut de chacun des trois niveaux. **Parcourir la hiérarchie** quitte la recherche. Les éléments désactivés restent consultables ; la pagination existe aux différents niveaux.
+
 Si un autre gestionnaire a modifié une fiche, utiliser **Recharger la fiche** dans le dialogue avant de refaire la modification. La navigation **Sessions** et **Journal** reste disponible selon les droits du compte.
 
 Avec `admin` ou `gestionnaire`, consulter **Journal des changements sensibles**, puis filtrer par type ou session. Avec `admin`, ouvrir « Exemple — Session clôturée » et changer effectivement la présence de Camille Exemple : le journal affiche la correction avec auteur, date UTC et états avant/après. Un enregistrement du même état n’ajoute pas de changement fictif.
@@ -65,13 +67,11 @@ Pour retrouver les deux événements d’une participation, choisir le type « P
 Depuis la racine du dépôt, avec l’application lancée sur 8080 pour Playwright :
 
 ```bash
-npm --prefix frontend run typecheck
-npm --prefix frontend test
-npm --prefix frontend run test:e2e
-cd backend
-./mvnw test
-python3 check-security-mutations.py
-./mvnw test
+mise run test:frontend
+mise run test:backend
+mise run test:e2e
+mise exec -- bash -c 'cd backend && python3 check-security-mutations.py'
+mise run test:backend
 ```
 
 Le contrôle de mutations restaure les sources même en cas d’échec. Il modifie temporairement les sources : ne pas lancer une autre compilation backend en parallèle. Le dernier `./mvnw test` recompile les sources restaurées.

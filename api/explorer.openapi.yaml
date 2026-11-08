@@ -1,0 +1,52 @@
+openapi: 3.1.0
+info: {title: Pôle formation — exploration du référentiel, version: 0.1.0}
+servers: [{url: /}]
+security: [{session: []}]
+paths:
+  /api/referentiels/exploration/competences:
+    get:
+      description: Lecture réservée aux gestionnaires et administrateurs fonctionnels, comme les catalogues de référentiel existants. Aucun état actif ne filtre les résultats historiques.
+      parameters:
+        - {name: q, in: query, description: Sous-chaîne littérale sans casse du code ou libellé de la compétence. Espaces externes retirés. Vide renvoie toutes les compétences. Pourcent et soulignement ne sont pas des jokers., schema: {type: string, maxLength: 200, default: ''}}
+        - {name: page, in: query, schema: {type: integer, minimum: 0, default: 0}}
+        - {name: size, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+      responses:
+        '200':
+          description: Chemins complets triés par libellé de compétence sans casse puis identifiant. Chaque niveau conserve son propre statut.
+          content: {application/json: {schema: {$ref: '#/components/schemas/Page'}}}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+components:
+  securitySchemes:
+    session: {type: apiKey, in: cookie, name: JSESSIONID}
+  responses:
+    Error:
+      description: Format invalide, session absente ou accès refusé
+      content:
+        application/problem+json:
+          schema: {type: object, properties: {status: {type: integer}, detail: {type: string}, fieldErrors: {type: object, additionalProperties: {type: string}}}}
+  schemas:
+    Node:
+      type: object
+      required: [id, code, label, active]
+      properties:
+        id: {type: string, format: uuid}
+        code: {type: string}
+        label: {type: string}
+        active: {type: boolean}
+    Match:
+      type: object
+      required: [domain, subdomain, competency]
+      properties:
+        domain: {$ref: '#/components/schemas/Node'}
+        subdomain: {$ref: '#/components/schemas/Node'}
+        competency: {$ref: '#/components/schemas/Node'}
+    Page:
+      type: object
+      required: [items, total, page, size]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Match'}}
+        total: {type: integer, minimum: 0}
+        page: {type: integer, minimum: 0}
+        size: {type: integer, minimum: 1, maximum: 100}

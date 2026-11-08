@@ -22,3 +22,6 @@ tags:
 - [ADR 0009 – Journal transactionnel](ADR-0009-transactional-audit.md)
 - [ADR 0010 – Référentiel des domaines](ADR-0010-domain-reference.md)
 - [ADR 0011 – Sous-domaines et rattachements](ADR-0011-subdomain-reference.md)
+
+- [ADR 0012 – Administration des compétences](ADR-0012-competency-reference.md)
+- [ADR 0013 – Mise sur l’hôte et services Podman](ADR-0013-local-mise-podman.md)

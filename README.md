@@ -14,7 +14,7 @@ tags:
 
 Application interne de centralisation du pôle formation INT : référentiels, formations, sessions, participations et pilotage de l'activité formation.
 
-> **Statut** : le devcontainer, les habilitations, le journal des changements sensibles et la gestion des domaines sont implémentés localement. Le reste du MVP décrit une cible ; certaines règles métier et intégrations restent à confirmer. Voir le [guide de lancement](docs/how-to/run-local-app.md), le [périmètre des habilitations](docs/reference/quality/us-08-01-validation.md), le [rapport du journal](docs/reference/quality/us-08-02-validation.md) et le [rapport des domaines](docs/reference/quality/us-01-01-validation.md).
+> **Statut** : le socle local Mise/Podman, les habilitations, le journal des changements sensibles et la gestion des domaines, sous-domaines et compétences ainsi que l’exploration du référentiel sont implémentés localement. Le reste du MVP décrit une cible ; certaines règles métier et intégrations restent à confirmer. Voir le [guide de lancement](docs/how-to/run-local-app.md), le [périmètre des habilitations](docs/reference/quality/us-08-01-validation.md), le [rapport du journal](docs/reference/quality/us-08-02-validation.md), le [rapport des domaines](docs/reference/quality/us-01-01-validation.md), celui des [sous-domaines](docs/reference/quality/us-01-02-validation.md) et celui des [compétences](docs/reference/quality/us-01-03-validation.md) et celui de l’[exploration](docs/reference/quality/us-01-04-validation.md).
 
 ## Sommaire
 
@@ -31,7 +31,7 @@ Application interne de centralisation du pôle formation INT : référentiels, f
 | Développer avec une IA | [AGENTS.md](AGENTS.md), puis [index documentaire](docs/README.md) |
 | Comprendre le métier | [Modèle métier](docs/reference/domain/domain-model.md), [règles](docs/reference/domain/business-rules.md), [workflows](docs/reference/domain/workflows.md) |
 | Appliquer les conventions | [Structure frontend](docs/reference/architecture/frontend-structure.md), [backend](docs/reference/architecture/backend-structure.md) et [CSS](docs/reference/frontend/css-conventions.md) |
-| Développer localement | [Guide du dev container obligatoire](docs/how-to/dev-container.md) |
+| Développer localement | [Guide Mise et services Podman](docs/how-to/local-development.md) |
 | Suivre l’avancement | [Registre généré](docs/generated/development-progress.md), [fonctionnement et preuves](docs/reference/development-tracking.md) |
 | Voir ce qui n'est pas décidé | [Registre des décisions ouvertes](docs/reference/architecture/open-questions.md) |
 | Comprendre les choix | [ADR](docs/decisions/README.md) |

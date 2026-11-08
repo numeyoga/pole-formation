@@ -27,6 +27,8 @@ class AccessHttpTest {
     }
     @LocalServerPort int port;
     @Autowired JdbcClient db;
+    @Autowired fr.intformation.referentiel.application.CompetencyAvailability competencyAvailability;
+    @Autowired org.springframework.transaction.PlatformTransactionManager transactionManager;
     final JsonMapper json=JsonMapper.builder().build();
     static final String S1="20000000-0000-0000-0000-000000000001", S2="20000000-0000-0000-0000-000000000002", S3="20000000-0000-0000-0000-000000000003", S4="20000000-0000-0000-0000-000000000004";
     static final String P1="40000000-0000-0000-0000-000000000001", P2="40000000-0000-0000-0000-000000000002", P3="40000000-0000-0000-0000-000000000003", P4="40000000-0000-0000-0000-000000000004";
@@ -73,6 +75,184 @@ class AccessHttpTest {
     Browser as(String username) throws Exception { var browser=new Browser();browser.login(username);return browser; }
     String people(String session) { return "/api/sessions/"+session+"/participants"; }
     String presence(String session,String participation) { return people(session)+"/"+participation+"/presence"; }
+
+    @Test void explorer_search_exposes_a_competency_path() throws Exception {
+        var manager=as("gestionnaire");var parent=competencyParent(manager);String code="EXP-"+java.util.UUID.randomUUID();
+        var created=manager.call("POST","/api/referentiels/competences",competencyBody(parent.get("id").asString(),code,"Compétence à retrouver"),true);
+        assertThat(created.statusCode()).isEqualTo(201);var competency=json.readTree(created.body());
+        var response=manager.get("/api/referentiels/exploration/competences?q="+code.toLowerCase(java.util.Locale.ROOT));
+        assertThat(response.statusCode()).isEqualTo(200);var result=json.readTree(response.body());
+        assertThat(result.get("total").asLong()).isEqualTo(1);var item=result.get("items").get(0);
+        assertThat(item.get("competency").get("id")).isEqualTo(competency.get("id"));
+        assertThat(item.get("competency").get("label").asString()).isEqualTo("Compétence à retrouver");
+        assertThat(item.get("subdomain").get("id")).isEqualTo(parent.get("id"));
+        assertThat(item.get("domain").get("id")).isEqualTo(parent.get("domainId"));
+    }
+
+    @Test void explorer_search_matches_literal_code_and_label_and_paginates() throws Exception {
+        var manager=as("gestionnaire");var parent=competencyParent(manager);String parentId=parent.get("id").asString();
+        String tag="EXP-LITERAL-"+java.util.UUID.randomUUID();String label="Libellé unique "+java.util.UUID.randomUUID();
+        var first=manager.call("POST","/api/referentiels/competences",competencyBody(parentId,tag+"%_literal",label+" Alpha"),true);
+        assertThat(first.statusCode()).isEqualTo(201);
+        assertThat(manager.call("POST","/api/referentiels/competences",competencyBody(parentId,tag+"XYliteral",label+" Zulu"),true).statusCode()).isEqualTo(201);
+        String path="/api/referentiels/exploration/competences?q=";
+        var literal=json.readTree(manager.get(path+java.net.URLEncoder.encode("  "+tag.toUpperCase(java.util.Locale.ROOT)+"%_literal  ",java.nio.charset.StandardCharsets.UTF_8)).body());
+        assertThat(literal.get("total").asLong()).isEqualTo(1);assertThat(literal.get("items").get(0).get("competency").get("id")).isEqualTo(json.readTree(first.body()).get("id"));
+        String query=path+java.net.URLEncoder.encode(label,java.nio.charset.StandardCharsets.UTF_8)+"&size=1";
+        var pageOne=json.readTree(manager.get(query).body());assertThat(pageOne.get("total").asLong()).isEqualTo(2);assertThat(pageOne.get("items").size()).isEqualTo(1);
+        assertThat(pageOne.get("items").get(0).get("competency").get("label").asString()).isEqualTo(label+" Alpha");
+        var pageTwo=json.readTree(manager.get(query+"&page=1").body());assertThat(pageTwo.get("items").get(0).get("competency").get("label").asString()).isEqualTo(label+" Zulu");
+        assertThat(json.readTree(manager.get(query+"&page=2").body()).get("items").isEmpty()).isTrue();
+        assertThat(json.readTree(manager.get(path+"no-such-"+tag).body()).get("total").asLong()).isZero();
+        assertThat(json.readTree(manager.get(path+java.net.URLEncoder.encode("' OR 1=1 --",java.nio.charset.StandardCharsets.UTF_8)).body()).get("total").asLong()).isZero();
+    }
+
+    @Test void explorer_search_keeps_inactive_competencies_and_the_full_historical_path() throws Exception {
+        var manager=as("gestionnaire");String code="HIST-EXP-"+java.util.UUID.randomUUID();
+        var domain=json.readTree(manager.call("POST","/api/referentiels/domaines",json.writeValueAsString(java.util.Map.of("code",code,"label","Domaine historique exploration")),true).body());
+        var parent=json.readTree(manager.call("POST","/api/referentiels/sous-domaines",json.writeValueAsString(java.util.Map.of("domainId",domain.get("id").asString(),"code",code,"label","Sous-domaine historique exploration")),true).body());
+        var child=json.readTree(manager.call("POST","/api/referentiels/competences",competencyBody(parent.get("id").asString(),code,"Compétence historique exploration"),true).body());
+        for(String resource:List.of("/api/referentiels/competences/"+child.get("id").asString(),"/api/referentiels/sous-domaines/"+parent.get("id").asString(),"/api/referentiels/domaines/"+domain.get("id").asString()))
+            assertThat(manager.call("POST",resource+"/desactivation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        var response=manager.get("/api/referentiels/exploration/competences?q="+code);assertThat(response.statusCode()).isEqualTo(200);
+        var result=json.readTree(response.body());assertThat(result.get("total").asLong()).isEqualTo(1);var item=result.get("items").get(0);
+        assertThat(item.get("competency").get("id")).isEqualTo(child.get("id"));assertThat(item.get("competency").get("label").asString()).isEqualTo("Compétence historique exploration");
+        assertThat(item.get("domain").get("id")).isEqualTo(domain.get("id"));assertThat(item.get("subdomain").get("id")).isEqualTo(parent.get("id"));
+        for(String level:List.of("domain","subdomain","competency"))assertThat(item.get(level).get("active").asBoolean()).as(level).isFalse();
+    }
+
+    @Test void explorer_search_enforces_permissions_revocation_and_input_limits() throws Exception {
+        String path="/api/referentiels/exploration/competences";
+        assertThat(new Browser().get(path).statusCode()).isEqualTo(401);assertThat(as("intervenant").get(path).statusCode()).isEqualTo(403);assertThat(as("admin").get(path).statusCode()).isEqualTo(200);
+        var manager=as("gestionnaire");
+        for(String query:List.of("?page=-1","?size=0","?size=101","?page=invalide","?q="+"x".repeat(201)))assertThat(manager.get(path+query).statusCode()).as(query).isEqualTo(400);
+        assertThat(manager.get(path+"?q="+"x".repeat(200)).statusCode()).isEqualTo(200);
+        assertThat(manager.get(path+"?page=2147483647&size=100").statusCode()).isEqualTo(200);
+        db.sql("UPDATE app_account SET role='INTERVENANT' WHERE username='gestionnaire'").update();assertThat(manager.get(path).statusCode()).isEqualTo(403);
+    }
+
+    @Test void manager_can_create_a_competency_under_one_active_subdomain() throws Exception {
+        var manager=as("gestionnaire");String code="COMP-"+java.util.UUID.randomUUID();
+        var parent=json.readTree(manager.call("POST",DOMAIN+"/sous-domaines",json.writeValueAsString(java.util.Map.of("label","Parent compétence")),true).body());
+        String parentId=parent.get("id").asString();
+        var created=manager.call("POST","/api/referentiels/competences",json.writeValueAsString(java.util.Map.of("subdomainId",parentId,"code"," "+code+" ","label"," Compétence de test ")),true);
+        assertThat(created.statusCode()).isEqualTo(201);
+        var competency=json.readTree(created.body());
+        assertThat(competency.get("subdomainId").asString()).isEqualTo(parentId);
+        assertThat(competency.get("code").asString()).isEqualTo(code);
+        assertThat(competency.get("label").asString()).isEqualTo("Compétence de test");
+        assertThat(competency.get("active").asBoolean()).isTrue();
+        assertThat(manager.get("/api/referentiels/competences/"+competency.get("id").asString()).statusCode()).isEqualTo(200);
+    }
+
+    JsonNode competencyParent(Browser manager) throws Exception {
+        var response=manager.call("POST",DOMAIN+"/sous-domaines",json.writeValueAsString(java.util.Map.of("label","Parent compétence")),true);
+        assertThat(response.statusCode()).isEqualTo(201);return json.readTree(response.body());
+    }
+    String competencyBody(String parent,String code,String label) throws Exception {return json.writeValueAsString(java.util.Map.of("subdomainId",parent,"code",code,"label",label));}
+
+    @Test void competency_edit_and_deactivation_preserve_identity_parent_and_legacy_history() throws Exception {
+        var manager=as("gestionnaire");var parent=competencyParent(manager);String parentId=parent.get("id").asString();
+        String path="/api/referentiels/competences",code="EDIT-COMP-"+java.util.UUID.randomUUID();
+        var response=manager.call("POST",path,competencyBody(parentId,code,"Avant"),true);assertThat(response.statusCode()).isEqualTo(201);
+        var child=json.readTree(response.body());String childPath=path+"/"+child.get("id").asString();assertThat(response.headers().firstValue("Location")).contains(childPath);
+        String edit=json.writeValueAsString(java.util.Map.of("code",code+"-B","label","Après","version",0));
+        assertThat(manager.put(childPath,edit).statusCode()).isEqualTo(204);
+        var changed=json.readTree(manager.get(childPath).body());assertThat(changed.get("version").asLong()).isEqualTo(1);
+        assertThat(changed.get("id")).isEqualTo(child.get("id"));assertThat(changed.get("subdomainId").asString()).isEqualTo(parentId);
+        assertThat(changed.get("code").asString()).isEqualTo(code+"-B");assertThat(changed.get("label").asString()).isEqualTo("Après");
+        assertThat(manager.put(childPath,edit).statusCode()).isEqualTo(409);
+        var other=competencyParent(manager);
+        assertThat(manager.put(childPath,json.writeValueAsString(java.util.Map.of("subdomainId",other.get("id").asString(),"code",code+"-B","label","Déplacement","version",1))).statusCode()).isEqualTo(409);
+        assertThat(manager.call("POST",childPath+"/desactivation","{\"version\":0}",true).statusCode()).isEqualTo(409);
+        assertThat(manager.call("POST",childPath+"/desactivation","{\"version\":1}",true).statusCode()).isEqualTo(204);
+        var history=json.readTree(manager.get(childPath).body());assertThat(history.get("active").asBoolean()).isFalse();assertThat(history.get("subdomainId").asString()).isEqualTo(parentId);
+        var children=json.readTree(manager.get("/api/referentiels/sous-domaines/"+parentId+"/competences").body());
+        assertThat(children.size()).isEqualTo(1);assertThat(children.get(0).get("id")).isEqualTo(child.get("id"));assertThat(children.get(0).get("active").asBoolean()).isFalse();
+        var duplicate=manager.call("POST",path,competencyBody(other.get("id").asString(),(code+"-B").toLowerCase(java.util.Locale.ROOT),"Doublon"),true);
+        assertThat(duplicate.statusCode()).isEqualTo(409);assertThat(duplicate.body()).contains("fieldErrors","code");
+        assertThat(manager.get(childPath).body()).contains("Après");
+    }
+
+    @Test void competency_fields_versions_and_inactive_parents_are_checked() throws Exception {
+        var manager=as("gestionnaire");var parent=competencyParent(manager);String id=parent.get("id").asString(),path="/api/referentiels/competences";
+        String code="FIELDS-COMP-"+java.util.UUID.randomUUID();
+        for(String body:List.of(competencyBody(id," ","Valide"),competencyBody(id,"X".repeat(65),"Valide"),competencyBody(id,code," "),competencyBody(id,code,"X".repeat(201)),"{}")){
+            var invalid=manager.call("POST",path,body,true);assertThat(invalid.statusCode()).isEqualTo(400);assertThat(invalid.body()).contains("fieldErrors");
+        }
+        var response=manager.call("POST",path,competencyBody(id,"X".repeat(64),"X".repeat(200)),true);assertThat(response.statusCode()).isEqualTo(201);
+        String child=path+"/"+json.readTree(response.body()).get("id").asString();
+        for(var fields:List.of(java.util.Map.of("code",code,"label","Valide"),java.util.Map.of("code",code,"label","Valide","version",-1)))assertThat(manager.put(child,json.writeValueAsString(fields)).statusCode()).isEqualTo(400);
+        assertThat(manager.call("POST",child+"/desactivation","{}",true).statusCode()).isEqualTo(400);
+        assertThat(manager.call("POST","/api/referentiels/sous-domaines/"+id+"/desactivation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST",path,competencyBody(id,code,"Interdit"),true).statusCode()).isEqualTo(409);
+        assertThat(manager.get(child).statusCode()).isEqualTo(200);
+        var choices=json.readTree(manager.get(path+"/parents").body());boolean found=false;
+        for(var choice:choices)if(choice.get("id").asString().equals(id)){found=true;assertThat(choice.get("selectableForCreation").asBoolean()).isFalse();}assertThat(found).isTrue();
+        assertThat(manager.call("POST",path,competencyBody(java.util.UUID.randomUUID().toString(),code,"Inconnu"),true).statusCode()).isEqualTo(404);
+        assertThat(manager.get(path+"/"+java.util.UUID.randomUUID()).statusCode()).isEqualTo(404);
+    }
+
+    @Test void competency_catalog_paginates_and_filters_while_retaining_inactive_parents() throws Exception {
+        var manager=as("gestionnaire");var parent=competencyParent(manager);String id=parent.get("id").asString(),path="/api/referentiels/competences";
+        String code="LIST-COMP-"+java.util.UUID.randomUUID();
+        assertThat(manager.call("POST",path,competencyBody(id,code+"-Z","Zulu"),true).statusCode()).isEqualTo(201);
+        assertThat(manager.call("POST",path,competencyBody(id,code+"-A","Alpha"),true).statusCode()).isEqualTo(201);
+        String query=path+"?subdomainId="+id+"&size=1";var first=json.readTree(manager.get(query).body());
+        assertThat(first.get("total").asLong()).isEqualTo(2);assertThat(first.get("items").size()).isEqualTo(1);
+        assertThat(first.get("items").get(0).get("label").asString()).isEqualTo("Alpha");
+        assertThat(first.get("items").get(0).get("subdomainId").asString()).isEqualTo(id);
+        assertThat(first.get("items").get(0).get("subdomainCode")).isEqualTo(parent.get("code"));
+        var second=json.readTree(manager.get(query+"&page=1").body());assertThat(second.get("items").get(0).get("label").asString()).isEqualTo("Zulu");
+        assertThat(json.readTree(manager.get(query+"&page=2").body()).get("items").isEmpty()).isTrue();
+        assertThat(manager.call("POST","/api/referentiels/sous-domaines/"+id+"/desactivation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        var history=json.readTree(manager.get(query).body());assertThat(history.get("items").get(0).get("subdomainActive").asBoolean()).isFalse();
+        assertThat(json.readTree(manager.get(path+"?subdomainId="+java.util.UUID.randomUUID()).body()).get("total").asLong()).isZero();
+        for(String suffix:List.of("?page=-1","?size=0","?size=101","?subdomainId=invalide"))assertThat(manager.get(path+suffix).statusCode()).as(suffix).isEqualTo(400);
+        assertThat(manager.get(path+"?page=2147483647&size=100").statusCode()).isEqualTo(200);
+    }
+
+    @Test void competency_api_enforces_permissions_csrf_and_immediate_revocation() throws Exception {
+        var manager=as("gestionnaire");var instructor=as("intervenant");var parent=competencyParent(manager);
+        String path="/api/referentiels/competences",body=competencyBody(parent.get("id").asString(),"AUTH-COMP-"+java.util.UUID.randomUUID(),"Sécurité");
+        var created=manager.call("POST",path,body,true);assertThat(created.statusCode()).isEqualTo(201);String child=path+"/"+json.readTree(created.body()).get("id").asString();
+        assertThat(as("admin").get(path).statusCode()).isEqualTo(200);
+        for(String resource:List.of(path,path+"/parents",child)){
+            assertThat(new Browser().get(resource).statusCode()).isEqualTo(401);assertThat(instructor.get(resource).statusCode()).isEqualTo(403);
+        }
+        for(String resource:List.of(path,child+"/desactivation")){
+            assertThat(instructor.call("POST",resource,body,true).statusCode()).isEqualTo(403);assertThat(manager.call("POST",resource,body,false).statusCode()).isEqualTo(403);
+        }
+        assertThat(instructor.put(child,body).statusCode()).isEqualTo(403);assertThat(manager.call("PUT",child,body,false).statusCode()).isEqualTo(403);
+        db.sql("UPDATE app_account SET role='INTERVENANT' WHERE username='gestionnaire'").update();
+        assertThat(manager.get(path).statusCode()).isEqualTo(403);assertThat(manager.call("POST",path,body,true).statusCode()).isEqualTo(403);
+        assertThat(manager.put(child,body).statusCode()).isEqualTo(403);assertThat(manager.call("POST",child+"/desactivation","{\"version\":0}",true).statusCode()).isEqualTo(403);
+    }
+
+    @Test void association_boundary_rejects_inactive_competencies_without_losing_history() throws Exception {
+        var manager=as("gestionnaire");var parent=competencyParent(manager);String path="/api/referentiels/competences";
+        var created=manager.call("POST",path,competencyBody(parent.get("id").asString(),"ASSOC-"+java.util.UUID.randomUUID(),"Historique"),true);
+        assertThat(created.statusCode()).isEqualTo(201);var child=json.readTree(created.body());var id=java.util.UUID.fromString(child.get("id").asString());
+        var transactions=new org.springframework.transaction.support.TransactionTemplate(transactionManager);
+        assertThatCode(()->transactions.executeWithoutResult(status->competencyAvailability.requireActive(id))).doesNotThrowAnyException();
+        assertThat(manager.call("POST",path+"/"+id+"/desactivation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        assertThatThrownBy(()->transactions.executeWithoutResult(status->competencyAvailability.requireActive(id)))
+            .isInstanceOf(fr.intformation.habilitations.domain.AccessPolicy.Conflict.class).hasMessageContaining("désactivée");
+        var history=json.readTree(manager.get(path+"/"+id).body());assertThat(history.get("label").asString()).isEqualTo("Historique");assertThat(history.get("subdomainId")).isEqualTo(parent.get("id"));
+        assertThatThrownBy(()->transactions.executeWithoutResult(status->competencyAvailability.requireActive(java.util.UUID.randomUUID())))
+            .isInstanceOf(fr.intformation.habilitations.application.AccessService.NotFound.class);
+    }
+
+    @Test void concurrent_competency_creations_cannot_duplicate_a_code_across_parents() throws Exception {
+        var manager=as("gestionnaire");var admin=as("admin");var parent=competencyParent(manager);var other=competencyParent(manager);
+        String code="RACE-COMP-"+java.util.UUID.randomUUID();String firstBody=competencyBody(parent.get("id").asString(),code,"Première"),secondBody=competencyBody(other.get("id").asString(),code.toLowerCase(java.util.Locale.ROOT),"Seconde");
+        var start=new java.util.concurrent.CountDownLatch(1);
+        try(var pool=java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()){
+            var first=pool.submit(()->{start.await();return manager.call("POST","/api/referentiels/competences",firstBody,true).statusCode();});
+            var second=pool.submit(()->{start.await();return admin.call("POST","/api/referentiels/competences",secondBody,true).statusCode();});
+            start.countDown();assertThat(List.of(first.get(10,java.util.concurrent.TimeUnit.SECONDS),second.get(10,java.util.concurrent.TimeUnit.SECONDS))).containsExactlyInAnyOrder(201,409);
+        }
+    }
 
     @Test void manager_can_create_and_read_a_domain() throws Exception {
         var manager=as("gestionnaire");

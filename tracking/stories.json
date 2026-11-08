@@ -44,5 +44,56 @@
     "report": "docs/reference/quality/us-01-02-validation.md",
     "remaining": [],
     "acceptance": {"required": true, "evidence": "docs/reference/quality/acceptance-2026-11-08.md"}
+  },
+  "US-01.03": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
+    "report": "docs/reference/quality/us-01-03-validation.md",
+    "remaining": [
+      "Enregistrer la révision de la livraison et de ses preuves techniques."
+    ],
+    "acceptance": {
+      "required": true,
+      "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
+    }
+  },
+  "US-01.04": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
+    "report": "docs/reference/quality/us-01-04-validation.md",
+    "remaining": [
+      "Recette métier et contrôles humains ciblés d’accessibilité."
+    ],
+    "acceptance": {
+      "required": true
+    }
+  },
+  "TECH-MISE": {
+    "title": "Développement local Mise et services Podman",
+    "implementation": "partial",
+    "code_paths": [
+      "mise.toml",
+      ".githooks/",
+      "scripts/in-environment.sh",
+      "scripts/in-devcontainer.sh",
+      "scripts/check-environment.sh",
+      "frontend/playwright.config.ts"
+    ],
+    "report": "docs/reference/quality/local-environment-validation.md",
+    "remaining": [
+      "Enregistrer la révision validée."
+    ],
+    "acceptance": {
+      "required": false,
+      "reason": "Transition technique demandée explicitement, vérifiée par les contrôles locaux et les suites applicatives."
+    }
   }
 }

@@ -39,6 +39,8 @@ L’administrateur fonctionnel dispose des droits du gestionnaire et de permissi
 | Consulter le pilotage | Non | Oui | Oui |
 | Consulter le journal des changements sensibles | Non | Oui | Oui |
 
+L’exploration en lecture du référentiel (US-01.04) conserve le périmètre des catalogues existants : gestionnaire et administrateur fonctionnel. L’intervenant reste limité au périmètre de sessions validé ; aucune nouvelle permission ou ouverture de données n’est introduite par cet écran.
+
 Les deux premières lignes désignent la gestion courante ; la configuration des classifications fait l’objet de la permission distincte indiquée dans le tableau. La décision SEC-01 du registre métier précise le « gestionnaire habilité » de OUV-04 par une spécialisation, l’administrateur fonctionnel.
 
 ## Contrôles serveur

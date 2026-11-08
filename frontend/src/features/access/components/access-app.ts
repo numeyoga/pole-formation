@@ -7,6 +7,10 @@ import '../../domains/components/domains-panel';
 import type { DomainsPanel } from '../../domains/components/domains-panel';
 import '../../subdomains/components/subdomains-panel';
 import type { SubdomainsPanel } from '../../subdomains/components/subdomains-panel';
+import '../../competencies/components/competencies-panel';
+import type { CompetenciesPanel } from '../../competencies/components/competencies-panel';
+import '../../explorer/components/reference-explorer';
+import type { ReferenceExplorer } from '../../explorer/components/reference-explorer';
 import type { AuditLog } from '../../audit/components/audit-log';
 
 export class AccessApp extends LitElement {
@@ -110,6 +114,8 @@ export class AccessApp extends LitElement {
         <nav class="actions" aria-label="Sections de l’application">
           ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<DomainsPanel>('domains-panel')?.focusHeading()}>Domaines</button>`:nothing}
           ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<SubdomainsPanel>('subdomains-panel')?.focusHeading()}>Sous-domaines</button>`:nothing}
+          ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<CompetenciesPanel>('competencies-panel')?.focusHeading()}>Compétences</button>`:nothing}
+          ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<ReferenceExplorer>('reference-explorer')?.focusHeading()}>Explorer le référentiel</button>`:nothing}
           <button @click=${()=>this.focusElement('#sessions-title')}>Sessions</button>
           ${this.identity.permissions.includes('READ_AUDIT')?html`<button @click=${()=>this.renderRoot.querySelector<AuditLog>('audit-log')?.focusHeading()}>Journal</button>`:nothing}
         </nav>`:nothing}</header>
@@ -123,7 +129,7 @@ export class AccessApp extends LitElement {
             <button data-primary ?disabled=${this.busy}>${m.login}</button>
           </form>
         </section>`:html`
-        ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<domains-panel></domains-panel><subdomains-panel></subdomains-panel>`:nothing}
+        ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<domains-panel></domains-panel><subdomains-panel></subdomains-panel><competencies-panel></competencies-panel><reference-explorer></reference-explorer>`:nothing}
         <section aria-labelledby="sessions-title"><h2 id="sessions-title" tabindex="-1">${m.sessions}</h2>
           ${this.sessions.length?html`<ul>${this.sessions.map(session=>html`<li><button ?disabled=${this.busy} @click=${()=>this.select(session)}>${session.title}</button> <span class="muted">${states[session.state]}</span></li>`)}</ul>`:html`<p>${m.empty}</p>`}
         </section>
