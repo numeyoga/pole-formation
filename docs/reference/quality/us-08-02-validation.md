@@ -19,7 +19,7 @@ type: reference
 
 La tranche ajoute le journal consultable par gestionnaires et administrateurs, les instantanés structurés avant/après et les raccordements transactionnels aux changements de créneau, remplacement d’affectations et désistement/réactivation. Les corrections de présence et changements de rôle existants utilisent le même journal. Auteurs, dates, cibles et identité de participation sont conservés.
 
-La livraison complète est rattachée au commit US-08.02 référencé dans `tracking/stories.json`. L’[accord utilisateur du 2026-11-08](acceptance-2026-11-08.md#validation-métier-de-us-0802) enregistre la validation métier. Les contrôles humains d’accessibilité non attestés restent explicitement ouverts.
+La livraison complète est rattachée au commit US-08.02 référencé dans `tracking/stories.json`. L’[accord utilisateur du 2026-11-08](acceptance-2026-11-08.md#validation-métier-de-us-0802), suivi d’une confirmation finale de passage à la story suivante, clôture la livraison locale. Les limites des contrôles humains non détaillés restent consignées.
 
 Le journal se filtre par type, identifiant d’objet et session, puis se parcourt par curseur. Les intervenants ne reçoivent ni écran ni données du journal. Les conventions nécessaires sont validées sous AUD-02 ; les autres propositions de la baseline ne sont pas réputées arbitrées.
 
