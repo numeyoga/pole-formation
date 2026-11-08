@@ -5,7 +5,6 @@ import fr.intformation.referentiel.domain.TrainingDomain;
 import fr.intformation.habilitations.application.AccessService.NotFound;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.*;
-import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
@@ -13,8 +12,7 @@ import java.util.*;
 @Repository
 public class PostgresDomainStore implements DomainStore {
     private final DomainRepository domains;
-    private final JdbcClient db;
-    public PostgresDomainStore(DomainRepository domains,JdbcClient db){this.domains=domains;this.db=db;}
+    public PostgresDomainStore(DomainRepository domains){this.domains=domains;}
     private TrainingDomain value(DomainEntity entity){return new TrainingDomain(entity.id,entity.code,entity.label,entity.active,entity.version);}
     private void save(DomainEntity entity){
         try{domains.saveAndFlush(entity);}catch(DataIntegrityViolationException error){
@@ -41,17 +39,5 @@ public class PostgresDomainStore implements DomainStore {
     public void deactivate(UUID id,long version){
         var entity=domains.findLocked(id).orElseThrow(NotFound::new);value(entity).checkVersion(version);
         entity.active=false;save(entity);
-    }
-    public List<Child> children(UUID id){
-        get(id);
-        return db.sql("SELECT id,domain_id,label FROM subdomain_reference WHERE domain_id=:id ORDER BY label,id").param("id",id)
-            .query((rs,i)->new Child(rs.getObject(1,UUID.class),rs.getObject(2,UUID.class),rs.getString(3))).list();
-    }
-    @Transactional
-    public Child addChild(UUID id,String label){
-        var parent=domains.findLocked(id).orElseThrow(NotFound::new);value(parent).requireActive();
-        var child=new Child(UUID.randomUUID(),id,label);
-        db.sql("INSERT INTO subdomain_reference VALUES (:id,:parent,:label)").param("id",child.id()).param("parent",id).param("label",label).update();
-        return child;
     }
 }

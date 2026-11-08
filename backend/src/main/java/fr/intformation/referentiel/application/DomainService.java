@@ -23,8 +23,4 @@ public final class DomainService {
     public void deactivate(String user,UUID id,Long version){
         authorize(user);if(version==null || version<0)throw new TrainingDomain.InvalidField("version","Version requise.");store.deactivate(id,version);
     }
-    public List<DomainStore.Child> children(String user,UUID id){authorize(user);return store.children(id);}
-    public DomainStore.Child addChild(String user,UUID id,String label){
-        authorize(user);return store.addChild(id,TrainingDomain.required(label,"label","Libellé",200));
-    }
 }

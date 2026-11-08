@@ -2,7 +2,7 @@
 title: "Registre des décisions métier validées"
 created: 2026-11-07
 updated: 2026-11-08
-version: "1.3.0"
+version: "1.4.0"
 status: "baseline-v1.0"
 diataxis: "reference"
 ---
@@ -17,7 +17,7 @@ diataxis: "reference"
 
 ## Registre des décisions validées
 
-Les 36 lignes ci-dessous regroupent **10 décisions de modèle**, **10 arbitrages ARB**, **10 arbitrages OUV** et **6 arbitrages HB**. L'identifiant et la formulation sont les unités de traçabilité.
+Les 40 lignes ci-dessous regroupent **10 décisions de modèle**, **10 arbitrages ARB**, **10 arbitrages OUV**, **6 arbitrages HB** et **4 précisions SEC/AUD/REF**. L'identifiant et la formulation sont les unités de traçabilité.
 
 | ID | Décision validée |
 |---|---|
@@ -60,6 +60,7 @@ Les 36 lignes ci-dessous regroupent **10 décisions de modèle**, **10 arbitrage
 | SEC-01 | Précision validée le 2026-11-08 : trois rôles fixes, intervenant, gestionnaire et administrateur fonctionnel. L’administrateur fonctionnel spécialise le gestionnaire habilité de OUV-04 : corrections après clôture avec audit, configuration des classifications et attribution des rôles lui sont réservées. La [matrice](../../reference/architecture/roles-permissions.md) fait autorité pour cette répartition. |
 | AUD-02 | Conventions validées explicitement le 2026-11-08 pour US-08.02 : aucun chevauchement au sein d’une session ; intervalles demi-ouverts, donc créneaux consécutifs autorisés ; Présente et Absente continuent à consommer une place. Les conflits entre sessions restent non bloquants après confirmation. |
 | REF-01 | Domaines, règles validées explicitement le 2026-11-08 : code de 1 à 64 caractères, espaces de début/fin retirés, unicité sans casse parmi tous les domaines, y compris désactivés ; libellé de 1 à 200 caractères ; code modifiable sous réserve d’unicité. L’identité technique reste stable. |
+| REF-02 | Sous-domaines, règles validées explicitement le 2026-11-08 : mêmes limites et normalisation que les domaines, code unique sans casse dans tout le référentiel des sous-domaines, y compris désactivés ; code modifiable sous réserve d’unicité. Le domaine parent est fixé à la création ; les modifications portent sur code et libellé. L’identité technique et les liens historiques restent stables. |
 
 ## Principes de gouvernance
 

@@ -1,0 +1,156 @@
+openapi: 3.1.0
+info: {title: Pôle formation — sous-domaines, version: 0.2.0}
+servers: [{url: /}]
+security: [{session: []}]
+paths:
+  /api/referentiels/sous-domaines:
+    get:
+      description: Consultation réservée aux gestionnaires et administrateurs fonctionnels.
+      parameters:
+        - {name: domainId, in: query, description: Filtre exact par domaine parent. Un identifiant inconnu donne une page vide., schema: {type: string, format: uuid}}
+        - {name: page, in: query, schema: {type: integer, minimum: 0, default: 0}}
+        - {name: size, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+      responses:
+        '200':
+          description: Sous-domaines triés par libellé sans casse puis identifiant, y compris ceux dont le parent est désactivé.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, page, size]
+                properties:
+                  items: {type: array, items: {$ref: '#/components/schemas/Subdomain'}}
+                  total: {type: integer, minimum: 0}
+                  page: {type: integer, minimum: 0}
+                  size: {type: integer, minimum: 1, maximum: 100}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+    post:
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/Create'}}}}
+      responses:
+        '201':
+          description: Sous-domaine créé actif sous un domaine actif, code unique sans casse y compris après désactivation
+          headers: {Location: {schema: {type: string}}}
+          content: {application/json: {schema: {$ref: '#/components/schemas/Subdomain'}}}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/referentiels/sous-domaines/parents:
+    get:
+      responses:
+        '200':
+          description: Domaines parents actifs et désactivés, triés par code sans casse puis identifiant ; éligibilité de création calculée côté serveur
+          content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Parent'}}}}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/referentiels/sous-domaines/{id}:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      responses:
+        '200': {description: Fiche conservée après désactivation, content: {application/json: {schema: {$ref: '#/components/schemas/Subdomain'}}}}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+    put:
+      description: Modifie code et libellé, avec version obligatoire. Un domainId différent du parent fixé à la création est refusé (409).
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/Edit'}}}}
+      responses:
+        '204': {description: Sous-domaine modifié, identité et parent conservés}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/referentiels/sous-domaines/{id}/desactivation:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    post:
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody: {required: true, content: {application/json: {schema: {type: object, required: [version], properties: {version: {type: integer, minimum: 0}}}}}}
+      responses:
+        '204': {description: Sous-domaine désactivé, compétences et liens conservés}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/referentiels/sous-domaines/{id}/competences:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      responses:
+        '200': {description: Compétences existantes conservées même après désactivation du sous-domaine, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Competency'}}}}}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+    post:
+      description: Raccordement minimal pour US-01.02, uniquement sous un sous-domaine actif. L’administration complète des compétences relève de US-01.03.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody: {required: true, content: {application/json: {schema: {type: object, required: [label], properties: {label: {type: string, minLength: 1, maxLength: 200}}}}}}
+      responses:
+        '201': {description: Compétence rattachée, content: {application/json: {schema: {$ref: '#/components/schemas/Competency'}}}}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+components:
+  parameters:
+    Id: {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+    Csrf: {name: X-CSRF-TOKEN, in: header, required: true, schema: {type: string}}
+  securitySchemes:
+    session: {type: apiKey, in: cookie, name: JSESSIONID}
+  responses:
+    Error:
+      description: Erreur de format, absence de session, permission insuffisante, ressource inconnue ou conflit ; fieldErrors associe les champs à leurs messages
+      content:
+        application/problem+json:
+          schema: {type: object, properties: {status: {type: integer}, detail: {type: string}, fieldErrors: {type: object, additionalProperties: {type: string}}}}
+  schemas:
+    Create:
+      type: object
+      required: [domainId, code, label]
+      properties:
+        domainId: {type: string, format: uuid}
+        code: {type: string, minLength: 1, maxLength: 64}
+        label: {type: string, minLength: 1, maxLength: 200}
+    Edit:
+      type: object
+      required: [code, label, version]
+      properties:
+        domainId: {type: string, format: uuid, description: Doit désigner le parent existant si fourni}
+        code: {type: string, minLength: 1, maxLength: 64}
+        label: {type: string, minLength: 1, maxLength: 200}
+        version: {type: integer, minimum: 0}
+    Parent:
+      type: object
+      required: [id, code, label, active, selectableForCreation]
+      properties:
+        id: {type: string, format: uuid}
+        code: {type: string}
+        label: {type: string}
+        active: {type: boolean}
+        selectableForCreation: {type: boolean}
+    Competency:
+      type: object
+      required: [id, subdomainId, label]
+      properties:
+        id: {type: string, format: uuid}
+        subdomainId: {type: string, format: uuid}
+        label: {type: string}
+    Subdomain:
+      type: object
+      required: [id, domainId, code, label, active, version, domainCode, domainLabel, domainActive]
+      properties:
+        id: {type: string, format: uuid}
+        domainId: {type: string, format: uuid}
+        code: {type: string}
+        label: {type: string}
+        active: {type: boolean}
+        version: {type: integer, minimum: 0}
+        domainCode: {type: string}
+        domainLabel: {type: string}
+        domainActive: {type: boolean}

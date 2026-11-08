@@ -6,3 +6,4 @@
 | 2 | Les libellés des champs sont explicites et le succès d’une ancienne action ne valide pas la suivante | Parcours Playwright de deux confirmations successives ; état final et focus vérifiés | DEF-002 | Oui, sur le changement de rôle |
 | 3 | Les champs optionnels OpenAPI sont réellement facultatifs pour les DTO HTTP | Corps JSON omettant le champ ; valeur explicite et défaut observés par HTTP | DEF-003 | Oui, pour `confirmConflicts` |
 | 4 | Les filtres proposent des options réellement sélectionnables | Sélection native puis résultat observé dans Playwright ; ne pas se fier au seul build | DEF-004 | Oui, pour Comptes et Participations |
+| 5 | Chaque contrat utilise l’en-tête CSRF du helper de session existant | Générer les clients puis TypeScript strict avant le build | DEF-006 | Oui, typage des paramètres d’en-tête |

@@ -21,6 +21,12 @@ public class ApiErrors {
     }
     @ExceptionHandler(fr.intformation.referentiel.domain.TrainingDomain.StaleVersion.class)
     ProblemDetail stale(fr.intformation.referentiel.domain.TrainingDomain.StaleVersion error){return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,error.getMessage());}
+    @ExceptionHandler(fr.intformation.referentiel.domain.TrainingSubdomain.DuplicateCode.class)
+    ProblemDetail duplicateSubdomain(fr.intformation.referentiel.domain.TrainingSubdomain.DuplicateCode error){
+        var problem=ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,error.getMessage());problem.setProperty("fieldErrors",java.util.Map.of("code",error.getMessage()));return problem;
+    }
+    @ExceptionHandler(fr.intformation.referentiel.domain.TrainingSubdomain.StaleVersion.class)
+    ProblemDetail staleSubdomain(fr.intformation.referentiel.domain.TrainingSubdomain.StaleVersion error){return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,error.getMessage());}
     @ExceptionHandler(fr.intformation.audit.domain.ChangeRules.PlanningConflict.class)
     ProblemDetail planning(fr.intformation.audit.domain.ChangeRules.PlanningConflict error) {
         var problem=ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,error.getMessage());

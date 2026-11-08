@@ -2,7 +2,7 @@
 title: "Documentation fonctionnelle — Index"
 created: 2026-11-07
 updated: 2026-11-08
-version: "1.3.0"
+version: "1.4.0"
 status: "baseline-v1.0"
 diataxis: "reference"
 ---
@@ -11,7 +11,7 @@ diataxis: "reference"
 
 Documentation du MVP, organisée selon les quatre usages de Diátaxis.
 
-Révision 1.3.0 du 2026-11-08 : REF-01 précise les codes des domaines, leur unicité et leurs limites de champs. La révision 1.2.0 a validé les conventions de planning/capacité avec AUD-02 ; la 1.1.0 a précisé les trois rôles avec SEC-01. Le chemin de la baseline reste stable.
+Révision 1.4.0 du 2026-11-08 : REF-02 précise les codes des sous-domaines, leur unicité globale et leur parent fixé à la création. La 1.3.0 a précisé les codes des domaines avec REF-01 ; la 1.2.0 les conventions de planning/capacité avec AUD-02 ; la 1.1.0 les trois rôles avec SEC-01. Le chemin de la baseline reste stable.
 
 ## Comprendre (Explanation)
 

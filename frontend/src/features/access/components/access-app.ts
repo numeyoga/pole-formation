@@ -5,6 +5,8 @@ import { messages as m, roles, states } from '../../../shared/i18n/fr';
 import '../../audit/components/audit-log';
 import '../../domains/components/domains-panel';
 import type { DomainsPanel } from '../../domains/components/domains-panel';
+import '../../subdomains/components/subdomains-panel';
+import type { SubdomainsPanel } from '../../subdomains/components/subdomains-panel';
 import type { AuditLog } from '../../audit/components/audit-log';
 
 export class AccessApp extends LitElement {
@@ -107,6 +109,7 @@ export class AccessApp extends LitElement {
       <header><h1>${m.title}</h1>${this.identity?html`<p>${this.identity.username} — ${roles[this.identity.role]}</p><button ?disabled=${this.busy} @click=${this.logout}>${m.logout}</button>
         <nav class="actions" aria-label="Sections de l’application">
           ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<DomainsPanel>('domains-panel')?.focusHeading()}>Domaines</button>`:nothing}
+          ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<SubdomainsPanel>('subdomains-panel')?.focusHeading()}>Sous-domaines</button>`:nothing}
           <button @click=${()=>this.focusElement('#sessions-title')}>Sessions</button>
           ${this.identity.permissions.includes('READ_AUDIT')?html`<button @click=${()=>this.renderRoot.querySelector<AuditLog>('audit-log')?.focusHeading()}>Journal</button>`:nothing}
         </nav>`:nothing}</header>
@@ -120,7 +123,7 @@ export class AccessApp extends LitElement {
             <button data-primary ?disabled=${this.busy}>${m.login}</button>
           </form>
         </section>`:html`
-        ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<domains-panel></domains-panel>`:nothing}
+        ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<domains-panel></domains-panel><subdomains-panel></subdomains-panel>`:nothing}
         <section aria-labelledby="sessions-title"><h2 id="sessions-title" tabindex="-1">${m.sessions}</h2>
           ${this.sessions.length?html`<ul>${this.sessions.map(session=>html`<li><button ?disabled=${this.busy} @click=${()=>this.select(session)}>${session.title}</button> <span class="muted">${states[session.state]}</span></li>`)}</ul>`:html`<p>${m.empty}</p>`}
         </section>

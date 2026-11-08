@@ -86,6 +86,124 @@ class AccessHttpTest {
         assertThat(manager.get("/api/referentiels/domaines/"+domain.get("id").asString()).statusCode()).isEqualTo(200);
     }
 
+    @Test void manager_can_list_subdomains_with_their_parent() throws Exception {
+        var manager=as("gestionnaire");
+        String code="CATALOG-"+java.util.UUID.randomUUID();
+        var created=manager.call("POST","/api/referentiels/domaines","{\"code\":\""+code+"\",\"label\":\"Parent du catalogue\"}",true);
+        assertThat(created.statusCode()).isEqualTo(201);
+        var domain=json.readTree(created.body());String id=domain.get("id").asString();
+        String path="/api/referentiels/domaines/"+id;
+        for(String label:List.of("Zulu","Alpha"))assertThat(manager.call("POST",path+"/sous-domaines","{\"label\":\""+label+"\"}",true).statusCode()).isEqualTo(201);
+        String query="/api/referentiels/sous-domaines?domainId="+id+"&size=1";
+        var response=manager.get(query);
+        assertThat(response.statusCode()).isEqualTo(200);
+        var first=json.readTree(response.body());assertThat(first.get("total").asLong()).isEqualTo(2);
+        assertThat(first.get("items").size()).isEqualTo(1);
+        var item=first.get("items").get(0);
+        assertThat(item.get("label").asString()).isEqualTo("Alpha");
+        assertThat(item.get("domainId").asString()).isEqualTo(id);
+        assertThat(item.get("domainCode").asString()).isEqualTo(code);
+        assertThat(item.get("domainLabel").asString()).isEqualTo("Parent du catalogue");
+        assertThat(item.get("domainActive").asBoolean()).isTrue();
+        var second=json.readTree(manager.get(query+"&page=1").body());
+        assertThat(second.get("items").get(0).get("label").asString()).isEqualTo("Zulu");
+        assertThat(second.get("page").asInt()).isEqualTo(1);
+        assertThat(json.readTree(manager.get(query+"&page=2").body()).get("items").isEmpty()).isTrue();
+        assertThat(manager.call("POST",path+"/desactivation","{\"version\":"+domain.get("version").asLong()+"}",true).statusCode()).isEqualTo(204);
+        var history=json.readTree(manager.get(query).body());
+        assertThat(history.get("total").asLong()).isEqualTo(2);
+        assertThat(history.get("items").get(0).get("id")).isEqualTo(item.get("id"));
+        assertThat(history.get("items").get(0).get("domainActive").asBoolean()).isFalse();
+        assertThat(json.readTree(manager.get("/api/referentiels/sous-domaines?domainId="+java.util.UUID.randomUUID()).body()).get("total").asLong()).isZero();
+    }
+
+    @Test void subdomain_catalog_enforces_permissions_and_query_limits() throws Exception {
+        String path="/api/referentiels/sous-domaines";
+        assertThat(new Browser().get(path).statusCode()).isEqualTo(401);
+        assertThat(as("intervenant").get(path).statusCode()).isEqualTo(403);
+        assertThat(as("admin").get(path).statusCode()).isEqualTo(200);
+        var manager=as("gestionnaire");
+        for(String query:List.of("?page=-1","?size=0","?size=101","?domainId=invalide"))
+            assertThat(manager.get(path+query).statusCode()).as(query).isEqualTo(400);
+        assertThat(manager.get(path+"?page=2147483647&size=100").statusCode()).isEqualTo(200);
+        db.sql("UPDATE app_account SET role='INTERVENANT' WHERE username='gestionnaire'").update();
+        assertThat(manager.get(path).statusCode()).isEqualTo(403);
+    }
+
+    @Test void manager_can_create_edit_and_deactivate_a_subdomain_without_losing_competencies() throws Exception {
+        var manager=as("gestionnaire");String code="SUB-"+java.util.UUID.randomUUID();
+        var parentResponse=manager.call("POST","/api/referentiels/domaines","{\"code\":\""+code+"\",\"label\":\"Parent\"}",true);
+        assertThat(parentResponse.statusCode()).isEqualTo(201);var parent=json.readTree(parentResponse.body());
+        String parentId=parent.get("id").asString();String path="/api/referentiels/sous-domaines";
+        var response=manager.call("POST",path,"{\"domainId\":\""+parentId+"\",\"code\":\" "+code+" \",\"label\":\" Prévention \"}",true);
+        assertThat(response.statusCode()).isEqualTo(201);var child=json.readTree(response.body());String childPath=path+"/"+child.get("id").asString();
+        assertThat(response.headers().firstValue("Location")).contains(childPath);
+        assertThat(child.get("code").asString()).isEqualTo(code);assertThat(child.get("label").asString()).isEqualTo("Prévention");assertThat(child.get("domainId").asString()).isEqualTo(parentId);
+        var competency=manager.call("POST",childPath+"/competences","{\"label\":\"Compétence historique\"}",true);
+        assertThat(competency.statusCode()).isEqualTo(201);String competencyId=json.readTree(competency.body()).get("id").asString();
+        assertThat(manager.put(childPath,"{\"code\":\""+code+"-B\",\"label\":\"Prévention modifiée\",\"version\":0}").statusCode()).isEqualTo(204);
+        assertThat(manager.put(childPath,"{\"code\":\""+code+"-C\",\"label\":\"Écrasement\",\"version\":0}").statusCode()).isEqualTo(409);
+        var edited=json.readTree(manager.get(childPath).body());assertThat(edited.get("id")).isEqualTo(child.get("id"));assertThat(edited.get("domainId").asString()).isEqualTo(parentId);
+        assertThat(edited.get("label").asString()).isEqualTo("Prévention modifiée");
+        var other=json.readTree(manager.call("POST","/api/referentiels/domaines","{\"code\":\"OTHER-"+code+"\",\"label\":\"Autre parent\"}",true).body());
+        String change="{\"domainId\":\""+other.get("id").asString()+"\",\"code\":\""+code+"-B\",\"label\":\"Déplacement\",\"version\":"+edited.get("version").asLong()+"}";
+        assertThat(manager.put(childPath,change).statusCode()).isEqualTo(409);
+        assertThat(manager.call("POST",childPath+"/desactivation","{\"version\":0}",true).statusCode()).isEqualTo(409);
+        assertThat(manager.call("POST",childPath+"/desactivation","{\"version\":"+edited.get("version").asLong()+"}",true).statusCode()).isEqualTo(204);
+        assertThat(json.readTree(manager.get(childPath).body()).get("active").asBoolean()).isFalse();
+        var history=json.readTree(manager.get(childPath+"/competences").body());assertThat(history.size()).isEqualTo(1);assertThat(history.get(0).get("id").asString()).isEqualTo(competencyId);
+        assertThat(manager.call("POST",childPath+"/competences","{\"label\":\"Nouveau\"}",true).statusCode()).isEqualTo(409);
+        assertThat(manager.call("POST",path,"{\"domainId\":\""+other.get("id").asString()+"\",\"code\":\""+(code+"-B").toLowerCase(java.util.Locale.ROOT)+"\",\"label\":\"Doublon\"}",true).statusCode()).isEqualTo(409);
+    }
+
+    @Test void subdomains_validate_fields_versions_and_active_parents() throws Exception {
+        var manager=as("gestionnaire");String code="FIELDS-"+java.util.UUID.randomUUID();String path="/api/referentiels/sous-domaines";
+        var parent=json.readTree(manager.call("POST","/api/referentiels/domaines",json.writeValueAsString(java.util.Map.of("code",code,"label","Parent")),true).body());
+        String parentId=parent.get("id").asString();
+        for(var fields:List.of(java.util.Map.of("domainId",parentId,"code"," ","label","Valide"),java.util.Map.of("domainId",parentId,"code","X".repeat(65),"label","Valide"),java.util.Map.of("domainId",parentId,"code",code,"label"," "),java.util.Map.of("domainId",parentId,"code",code,"label","X".repeat(201)),java.util.Map.of("code",code,"label","Sans parent"))){
+            var invalid=manager.call("POST",path,json.writeValueAsString(fields),true);assertThat(invalid.statusCode()).isEqualTo(400);assertThat(invalid.body()).contains("fieldErrors");
+        }
+        String body=json.writeValueAsString(java.util.Map.of("domainId",parentId,"code",code,"label","Valide"));
+        var response=manager.call("POST",path,body,true);assertThat(response.statusCode()).isEqualTo(201);var child=json.readTree(response.body());String childPath=path+"/"+child.get("id").asString();
+        for(String version:List.of(""," ,\"version\":-1"))assertThat(manager.put(childPath,"{\"code\":\""+code+"\",\"label\":\"Valide\""+version+"}").statusCode()).isEqualTo(400);
+        assertThat(manager.call("POST",childPath+"/desactivation","{}",true).statusCode()).isEqualTo(400);
+        assertThat(manager.call("POST",childPath+"/competences","{\"label\":\" \"}",true).statusCode()).isEqualTo(400);
+        assertThat(manager.call("POST","/api/referentiels/domaines/"+parentId+"/desactivation","{\"version\":"+parent.get("version").asLong()+"}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST",path,body,true).statusCode()).isEqualTo(409);
+        var choices=json.readTree(manager.get(path+"/parents").body());
+        boolean found=false;for(var choice:choices)if(choice.get("id").asString().equals(parentId)){found=true;assertThat(choice.get("selectableForCreation").asBoolean()).isFalse();}
+        assertThat(found).isTrue();
+        assertThat(manager.get(path+"/"+java.util.UUID.randomUUID()).statusCode()).isEqualTo(404);
+        assertThat(manager.call("POST",path,body.replace(parentId,java.util.UUID.randomUUID().toString()),true).statusCode()).isEqualTo(404);
+    }
+
+    @Test void subdomain_writes_and_history_enforce_permissions_and_csrf() throws Exception {
+        var manager=as("gestionnaire");String code="AUTH-SUB-"+java.util.UUID.randomUUID();String path="/api/referentiels/sous-domaines";
+        var parent=json.readTree(manager.call("POST","/api/referentiels/domaines",json.writeValueAsString(java.util.Map.of("code",code,"label","Parent")),true).body());String parentId=parent.get("id").asString();
+        String body=json.writeValueAsString(java.util.Map.of("domainId",parentId,"code",code,"label","Sous-domaine"));
+        var response=manager.call("POST",path,body,true);assertThat(response.statusCode()).isEqualTo(201);String childPath=path+"/"+json.readTree(response.body()).get("id").asString();
+        var instructor=as("intervenant");
+        for(String resource:List.of(path+"/parents",childPath,childPath+"/competences","/api/referentiels/domaines/"+parentId+"/sous-domaines"))assertThat(instructor.get(resource).statusCode()).isEqualTo(403);
+        for(String resource:List.of(path,childPath+"/desactivation",childPath+"/competences","/api/referentiels/domaines/"+parentId+"/sous-domaines")){
+            assertThat(instructor.call("POST",resource,body,true).statusCode()).isEqualTo(403);
+            assertThat(manager.call("POST",resource,body,false).statusCode()).isEqualTo(403);
+        }
+        assertThat(instructor.put(childPath,body).statusCode()).isEqualTo(403);
+        assertThat(manager.call("PUT",childPath,body,false).statusCode()).isEqualTo(403);
+        assertThat(new Browser().get(childPath).statusCode()).isEqualTo(401);
+    }
+
+    @Test void concurrent_subdomain_creations_cannot_duplicate_a_code() throws Exception {
+        var manager=as("gestionnaire");var admin=as("admin");String code="RACE-SUB-"+java.util.UUID.randomUUID();
+        var parent=json.readTree(manager.call("POST","/api/referentiels/domaines",json.writeValueAsString(java.util.Map.of("code",code,"label","Parent")),true).body());
+        String body=json.writeValueAsString(java.util.Map.of("domainId",parent.get("id").asString(),"code",code,"label","Sous-domaine"));var start=new java.util.concurrent.CountDownLatch(1);
+        try(var pool=java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()){
+            var first=pool.submit(()->{start.await();return manager.call("POST","/api/referentiels/sous-domaines",body,true).statusCode();});
+            var second=pool.submit(()->{start.await();return admin.call("POST","/api/referentiels/sous-domaines",body.replace(code,code.toLowerCase(java.util.Locale.ROOT)),true).statusCode();});
+            start.countDown();assertThat(List.of(first.get(10,java.util.concurrent.TimeUnit.SECONDS),second.get(10,java.util.concurrent.TimeUnit.SECONDS))).containsExactlyInAnyOrder(201,409);
+        }
+    }
+
     @Test void domain_codes_are_unique_ignoring_case_and_remain_reserved_after_deactivation() throws Exception {
         var manager=as("gestionnaire");String code="UNIQUE-"+java.util.UUID.randomUUID();
         var created=manager.call("POST","/api/referentiels/domaines","{\"code\":\""+code+"\",\"label\":\"Premier\"}",true);

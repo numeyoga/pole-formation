@@ -25,7 +25,7 @@ tags:
 - DTO publics adaptés aux cas d'utilisation ; pas d'exposition directe des entités domaine/JPA.
 - Identifiants opaques, dates ISO 8601 explicites, pagination filtrage et tri définis contractuellement.
 - Le frontend transforme DTO → modèles de présentation ; le backend est autorité sur règles et données.
-- Les endpoints d’accès et habilitations sont définis dans le [contrat OpenAPI](../../../api/openapi.yaml). Le [contrat du journal](../../../api/audit.openapi.yaml) couvre les changements sensibles et le [contrat des domaines](../../../api/domains.openapi.yaml) décrit US-01.01. Les endpoints des autres stories restent à concevoir.
+- Les endpoints d’accès et habilitations sont définis dans le [contrat OpenAPI](../../../api/openapi.yaml). Le [contrat du journal](../../../api/audit.openapi.yaml) couvre les changements sensibles et le [contrat des domaines](../../../api/domains.openapi.yaml) décrit US-01.01. Le [contrat des sous-domaines](../../../api/subdomains.openapi.yaml) couvre US-01.02 : consultation paginée et filtrée, création, modification, désactivation et raccordement minimal des compétences.
 
 ## Erreurs
 

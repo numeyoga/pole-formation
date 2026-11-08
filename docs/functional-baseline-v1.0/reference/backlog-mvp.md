@@ -2,7 +2,7 @@
 title: "Backlog fonctionnel MVP — 26 user stories"
 created: 2026-11-07
 updated: 2026-11-08
-version: "1.3.0"
+version: "1.4.0"
 status: "baseline-v1.0"
 diataxis: "reference"
 ---
@@ -88,7 +88,7 @@ diataxis: "reference"
 ### US-01.02 — Administrer les sous-domaines
 
 **Priorité :** Must. **Dépendances :** [US-01.01](#us-0101-administrer-les-domaines).  
-**Références métier :** INV-01, INV-03, INV-15.  
+**Références métier :** INV-01, INV-03, INV-15, REF-02.
 
 > En tant que gestionnaire habilité, je veux rattacher et maintenir des sous-domaines afin de conserver une hiérarchie cohérente.
 

@@ -21,3 +21,4 @@ tags:
 - [ADR 0008 – Suivi du développement](ADR-0008-development-tracking.md)
 - [ADR 0009 – Journal transactionnel](ADR-0009-transactional-audit.md)
 - [ADR 0010 – Référentiel des domaines](ADR-0010-domain-reference.md)
+- [ADR 0011 – Sous-domaines et rattachements](ADR-0011-subdomain-reference.md)

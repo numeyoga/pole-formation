@@ -52,6 +52,8 @@ Le profil par défaut ne charge ni ces comptes ni les données fictives. Les mod
 
 Avec `gestionnaire` ou `admin`, utiliser le bouton **Domaines** pour rejoindre le référentiel. Créer un domaine, modifier son code/libellé ou confirmer sa désactivation. Les domaines désactivés restent dans le tableau et leur code ne peut pas être réutilisé. Ouvrir les détails « Sous-domaines de… » pour consulter l’historique existant. Les codes techniques `MIG-…` des anciennes lignes peuvent être remplacés par des codes métier uniques.
 
+Utiliser **Sous-domaines**, puis sélectionner un domaine dans le filtre pour consulter sa liste. Cliquer sur **Créer un sous-domaine**, choisir un parent actif, saisir code et libellé, puis enregistrer. En modification, changer code/libellé ; le domaine parent reste fixé à la création. Pour désactiver, confirmer le dialogue puis ouvrir « Compétences de… » : les compétences déjà rattachées restent consultables. Le code d’un sous-domaine désactivé ne peut pas être réutilisé, même dans un autre domaine.
+
 Si un autre gestionnaire a modifié une fiche, utiliser **Recharger la fiche** dans le dialogue avant de refaire la modification. La navigation **Sessions** et **Journal** reste disponible selon les droits du compte.
 
 Avec `admin` ou `gestionnaire`, consulter **Journal des changements sensibles**, puis filtrer par type ou session. Avec `admin`, ouvrir « Exemple — Session clôturée » et changer effectivement la présence de Camille Exemple : le journal affiche la correction avec auteur, date UTC et états avant/après. Un enregistrement du même état n’ajoute pas de changement fictif.
@@ -74,6 +76,6 @@ python3 check-security-mutations.py
 
 Le contrôle de mutations restaure les sources même en cas d’échec. Il modifie temporairement les sources : ne pas lancer une autre compilation backend en parallèle. Le dernier `./mvnw test` recompile les sources restaurées.
 
-Les tests serveur créent leurs propres PostgreSQL temporaires et ne réutilisent pas la base de développement. Les tests navigateur utilisent les comptes fictifs de la base dev et restaurent le rôle qu’ils changent ; ils enregistrent une présence sur la session d’exemple. Les scénarios des domaines créent des données de recette conservées dans la base locale, faute de suppression physique dans le MVP.
+Les tests serveur créent leurs propres PostgreSQL temporaires et ne réutilisent pas la base de développement. Les tests navigateur utilisent les comptes fictifs de la base dev et restaurent le rôle qu’ils changent ; ils enregistrent une présence sur la session d’exemple. Les scénarios des domaines et sous-domaines créent des données de recette conservées dans la base locale, faute de suppression physique dans le MVP.
 
 Après une interruption brutale des tests, vérifier les conteneurs temporaires restants avec Podman sur l’hôte. Ne pas supprimer le volume de développement pour nettoyer les tests. Voir le [rapport de validation](../reference/quality/us-08-01-validation.md).
