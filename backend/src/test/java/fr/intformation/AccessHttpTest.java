@@ -76,6 +76,90 @@ class AccessHttpTest {
     String people(String session) { return "/api/sessions/"+session+"/participants"; }
     String presence(String session,String participation) { return people(session)+"/"+participation+"/presence"; }
 
+    @Test void classifications_are_available_only_to_managers_for_reading_and_administrators_for_writing() throws Exception {
+        String path="/api/referentiels/classifications";
+        assertThat(as("gestionnaire").get(path).statusCode()).isEqualTo(200);
+        assertThat(as("intervenant").get(path).statusCode()).isEqualTo(403);
+        assertThat(new Browser().get(path).statusCode()).isEqualTo(401);
+        String body="{\"code\":\"C-"+java.util.UUID.randomUUID()+"\",\"label\":\"Classification\",\"sortOrder\":0}";
+        assertThat(as("gestionnaire").call("POST",path,body,true).statusCode()).isEqualTo(403);
+        var admin=as("admin");
+        assertThat(admin.call("POST",path,body,false).statusCode()).isEqualTo(403);
+        assertThat(admin.call("POST",path,body,true).statusCode()).isEqualTo(201);
+    }
+
+    String classificationBody(String code,String label,int order,boolean active,long version) throws Exception {
+        return json.writeValueAsString(java.util.Map.of("code",code,"label",label,"sortOrder",order,"active",active,"version",version));
+    }
+    @Test void classifications_preserve_historical_requirements_and_exclude_inactive_choices() throws Exception {
+        var admin=as("admin");var manager=as("gestionnaire");String root="/api/referentiels/classifications";
+        String code="HIST-"+java.util.UUID.randomUUID();
+        var created=admin.call("POST",root,classificationBody(code,"Avant",3,true,0),true);
+        assertThat(created.statusCode()).isEqualTo(201);var classification=json.readTree(created.body());
+        String id=classification.get("id").asString(),path=root+"/"+id;
+        var parent=competencyParent(manager);
+        var competency=json.readTree(manager.call("POST","/api/referentiels/competences",competencyBody(parent.get("id").asString(),"CL-C-"+java.util.UUID.randomUUID(),"Compétence classification"),true).body());
+        var profile=json.readTree(manager.call("POST",PROFILES,"{\"code\":\"CL-P-"+java.util.UUID.randomUUID()+"\",\"label\":\"Profil classification\"}",true).body());
+        String requirements=PROFILES+"/"+profile.get("id").asString()+"/exigences";
+        String body=json.writeValueAsString(java.util.Map.of("competencyId",competency.get("id").asString(),"classificationId",id));
+        var requirement=manager.call("POST",requirements,body,true);assertThat(requirement.statusCode()).isEqualTo(201);
+        String requirementId=json.readTree(requirement.body()).get("id").asString();
+        assertThat(admin.put(path,classificationBody(code,"Après",1,false,0)).statusCode()).isEqualTo(204);
+        var historical=json.readTree(manager.get(requirements).body()).get(0);
+        assertThat(historical.get("id").asString()).isEqualTo(requirementId);
+        assertThat(historical.get("classificationId").asString()).isEqualTo(id);
+        assertThat(historical.get("classificationLabel").asString()).isEqualTo("Après");
+        var anotherProfile=json.readTree(manager.call("POST",PROFILES,"{\"code\":\"CL-NEW-"+java.util.UUID.randomUUID()+"\",\"label\":\"Nouveau profil\"}",true).body());
+        String newRequirements=PROFILES+"/"+anotherProfile.get("id").asString()+"/exigences";
+        var refused=manager.call("POST",newRequirements,body,true);
+        assertThat(refused.statusCode()).isEqualTo(409);assertThat(refused.body()).contains("Cette classification est désactivée.");
+        assertThat(manager.get(root+"?activeOnly=true&size=100").body()).doesNotContain(id);
+        assertThat(json.readTree(admin.get(path).body()).get("active").asBoolean()).isFalse();
+        assertThat(admin.put(path,classificationBody(code,"Réactivée",0,true,1)).statusCode()).isEqualTo(204);
+        assertThat(manager.get(root+"?activeOnly=true&size=100").body()).contains(id);
+    }
+    @Test void classifications_validate_fields_uniqueness_versions_and_mutation_permissions() throws Exception {
+        var admin=as("admin");String root="/api/referentiels/classifications",code="VALID-"+java.util.UUID.randomUUID();
+        var created=admin.call("POST",root,classificationBody(" "+code+" "," Libellé ",0,true,0),true);
+        assertThat(created.statusCode()).isEqualTo(201);var item=json.readTree(created.body());String path=root+"/"+item.get("id").asString();
+        assertThat(item.get("code").asString()).isEqualTo(code);assertThat(item.get("label").asString()).isEqualTo("Libellé");
+        assertThat(admin.call("POST",root,classificationBody(code.toLowerCase(),"Doublon",0,true,0),true).statusCode()).isEqualTo(409);
+        for(String invalid:List.of("{\"code\":\"X\",\"label\":\"X\",\"sortOrder\":0.5}","{\"label\":\"X\",\"sortOrder\":0}",classificationBody(" ","X",0,true,0),classificationBody("X".repeat(65),"X",0,true,0),classificationBody("X"," ",0,true,0),classificationBody("X","X".repeat(201),0,true,0),classificationBody("X","X",-1,true,0),"{\"code\":\"X\",\"label\":\"X\"}"))
+            assertThat(admin.call("POST",root,invalid,true).statusCode()).isEqualTo(400);
+        String update=classificationBody(code,"Modifiée",2,false,0);
+        for(String user:List.of("gestionnaire","intervenant")){
+            var browser=as(user);assertThat(browser.put(path,update).statusCode()).isEqualTo(403);
+            assertThat(browser.call("POST",root,update,true).statusCode()).isEqualTo(403);
+        }
+        assertThat(admin.call("PUT",path,update,false).statusCode()).isEqualTo(403);
+        assertThat(admin.put(path,update.replace(",\"version\":0","").replace("\"version\":0,","")).statusCode()).isEqualTo(400);
+        assertThat(admin.put(path,update.replace("\"version\":0","\"version\":0.5")).statusCode()).isEqualTo(400);
+        assertThat(admin.put(path,update.replace("\"version\":0","\"version\":9223372036854775808")).statusCode()).isEqualTo(400);
+        assertThat(admin.put(path,update).statusCode()).isEqualTo(204);
+        assertThat(admin.put(path,update).statusCode()).isEqualTo(409);
+        assertThat(admin.call("POST",root,classificationBody(code.toLowerCase(),"Doublon inactif",0,true,0),true).statusCode()).isEqualTo(409);
+        assertThat(admin.get(root+"?page=-1").statusCode()).isEqualTo(400);
+        assertThat(admin.get(root+"?size=101").statusCode()).isEqualTo(400);
+        assertThat(admin.get(root+"/"+java.util.UUID.randomUUID()).statusCode()).isEqualTo(404);
+        assertThat(admin.put(path,"{\"label\":\"Renommage compatible\"}").statusCode()).isEqualTo(204);
+        assertThat(json.readTree(admin.get(path).body()).get("version").asLong()).isEqualTo(2);
+        assertThat(admin.put(path,classificationBody(code,"Édition périmée",2,false,1)).statusCode()).isEqualTo(409);
+    }
+    @Test void classification_concurrent_creates_have_one_winner_and_list_is_sorted_by_order_then_code() throws Exception {
+        var admin=as("admin");String root="/api/referentiels/classifications",code="RACE-"+java.util.UUID.randomUUID();
+        String body=classificationBody(code,"Course",0,true,0);
+        try(var executor=java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()){
+            var start=new java.util.concurrent.CountDownLatch(1);
+            var first=executor.submit(()->{start.await();return admin.call("POST",root,body,true).statusCode();});
+            var second=executor.submit(()->{start.await();return admin.call("POST",root,body,true).statusCode();});
+            start.countDown();assertThat(List.of(first.get(),second.get())).containsExactlyInAnyOrder(201,409);
+        }
+        String prefix="ORDER-"+java.util.UUID.randomUUID();
+        assertThat(admin.call("POST",root,classificationBody(prefix+"-B","B",2147483647,true,0),true).statusCode()).isEqualTo(201);
+        assertThat(admin.call("POST",root,classificationBody(prefix+"-A","A",2147483647,true,0),true).statusCode()).isEqualTo(201);
+        String result=admin.get(root+"?size=100").body();assertThat(result.indexOf(prefix+"-A")).isLessThan(result.indexOf(prefix+"-B"));
+    }
+
     static final String PROFILES="/api/referentiels/profils-emploi";
     @Test void profiles_preserve_requirements_and_refuse_new_ones_after_deactivation() throws Exception {
         var manager=as("gestionnaire");var parent=competencyParent(manager);

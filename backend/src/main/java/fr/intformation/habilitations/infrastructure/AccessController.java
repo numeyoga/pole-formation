@@ -32,8 +32,6 @@ public class AccessController {
     }
     @PutMapping("/sessions/{id}/participants/{participationId}/presence") @ResponseStatus(HttpStatus.NO_CONTENT)
     void presence(Principal user, @PathVariable UUID id, @PathVariable UUID participationId, @RequestBody Presence body) { service.presence(user.getName(),id,participationId,body.state()); }
-    @PutMapping("/referentiels/classifications/{id}") @ResponseStatus(HttpStatus.NO_CONTENT)
-    void classification(Principal user, @PathVariable UUID id, @RequestBody Label body) { service.renameClassification(user.getName(),id,body.label()); }
     @GetMapping("/habilitations/comptes") List<AccountResponse> accounts(Principal user) {
         return service.accounts(user.getName()).stream().map(a->new AccountResponse(a.username(),a.role())).toList();
     }

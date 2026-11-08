@@ -62,9 +62,6 @@ public class DatabaseAccessStore implements AccessStore {
     private void lockSession(UUID id) {
         db.sql("SELECT id FROM training_session WHERE id=:id FOR UPDATE").param("id", id).query(UUID.class).optional().orElseThrow(AccessService.NotFound::new);
     }
-    public void renameClassification(UUID id, String label) {
-        if (db.sql("UPDATE requirement_classification SET label=:label WHERE id=:id").param("label", label).param("id", id).update() == 0) throw new AccessService.NotFound();
-    }
     public List<Account> accounts() {
         return db.sql("SELECT username,role FROM app_account ORDER BY username").query((rs,i) -> new Account(rs.getString(1), Role.valueOf(rs.getString(2)))).list();
     }

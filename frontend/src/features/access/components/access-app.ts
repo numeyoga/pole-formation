@@ -1,3 +1,5 @@
+import '../../classifications/components/classifications-panel';
+import type { ClassificationsPanel } from '../../classifications/components/classifications-panel';
 import { profileMessages } from '../../../shared/i18n/fr';
 import '../../profiles/components/profiles-panel';
 import type { ProfilesPanel } from '../../profiles/components/profiles-panel';
@@ -120,6 +122,7 @@ export class AccessApp extends LitElement {
           ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<SubdomainsPanel>('subdomains-panel')?.focusHeading()}>Sous-domaines</button>`:nothing}
           ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<CompetenciesPanel>('competencies-panel')?.focusHeading()}>Compétences</button>`:nothing}
           ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<ReferenceExplorer>('reference-explorer')?.focusHeading()}>Explorer le référentiel</button>`:nothing}
+          ${this.identity.permissions.includes('WRITE_CLASSIFICATION')?html`<button @click=${()=>this.renderRoot.querySelector<ClassificationsPanel>('classifications-panel')?.focusHeading()}>Classifications</button>`:nothing}
           <button @click=${()=>this.focusElement('#sessions-title')}>Sessions</button>
           ${this.identity.permissions.includes('READ_AUDIT')?html`<button @click=${()=>this.renderRoot.querySelector<AuditLog>('audit-log')?.focusHeading()}>Journal</button>`:nothing}
         </nav>`:nothing}</header>
@@ -134,6 +137,7 @@ export class AccessApp extends LitElement {
           </form>
         </section>`:html`
         ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<domains-panel></domains-panel><subdomains-panel></subdomains-panel><competencies-panel></competencies-panel><reference-explorer></reference-explorer><profiles-panel></profiles-panel>`:nothing}
+        ${this.identity.permissions.includes('WRITE_CLASSIFICATION')?html`<classifications-panel></classifications-panel>`:nothing}
         <section aria-labelledby="sessions-title"><h2 id="sessions-title" tabindex="-1">${m.sessions}</h2>
           ${this.sessions.length?html`<ul>${this.sessions.map(session=>html`<li><button ?disabled=${this.busy} @click=${()=>this.select(session)}>${session.title}</button> <span class="muted">${states[session.state]}</span></li>`)}</ul>`:html`<p>${m.empty}</p>`}
         </section>

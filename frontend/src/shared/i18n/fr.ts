@@ -61,3 +61,7 @@ export const profileMessages={
   "disabling": "Désactivation en cours…",
   "confirmDisable": "Confirmer la désactivation"
 };
+
+export const classificationMessages={
+ title:'Classifications',create:'Créer une classification',refresh:'Actualiser les classifications',status:'État des classifications',loading:'Chargement des classifications…',empty:'Aucune classification.',table:'Tableau des classifications',caption:'Classifications des exigences',code:'Code',label:'Libellé',order:'Ordre',state:'État',actions:'Actions',modify:'Modifier',edit:'Modifier une classification',pagination:'Pagination des classifications',previous:'Classifications précédentes',next:'Classifications suivantes',formStatus:'État du formulaire de classification',saving:'Enregistrement…',saved:'Classification enregistrée.',reload:'Recharger la fiche',codeHelp:'Code unique sans distinction de casse, conservé après désactivation.',cancel:'Annuler',save:'Enregistrer la classification',active:'Active',activationHelp:'Une classification désactivée reste visible sur les exigences existantes et ne peut plus être choisie pour une nouvelle exigence.'
+};

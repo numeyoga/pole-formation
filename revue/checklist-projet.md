@@ -14,3 +14,5 @@
 - Vérifier que chaque nouveau Web Component est enregistré dans le bundle livré, avec un import à effet de bord distinct des imports de types et un parcours navigateur de navigation (DEF-010).
 - Pour tester un refus métier, satisfaire les autres préconditions et différencier les motifs partageant le même statut HTTP ; vérifier par mutation les gardes critiques (DEF-011).
 - Arrêter le serveur avant de remplacer son JAR ; après redémarrage, vérifier accueil, assets, connexion et API métier sur le port de recette utilisé par l’utilisateur (DEF-012).
+- Vérifier qu’un entier OpenAPI refuse réellement les fractions et les dépassements par HTTP ; un DTO Integer/Long et une colonne entière ne suffisent pas si la désérialisation effectue une coercition préalable (DEF-013).
+- Attendre l’effet observable des interactions asynchrones (y compris le défilement natif au clavier) avec une assertion réessayée ; ne pas lire immédiatement la propriété et ne pas ajouter de pause fixe (DEF-014).

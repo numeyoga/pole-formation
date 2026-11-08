@@ -20,7 +20,13 @@ competency_catalog = root / "src/main/java/fr/intformation/referentiel/infrastru
 training_competency = root / "src/main/java/fr/intformation/referentiel/domain/TrainingCompetency.java"
 explorer_service = root / "src/main/java/fr/intformation/referentiel/application/ReferenceExplorerService.java"
 explorer_catalog = root / "src/main/java/fr/intformation/referentiel/infrastructure/PostgresReferenceExplorerCatalog.java"
+classification_service = root / "src/main/java/fr/intformation/classifications/application/ClassificationService.java"
+classification_domain = root / "src/main/java/fr/intformation/classifications/domain/Classification.java"
+profile_store = root / "src/main/java/fr/intformation/profils/infrastructure/PostgresProfileStore.java"
 mutants = [
+    (classification_service, "policy.require(accounts.actor(user),AccessPolicy.Permission.WRITE_CLASSIFICATION);", "/* classification authorization removed */", "AccessHttpTest#classifications_are_available_only_to_managers_for_reading_and_administrators_for_writing", "fr.intformation.AccessHttpTest"),
+    (classification_domain, "if(expected!=version)", "if(false && expected!=version)", "AccessHttpTest#classifications_validate_fields_uniqueness_versions_and_mutation_permissions", "fr.intformation.AccessHttpTest"),
+    (profile_store, "if(!active)throw", "if(false && !active)throw", "AccessHttpTest#classifications_preserve_historical_requirements_and_exclude_inactive_choices", "fr.intformation.AccessHttpTest"),
     (policy, "if (actor.role() == Role.INTERVENANT &&", "if (false &&", "AccessHttpTest#guessing_another_session_or_participation_cannot_bypass_assignment", "fr.intformation.AccessHttpTest"),
     (policy, "case GESTIONNAIRE -> permission !=", "case GESTIONNAIRE -> true || permission !=", "AccessPolicyTest#fixed_roles_match_the_validated_permissions", "fr.intformation.AccessPolicyTest"),
     (security, ".requestCache(cache -> cache.disable())", ".csrf(csrf -> csrf.disable()).requestCache(cache -> cache.disable())", "AccessHttpTest#anonymous_access_and_missing_csrf_are_rejected", "fr.intformation.AccessHttpTest"),
@@ -51,12 +57,15 @@ mutants = [
 ]
 parser = argparse.ArgumentParser(description=__doc__)
 scopes = parser.add_mutually_exclusive_group()
+scopes.add_argument("--classifications", action="store_true", help="Run only classification controls")
 scopes.add_argument("--subdomains", action="store_true", help="Run only mutations affecting subdomain behavior")
 scopes.add_argument("--competencies", action="store_true", help="Run only mutations affecting competency behavior")
 scopes.add_argument("--explorer", action="store_true", help="Run only mutations affecting reference exploration")
 parser.add_argument("--list", action="store_true", help="List selected controls without modifying sources or running Maven")
 args = parser.parse_args()
-if args.explorer:
+if args.classifications:
+    mutants = [item for item in mutants if item[0] in (classification_service, classification_domain, profile_store)]
+elif args.explorer:
     mutants = [item for item in mutants if item[0] in (explorer_service, explorer_catalog)]
 elif args.competencies:
     mutants = [item for item in mutants if item[0] in (competency_service, competency_catalog, training_competency)]

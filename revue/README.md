@@ -22,3 +22,5 @@ Le [suivi](suivi.md) contient les statuts courants et la [checklist](checklist-p
 | [DEF-010](defauts/2026-11-08-DEF-010-import-composant.md) | 2026-11-08 | Composant absent après suppression d’un import de type | Parcours navigateur après build | corrigé, US-02.01 |
 | [DEF-011](defauts/2026-11-08-DEF-011-test-garde-activation.md) | 2026-11-08 | Doublon masquant le garde d’activation dans un test | Mutation ciblée du garde d’activation | corrigé, US-02.01 |
 | [DEF-012](defauts/2026-11-08-DEF-012-jar-remplace-en-execution.md) | 2026-11-08 | Serveur local conservé après reconstruction du JAR | Vérification du port utilisé pour la recette après build | corrigé, US-02.01 |
+| [DEF-013](defauts/2026-11-08-DEF-013-entiers-json.md) | 2026-11-08 | Ordre JSON décimal accepté comme entier | Test HTTP de fraction et conversion numérique exacte | corrigé localement, US-02.02 |
+| [DEF-014](defauts/2026-11-08-DEF-014-attente-defilement.md) | 2026-11-08 | Assertion avant la fin du défilement clavier | Assertion réessayée sur l’effet observable | corrigé localement, US-02.02 |

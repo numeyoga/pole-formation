@@ -26,3 +26,5 @@ tags:
 - [ADR 0012 – Administration des compétences](ADR-0012-competency-reference.md)
 - [ADR 0013 – Mise sur l’hôte et services Podman](ADR-0013-local-mise-podman.md)
 - [ADR 0014 – Administration des profils d’emploi](ADR-0014-job-profiles.md)
+
+- [ADR 0015 – Configuration des classifications](ADR-0015-classifications.md)

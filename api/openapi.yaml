@@ -163,6 +163,7 @@ paths:
         '403': {$ref: '#/components/responses/Error'}
         '404': {$ref: '#/components/responses/Error'}
   /api/referentiels/classifications/{id}:
+    # Legacy label-only operation; full configuration is in classifications.openapi.yaml.
     parameters: [{$ref: '#/components/parameters/SessionId'}]
     put:
       parameters: [{$ref: '#/components/parameters/Csrf'}]

@@ -29,6 +29,8 @@ tags:
 
 Le [contrat des profils d’emploi](../../../api/profiles.openapi.yaml) couvre US-02.01 : liste paginée, fiche, création, modification versionnée, désactivation et raccordement minimal des exigences conservées.
 
+Le [contrat des classifications](../../../api/classifications.openapi.yaml) couvre US-02.02 : consultation paginée triée par ordre puis code, filtre des valeurs actives, création et modification du code, libellé, ordre et activation. Écriture réservée à l’administrateur fonctionnel ; lecture accessible aussi au gestionnaire.
+
 ## Erreurs
 
 - Privilégier `application/problem+json` (RFC 9457) ; distinguer erreur de format, violation métier, introuvable, conflit, non authentifié, interdit.

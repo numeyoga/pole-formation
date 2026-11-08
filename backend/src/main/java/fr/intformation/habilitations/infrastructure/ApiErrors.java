@@ -9,6 +9,17 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @RestControllerAdvice
 public class ApiErrors {
+    @ExceptionHandler(fr.intformation.classifications.domain.Classification.InvalidField.class)
+    ProblemDetail classificationField(fr.intformation.classifications.domain.Classification.InvalidField error){
+        var problem=ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,error.getMessage());problem.setProperty("fieldErrors",java.util.Map.of(error.field(),error.getMessage()));return problem;
+    }
+    @ExceptionHandler(fr.intformation.classifications.domain.Classification.DuplicateCode.class)
+    ProblemDetail duplicateClassification(fr.intformation.classifications.domain.Classification.DuplicateCode error){
+        var problem=ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,error.getMessage());problem.setProperty("fieldErrors",java.util.Map.of("code",error.getMessage()));return problem;
+    }
+    @ExceptionHandler(fr.intformation.classifications.domain.Classification.StaleVersion.class)
+    ProblemDetail staleClassification(fr.intformation.classifications.domain.Classification.StaleVersion error){return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,error.getMessage());}
+
     @ExceptionHandler(fr.intformation.profils.domain.JobProfile.InvalidField.class)
     ProblemDetail profileField(fr.intformation.profils.domain.JobProfile.InvalidField error){
         var problem=ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,error.getMessage());problem.setProperty("fieldErrors",java.util.Map.of(error.field(),error.getMessage()));return problem;

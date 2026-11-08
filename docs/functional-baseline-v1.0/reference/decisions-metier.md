@@ -64,6 +64,8 @@ Les 41 lignes ci-dessous regroupent **10 décisions de modèle**, **10 arbitrage
 | REF-03 | Compétences, règles validées explicitement le 2026-11-08 (« oui, les même règles ») : code de 1 à 64 caractères, espaces externes retirés, unicité globale sans casse parmi toutes les compétences, y compris désactivées ; code modifiable sous réserve d’unicité. Libellé de 1 à 200 caractères, espaces externes retirés. Sous-domaine parent fixé à la création ; identité technique et liens historiques conservés. Désactivation sans suppression ni réactivation dans US-01.03. |
 | REF-04 | Profils d’emploi, convention validée explicitement le 2026-11-08 pendant US-02.01 : code obligatoire de 1 à 64 caractères, espaces externes retirés, unique sans casse parmi tous les profils, y compris désactivés ; code modifiable sous réserve d’unicité. Libellé de 1 à 200 caractères ; identité technique et exigences conservées lors des modifications et désactivations. |
 
+| REF-05 | Classifications, conventions confirmées explicitement le 2026-11-08 pendant US-02.02 : reprise des limites des profils (code 1–64 caractères, libellé 1–200, espaces externes retirés), code obligatoire et unique sans casse même après désactivation ; ordre entier positif ou nul ; contrôle de version pour les modifications complètes concurrentes. Identité technique et exigences existantes conservées. Aucune sémantique métier ni classification officielle prédéfinie. |
+
 ## Principes de gouvernance
 
 - La validation d'une décision métier ne valide pas automatiquement tous les détails de persistance ou d'interface.

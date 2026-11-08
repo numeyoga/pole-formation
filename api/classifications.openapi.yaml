@@ -1,0 +1,124 @@
+openapi: 3.1.0
+info: {title: Pôle formation — classifications, version: 0.7.0}
+servers: [{url: /}]
+security: [{session: []}]
+paths:
+  /api/referentiels/classifications:
+    get:
+      description: Lecture accessible au gestionnaire et à l’administrateur fonctionnel.
+      parameters:
+        - {name: page, in: query, schema: {type: integer, minimum: 0, default: 0}}
+        - {name: activeOnly, in: query, schema: {type: boolean, default: false}}
+        - {name: size, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+      responses:
+        '200':
+          description: Toutes les classifications, actives et désactivées, triées par ordre, code sans casse puis identifiant
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, page, size]
+                properties:
+                  items: {type: array, items: {$ref: '#/components/schemas/Classification'}}
+                  total: {type: integer}
+                  page: {type: integer}
+                  size: {type: integer}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+    post:
+      description: Création réservée à l’administrateur fonctionnel.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, label, sortOrder]
+              properties:
+                code: {type: string, minLength: 1, maxLength: 64}
+                label: {type: string, minLength: 1, maxLength: 200}
+                sortOrder: {type: integer, minimum: 0, maximum: 2147483647}
+      responses:
+        '201':
+          description: Classification créée active, code unique sans casse même après désactivation
+          headers:
+            Location: {schema: {type: string}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Classification'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/referentiels/classifications/{id}:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      responses:
+        '200':
+          description: Fiche conservée même après désactivation
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Classification'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+    put:
+      description: Modifier code, libellé, ordre et activation. Version obligatoire pour une modification complète. Le PUT historique contenant uniquement label reste compatible et incrémente la version. Écriture réservée à WRITE_CLASSIFICATION ; lectures réservées à WRITE_REFERENTIAL.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  additionalProperties: false
+                  required: [label]
+                  properties:
+                    label: {type: string, minLength: 1, maxLength: 200}
+                - type: object
+                  required: [code, label, sortOrder, active, version]
+                  properties:
+                    code: {type: string, minLength: 1, maxLength: 64}
+                    label: {type: string, minLength: 1, maxLength: 200}
+                    sortOrder: {type: integer, minimum: 0, maximum: 2147483647}
+                    active: {type: boolean}
+                    version: {type: integer, format: int64, minimum: 0}
+      responses:
+        '204': {description: Classification modifiée, identité et exigences conservées}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+components:
+  securitySchemes:
+    session: {type: apiKey, in: cookie, name: JSESSIONID}
+  parameters:
+    Id: {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+    Csrf: {name: X-CSRF-TOKEN, in: header, required: true, schema: {type: string}}
+  responses:
+    Error:
+      description: Erreur explicite de format, droit, doublon, référence inactive ou version périmée
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [status]
+            properties:
+              status: {type: integer}
+              detail: {type: string}
+              fieldErrors: {type: object, additionalProperties: {type: string}}
+  schemas:
+    Classification:
+      type: object
+      required: [id, code, label, sortOrder, active, version]
+      properties:
+        id: {type: string, format: uuid}
+        code: {type: string}
+        label: {type: string}
+        sortOrder: {type: integer, minimum: 0}
+        active: {type: boolean}
+        version: {type: integer, format: int64}

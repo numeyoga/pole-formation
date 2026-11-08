@@ -168,5 +168,21 @@
       "0b538a48a3f35a7df065dba25e1c4b184c7ac455"
     ],
     "validated_commit": "0b538a48a3f35a7df065dba25e1c4b184c7ac455"
+  },
+  "US-02.02": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
+    "report": "docs/reference/quality/us-02-02-validation.md",
+    "remaining": [
+      "Rattacher la preuve technique au commit de livraison.",
+      "Recette métier humaine et examen d’accessibilité (lecteur d’écran, zoom navigateur 200 %)."
+    ],
+    "acceptance": {
+      "required": true
+    }
   }
 }
