@@ -19,3 +19,6 @@ Le [suivi](suivi.md) contient les statuts courants et la [checklist](checklist-p
 | [DEF-007](defauts/2026-11-08-DEF-007-selection-mutations.md) | 2026-11-08 | Sélection vide des mutations de compétences | Absence de contrat CLI du sélecteur et de refus des sélections vides | corrigé, US-01.03 |
 | [DEF-008](defauts/2026-11-08-DEF-008-methode-dom-native.md) | 2026-11-08 | Méthode Lit en collision avec HTMLElement.children | Récurrence de DEF-005 arrêtée par TypeScript strict | corrigé, US-01.04 |
 | [DEF-009](defauts/2026-11-08-DEF-009-largeur-formulaire-flex.md) | 2026-11-08 | Label flex empêchant la réduction du champ de recherche | Contrôle navigateur de la largeur du document | corrigé, US-01.04 |
+| [DEF-010](defauts/2026-11-08-DEF-010-import-composant.md) | 2026-11-08 | Composant absent après suppression d’un import de type | Parcours navigateur après build | corrigé, US-02.01 |
+| [DEF-011](defauts/2026-11-08-DEF-011-test-garde-activation.md) | 2026-11-08 | Doublon masquant le garde d’activation dans un test | Mutation ciblée du garde d’activation | corrigé, US-02.01 |
+| [DEF-012](defauts/2026-11-08-DEF-012-jar-remplace-en-execution.md) | 2026-11-08 | Serveur local conservé après reconstruction du JAR | Vérification du port utilisé pour la recette après build | corrigé, US-02.01 |

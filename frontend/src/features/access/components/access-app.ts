@@ -1,3 +1,6 @@
+import { profileMessages } from '../../../shared/i18n/fr';
+import '../../profiles/components/profiles-panel';
+import type { ProfilesPanel } from '../../profiles/components/profiles-panel';
 import { LitElement, css, html, nothing } from 'lit';
 import { api, ApiError } from '../adapters/access-api';
 import type { Identity, SessionView, ParticipantView, AccountView, Role } from '../presentation/models';
@@ -112,6 +115,7 @@ export class AccessApp extends LitElement {
     return html`
       <header><h1>${m.title}</h1>${this.identity?html`<p>${this.identity.username} — ${roles[this.identity.role]}</p><button ?disabled=${this.busy} @click=${this.logout}>${m.logout}</button>
         <nav class="actions" aria-label="Sections de l’application">
+          ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<ProfilesPanel>('profiles-panel')?.focusHeading()}>${profileMessages.title}</button>`:nothing}
           ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<DomainsPanel>('domains-panel')?.focusHeading()}>Domaines</button>`:nothing}
           ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<SubdomainsPanel>('subdomains-panel')?.focusHeading()}>Sous-domaines</button>`:nothing}
           ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<CompetenciesPanel>('competencies-panel')?.focusHeading()}>Compétences</button>`:nothing}
@@ -129,7 +133,7 @@ export class AccessApp extends LitElement {
             <button data-primary ?disabled=${this.busy}>${m.login}</button>
           </form>
         </section>`:html`
-        ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<domains-panel></domains-panel><subdomains-panel></subdomains-panel><competencies-panel></competencies-panel><reference-explorer></reference-explorer>`:nothing}
+        ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<domains-panel></domains-panel><subdomains-panel></subdomains-panel><competencies-panel></competencies-panel><reference-explorer></reference-explorer><profiles-panel></profiles-panel>`:nothing}
         <section aria-labelledby="sessions-title"><h2 id="sessions-title" tabindex="-1">${m.sessions}</h2>
           ${this.sessions.length?html`<ul>${this.sessions.map(session=>html`<li><button ?disabled=${this.busy} @click=${()=>this.select(session)}>${session.title}</button> <span class="muted">${states[session.state]}</span></li>`)}</ul>`:html`<p>${m.empty}</p>`}
         </section>

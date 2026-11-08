@@ -10,3 +10,7 @@
 | 6 | Un contrôle de mutation ne valide jamais silencieusement un périmètre vide | `--list`, tests CLI des périmètres et refus d’une liste vide | DEF-007 | Oui, `scripts/tests/test_mutation_selection.py` |
 | 7 | Aucun état ni méthode Lit ne redéfinit involontairement l’API DOM native | TypeScript strict et revue des noms (dont children) avant le build | DEF-005, DEF-008 | Oui, compilation stricte |
 | 8 | Les items flex contenant un contrôle de largeur fixe peuvent se réduire en affichage étroit | Contraintes de taille minimale et contrôle scrollWidth à 375 pixels | DEF-009 | Oui, Playwright |
+
+- Vérifier que chaque nouveau Web Component est enregistré dans le bundle livré, avec un import à effet de bord distinct des imports de types et un parcours navigateur de navigation (DEF-010).
+- Pour tester un refus métier, satisfaire les autres préconditions et différencier les motifs partageant le même statut HTTP ; vérifier par mutation les gardes critiques (DEF-011).
+- Arrêter le serveur avant de remplacer son JAR ; après redémarrage, vérifier accueil, assets, connexion et API métier sur le port de recette utilisé par l’utilisateur (DEF-012).

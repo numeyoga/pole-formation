@@ -1,0 +1,180 @@
+openapi: 3.1.0
+info: {title: Pôle formation — profils-emploi, version: 0.6.0}
+servers: [{url: /}]
+security: [{session: []}]
+paths:
+  /api/referentiels/profils-emploi:
+    get:
+      parameters:
+        - {name: page, in: query, schema: {type: integer, minimum: 0, default: 0}}
+        - {name: size, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+      responses:
+        '200':
+          description: Tous les profils d’emploi, actifs et désactivés, triés par code sans casse puis identifiant
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, page, size]
+                properties:
+                  items: {type: array, items: {$ref: '#/components/schemas/Profile'}}
+                  total: {type: integer}
+                  page: {type: integer}
+                  size: {type: integer}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+    post:
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, label]
+              properties:
+                code: {type: string, minLength: 1, maxLength: 64}
+                label: {type: string, minLength: 1, maxLength: 200}
+                description: {type: string, maxLength: 4000, default: ""}
+      responses:
+        '201':
+          description: Profil créé actif, code unique sans casse même après désactivation
+          headers:
+            Location: {schema: {type: string}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Profile'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/referentiels/profils-emploi/{id}:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      responses:
+        '200':
+          description: Fiche conservée même après désactivation
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Profile'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+    put:
+      description: Modifier code, libellé et description. Version obligatoire ; identité, activation et exigences conservées.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, label, version]
+              properties:
+                code: {type: string, minLength: 1, maxLength: 64}
+                label: {type: string, minLength: 1, maxLength: 200}
+                description: {type: string, maxLength: 4000, default: ""}
+                version: {type: integer, format: int64, minimum: 0}
+      responses:
+        '204': {description: Profil modifié, identité et activation conservées}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/referentiels/profils-emploi/{id}/desactivation:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    post:
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [version]
+              properties:
+                version: {type: integer, format: int64, minimum: 0}
+      responses:
+        '204': {description: Profil désactivé sans suppression des exigences ni libération du code}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/referentiels/profils-emploi/{id}/exigences:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      responses:
+        '200':
+          description: Exigences conservées et consultables même après désactivation
+          content:
+            application/json:
+              schema: {type: array, items: {$ref: '#/components/schemas/Requirement'}}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+    post:
+      description: Raccordement minimal pour US-02.01. Profil, compétence et classification doivent être actifs. Une seule exigence par couple profil-compétence. Administration complète dans US-02.03.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [competencyId, classificationId]
+              properties:
+                competencyId: {type: string, format: uuid}
+                classificationId: {type: string, format: uuid}
+      responses:
+        '201':
+          description: Exigence créée
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Requirement'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+components:
+  securitySchemes:
+    session: {type: apiKey, in: cookie, name: JSESSIONID}
+  parameters:
+    Id: {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+    Csrf: {name: X-CSRF-TOKEN, in: header, required: true, schema: {type: string}}
+  responses:
+    Error:
+      description: Erreur explicite de format, droit, doublon, référence inactive ou version périmée
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [status]
+            properties:
+              status: {type: integer}
+              detail: {type: string}
+              fieldErrors: {type: object, additionalProperties: {type: string}}
+  schemas:
+    Profile:
+      type: object
+      required: [id, code, label, description, active, version]
+      properties:
+        id: {type: string, format: uuid}
+        code: {type: string}
+        label: {type: string}
+        description: {type: string}
+        active: {type: boolean}
+        version: {type: integer, format: int64}
+    Requirement:
+      type: object
+      required: [id, profileId, competencyId, competencyLabel, classificationId, classificationLabel]
+      properties:
+        id: {type: string, format: uuid}
+        profileId: {type: string, format: uuid}
+        competencyId: {type: string, format: uuid}
+        competencyLabel: {type: string}
+        classificationId: {type: string, format: uuid}
+        classificationLabel: {type: string}

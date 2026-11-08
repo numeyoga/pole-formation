@@ -9,6 +9,17 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @RestControllerAdvice
 public class ApiErrors {
+    @ExceptionHandler(fr.intformation.profils.domain.JobProfile.InvalidField.class)
+    ProblemDetail profileField(fr.intformation.profils.domain.JobProfile.InvalidField error){
+        var problem=ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,error.getMessage());problem.setProperty("fieldErrors",java.util.Map.of(error.field(),error.getMessage()));return problem;
+    }
+    @ExceptionHandler(fr.intformation.profils.domain.JobProfile.DuplicateCode.class)
+    ProblemDetail duplicateProfile(fr.intformation.profils.domain.JobProfile.DuplicateCode error){
+        var problem=ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,error.getMessage());problem.setProperty("fieldErrors",java.util.Map.of("code",error.getMessage()));return problem;
+    }
+    @ExceptionHandler(fr.intformation.profils.domain.JobProfile.StaleVersion.class)
+    ProblemDetail staleProfile(fr.intformation.profils.domain.JobProfile.StaleVersion error){return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,error.getMessage());}
+
     @ExceptionHandler(fr.intformation.referentiel.domain.TrainingDomain.InvalidField.class)
     ProblemDetail domainField(fr.intformation.referentiel.domain.TrainingDomain.InvalidField error){
         var problem=ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,error.getMessage());

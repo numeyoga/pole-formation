@@ -64,6 +64,8 @@ mise run build
 mise run dev
 ```
 
+Avant de reconstruire un JAR déjà exécuté avec `mise run dev`, arrêter le serveur avec Ctrl+C, puis exécuter `mise run build` et relancer `mise run dev`. Le lancement lit le JAR dans `backend/target` : le remplacer pendant son exécution peut casser le chargement des classes ou ressources. Après redémarrage, vérifier l’accueil et la connexion sur 8080.
+
 Ouvrir **http://localhost:8080**. Le navigateur du conteneur utilise `host.containers.internal:8080`. Le serveur doit donc être joignable depuis le réseau Podman. Voir les comptes fictifs et les parcours dans le [guide de lancement](run-local-app.md).
 
 Pour le frontend avec rechargement automatique, lancer dans un autre terminal :

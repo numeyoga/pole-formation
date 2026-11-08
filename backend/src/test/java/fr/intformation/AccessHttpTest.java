@@ -76,6 +76,107 @@ class AccessHttpTest {
     String people(String session) { return "/api/sessions/"+session+"/participants"; }
     String presence(String session,String participation) { return people(session)+"/"+participation+"/presence"; }
 
+    static final String PROFILES="/api/referentiels/profils-emploi";
+    @Test void profiles_preserve_requirements_and_refuse_new_ones_after_deactivation() throws Exception {
+        var manager=as("gestionnaire");var parent=competencyParent(manager);
+        var competency=json.readTree(manager.call("POST","/api/referentiels/competences",competencyBody(parent.get("id").asString(),"PROF-C-"+java.util.UUID.randomUUID(),"Compétence profil"),true).body());
+        var response=manager.call("POST",PROFILES,"{\"code\":\" P-"+java.util.UUID.randomUUID()+" \",\"label\":\" Profil initial \",\"description\":\" Description \"}",true);
+        assertThat(response.statusCode()).isEqualTo(201);var profile=json.readTree(response.body());String path=PROFILES+"/"+profile.get("id").asString();
+        assertThat(response.headers().firstValue("Location")).contains(path);
+        assertThat(profile.get("label").asString()).isEqualTo("Profil initial");assertThat(profile.get("description").asString()).isEqualTo("Description");
+        String requirement="{\"competencyId\":\""+competency.get("id").asString()+"\",\"classificationId\":\"60000000-0000-0000-0000-000000000001\"}";
+        assertThat(manager.call("POST",path+"/exigences",requirement,true).statusCode()).isEqualTo(201);
+        String history=manager.get(path+"/exigences").body();assertThat(json.readTree(history).size()).isEqualTo(1);
+        assertThat(manager.put(path,"{\"code\":\""+profile.get("code").asString()+"\",\"label\":\"Profil renommé\",\"description\":\"Nouvelle description\",\"version\":0}").statusCode()).isEqualTo(204);
+        assertThat(manager.get(path+"/exigences").body()).isEqualTo(history);
+        assertThat(manager.call("POST",path+"/desactivation","{\"version\":0}",true).statusCode()).isEqualTo(409);
+        assertThat(manager.call("POST",path+"/desactivation","{\"version\":1}",true).statusCode()).isEqualTo(204);
+        assertThat(json.readTree(manager.get(path).body()).get("active").asBoolean()).isFalse();
+        var newCompetency=json.readTree(manager.call("POST","/api/referentiels/competences",competencyBody(parent.get("id").asString(),"NEW-"+java.util.UUID.randomUUID(),"Nouvelle compétence du profil"),true).body());
+        var rejected=manager.call("POST",path+"/exigences",requirement.replace(competency.get("id").asString(),newCompetency.get("id").asString()),true);
+        assertThat(rejected.statusCode()).isEqualTo(409);assertThat(json.readTree(rejected.body()).get("detail").asString()).contains("profil d’emploi désactivé");
+        assertThat(manager.get(path+"/exigences").body()).isEqualTo(history);
+        assertThat(manager.put(path,"{\"code\":\""+profile.get("code").asString()+"\",\"label\":\"Historique renommé\",\"description\":\"\",\"version\":2}").statusCode()).isEqualTo(204);
+        assertThat(manager.get(path+"/exigences").body()).isEqualTo(history);
+    }
+    @Test void profiles_enforce_permissions_csrf_versions_and_field_validation() throws Exception {
+        var guest=new Browser();assertThat(guest.get(PROFILES).statusCode()).isEqualTo(401);
+        var instructor=as("intervenant");var manager=as("gestionnaire");var admin=as("admin");
+        String body="{\"code\":\"P-"+java.util.UUID.randomUUID()+"\",\"label\":\"Profil\"}";
+        assertThat(instructor.get(PROFILES).statusCode()).isEqualTo(403);
+        assertThat(instructor.call("POST",PROFILES,body,true).statusCode()).isEqualTo(403);
+        assertThat(manager.call("POST",PROFILES,body,false).statusCode()).isEqualTo(403);
+        var created=admin.call("POST",PROFILES,body,true);assertThat(created.statusCode()).isEqualTo(201);
+        String path=PROFILES+"/"+json.readTree(created.body()).get("id").asString();
+        for(String target:java.util.List.of(path,path+"/exigences"))assertThat(instructor.get(target).statusCode()).isEqualTo(403);
+        assertThat(instructor.put(path,body).statusCode()).isEqualTo(403);
+        assertThat(instructor.call("POST",path+"/desactivation","{\"version\":0}",true).statusCode()).isEqualTo(403);
+        assertThat(instructor.call("POST",path+"/exigences","{}",true).statusCode()).isEqualTo(403);
+        assertThat(manager.put(path,body).statusCode()).isEqualTo(400);
+        assertThat(manager.call("POST",path+"/desactivation","{}",true).statusCode()).isEqualTo(400);
+        var invalid=manager.call("POST",PROFILES,"{\"code\":\" \",\"label\":\"Profil\"}",true);
+        assertThat(invalid.statusCode()).isEqualTo(400);assertThat(json.readTree(invalid.body()).get("fieldErrors").has("code")).isTrue();
+        assertThat(manager.get(PROFILES+"?page=-1").statusCode()).isEqualTo(400);
+        assertThat(manager.get(PROFILES+"?size=101").statusCode()).isEqualTo(400);
+        assertThat(manager.get(PROFILES+"/"+java.util.UUID.randomUUID()).statusCode()).isEqualTo(404);
+    }
+
+    @Test void profiles_bound_fields_and_reject_competing_edits() throws Exception {
+        var manager=as("gestionnaire");String code="BOUND-"+java.util.UUID.randomUUID();
+        var created=manager.call("POST",PROFILES,json.writeValueAsString(java.util.Map.of("code",code,"label","L".repeat(200),"description","D".repeat(4000))),true);
+        assertThat(created.statusCode()).isEqualTo(201);String path=PROFILES+"/"+json.readTree(created.body()).get("id").asString();
+        for(var invalid:java.util.List.of(java.util.Map.of("code","X".repeat(65),"label","Valide"),java.util.Map.of("code",code,"label"," "),java.util.Map.of("code",code,"label","L".repeat(201)),java.util.Map.of("code",code,"label","Valide","description","D".repeat(4001)))){
+            assertThat(manager.call("POST",PROFILES,json.writeValueAsString(invalid),true).statusCode()).isEqualTo(400);
+        }
+        String body=json.writeValueAsString(java.util.Map.of("code",code,"label","Concurrent","version",0));
+        var other=as("gestionnaire");
+        try(var executor=java.util.concurrent.Executors.newFixedThreadPool(2)){
+            var first=executor.submit(()->manager.put(path,body).statusCode());var second=executor.submit(()->other.put(path,body).statusCode());
+            assertThat(java.util.List.of(first.get(),second.get())).containsExactlyInAnyOrder(204,409);
+        }
+        assertThat(manager.put(path,"{\"label\":\"Sans code\",\"version\":1}").statusCode()).isEqualTo(400);
+        assertThat(manager.put(path,"{\"code\":\"Valide\",\"label\":\"Valide\",\"version\":-1}").statusCode()).isEqualTo(400);
+    }
+    @Test void requirements_reject_inactive_references_duplicates_and_unknown_ids() throws Exception {
+        var manager=as("gestionnaire");var parent=competencyParent(manager);
+        var competency=json.readTree(manager.call("POST","/api/referentiels/competences",competencyBody(parent.get("id").asString(),"REQ-"+java.util.UUID.randomUUID(),"Compétence requise"),true).body());
+        var profile=json.readTree(manager.call("POST",PROFILES,"{\"code\":\"REQ-"+java.util.UUID.randomUUID()+"\",\"label\":\"Profil exigence\"}",true).body());
+        String path=PROFILES+"/"+profile.get("id").asString()+"/exigences";
+        String classificationId=java.util.UUID.randomUUID().toString();
+        db.sql("INSERT INTO requirement_classification(id,label,active) VALUES (:id,'Inactive',false)").param("id",java.util.UUID.fromString(classificationId)).update();
+        String body=json.writeValueAsString(java.util.Map.of("competencyId",competency.get("id").asString(),"classificationId",classificationId));
+        assertThat(manager.call("POST",path,body,true).statusCode()).isEqualTo(409);
+        db.sql("UPDATE requirement_classification SET active=true WHERE id=:id").param("id",java.util.UUID.fromString(classificationId)).update();
+        assertThat(manager.call("POST",path,body,true).statusCode()).isEqualTo(201);
+        assertThat(manager.call("POST",path,body,true).statusCode()).isEqualTo(409);
+        assertThat(manager.call("POST",path,"{}",true).statusCode()).isEqualTo(400);
+        assertThat(manager.call("POST",path,body.replace(classificationId,java.util.UUID.randomUUID().toString()),true).statusCode()).isEqualTo(404);
+        assertThat(manager.call("POST","/api/referentiels/competences/"+competency.get("id").asString()+"/desactivation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST",path,body,true).statusCode()).isEqualTo(409);
+        assertThat(json.readTree(manager.get(path).body()).size()).isEqualTo(1);
+    }
+
+    @Test void profile_codes_are_unique_without_case_even_after_deactivation_and_concurrent_creation() throws Exception {
+        var manager=as("gestionnaire");String code="UNIQUE-"+java.util.UUID.randomUUID();
+        String body=json.writeValueAsString(java.util.Map.of("code"," "+code+" ","label","Unique"));
+        var profile=json.readTree(manager.call("POST",PROFILES,body,true).body());String path=PROFILES+"/"+profile.get("id").asString();
+        assertThat(profile.get("code").asString()).isEqualTo(code);
+        String duplicate=json.writeValueAsString(java.util.Map.of("code",code.toLowerCase(java.util.Locale.ROOT),"label","Doublon"));
+        var conflict=manager.call("POST",PROFILES,duplicate,true);assertThat(conflict.statusCode()).isEqualTo(409);
+        assertThat(json.readTree(conflict.body()).get("fieldErrors").has("code")).isTrue();
+        assertThat(manager.call("POST",path+"/desactivation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST",PROFILES,duplicate,true).statusCode()).isEqualTo(409);
+        String otherCode="OTHER-"+java.util.UUID.randomUUID();
+        var otherProfile=json.readTree(manager.call("POST",PROFILES,json.writeValueAsString(java.util.Map.of("code",otherCode,"label","Autre")),true).body());
+        assertThat(manager.put(PROFILES+"/"+otherProfile.get("id").asString(),json.writeValueAsString(java.util.Map.of("code",code,"label","Conflit","version",0))).statusCode()).isEqualTo(409);
+        assertThat(json.readTree(manager.get(PROFILES+"/"+otherProfile.get("id").asString()).body()).get("code").asString()).isEqualTo(otherCode);
+        String raceBody=json.writeValueAsString(java.util.Map.of("code","RACE-"+java.util.UUID.randomUUID(),"label","Concurrent"));var other=as("gestionnaire");
+        try(var executor=java.util.concurrent.Executors.newFixedThreadPool(2)){
+            var first=executor.submit(()->manager.call("POST",PROFILES,raceBody,true).statusCode());var second=executor.submit(()->other.call("POST",PROFILES,raceBody,true).statusCode());
+            assertThat(java.util.List.of(first.get(),second.get())).containsExactlyInAnyOrder(201,409);
+        }
+    }
+
     @Test void explorer_search_exposes_a_competency_path() throws Exception {
         var manager=as("gestionnaire");var parent=competencyParent(manager);String code="EXP-"+java.util.UUID.randomUUID();
         var created=manager.call("POST","/api/referentiels/competences",competencyBody(parent.get("id").asString(),code,"Compétence à retrouver"),true);

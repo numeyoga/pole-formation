@@ -18,6 +18,7 @@ type: reference
 - [Validation de US-01.02](#validation-de-us-0102)
 - [Validation de US-01.03](#validation-de-us-0103)
 - [Validation de US-01.04](#validation-de-us-0104)
+- [Validation de US-02.01](#validation-de-us-0201)
 - [Limites des preuves](#limites-des-preuves)
 
 ## Accord enregistré
@@ -37,6 +38,8 @@ Cet accord valide fonctionnellement les premières livraisons présentées. Il e
 | US-01.02 — Administrer les sous-domaines | `7ee132f` | Livraison locale acceptée et clôturée sur validation utilisateur |
 | US-01.03 — Administrer les compétences | `44d06d0` | Livraison locale acceptée et clôturée sur validation utilisateur |
 | US-01.04 — Explorer le référentiel | `44d06d0` | Livraison locale acceptée et clôturée sur validation utilisateur |
+
+| US-02.01 — Administrer les profils d’emploi | Copie de travail locale non commitée, voir identification ci-dessous | Livraison locale acceptée ; rattachement au commit de livraison restant à enregistrer |
 
 Les autres stories du backlog ne sont pas déclarées développées par cet accord.
 
@@ -93,6 +96,16 @@ Le 2026-11-08, après présentation de l’explorateur disponible sur l’applic
 Cet accord accepte US-01.04 dans le périmètre de la révision `44d06d0` : navigation des trois niveaux, recherche par code ou libellé avec chemin complet, conservation de l’historique et des statuts désactivés, décrits dans le [rapport de validation](us-01-04-validation.md). La preuve technique existante reste rattachée à cette révision ; aucun changement applicatif n’accompagne la clôture.
 
 La validation ne détaille pas de nouveau scan humain, d’essai individuel de zoom à 200 % ou de lecteur d’écran ; leur exécution n’est pas affirmée. Ces limites restent documentées, sans être confondues avec un refus d’acceptation de la livraison. Aucune story de l’epic suivant n’est acceptée par cet accord.
+
+## Validation de US-02.01
+
+Le 2026-11-08, après présentation du bilan de US-02.01 et remise en service de l’application sur `http://localhost:8080/`, le représentant du projet a déclaré : « je valide ».
+
+Cet accord accepte la livraison locale des profils d’emploi décrite dans le [rapport](us-02-01-validation.md) : création, consultation, modification, désactivation, unicité des codes et conservation des exigences. L’utilisateur ne détaille pas les scénarios exécutés individuellement ; aucune recette détaillée, vérification au lecteur d’écran ou au zoom 200 % n’est inventée.
+
+La livraison acceptée est la copie de travail contenant US-02.01, basée sur `dd10bd00073d66dbd2d32fe8c2f37e349780a96c` avec ses modifications locales. Ce hash de base ne désigne pas le code livré. Le JAR exécuté sur 8080 lors de l’acceptation a pour SHA-256 `f7af9bb7ed0ae4ec8c09aa8b56acf3a65f0bcf6437b0f0be71610f39e89b12c2`. Son commit de livraison reste à créer et à renseigner dans le manifeste ; l’acceptation n’est pas artificiellement rattachée au commit de base.
+
+L’acceptation métier est enregistrée. L’examen humain d’accessibilité non détaillé reste un contrôle distinct. Cet accord ne valide aucune autre story de l’epic des profils.
 
 ## Limites des preuves
 

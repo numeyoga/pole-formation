@@ -27,6 +27,8 @@ tags:
 - Le frontend transforme DTO → modèles de présentation ; le backend est autorité sur règles et données.
 - Les endpoints d’accès et habilitations sont définis dans le [contrat OpenAPI](../../../api/openapi.yaml). Le [contrat du journal](../../../api/audit.openapi.yaml) couvre les changements sensibles et le [contrat des domaines](../../../api/domains.openapi.yaml) décrit US-01.01. Le [contrat des sous-domaines](../../../api/subdomains.openapi.yaml) couvre US-01.02 : consultation paginée et filtrée, création, modification, désactivation et raccordement compatible des compétences. Le [contrat des compétences](../../../api/competencies.openapi.yaml) couvre US-01.03 : consultation, filtre, création, modification et désactivation. Le [contrat d’exploration](../../../api/explorer.openapi.yaml) couvre la recherche paginée par code/libellé, avec le chemin et le statut des trois niveaux.
 
+Le [contrat des profils d’emploi](../../../api/profiles.openapi.yaml) couvre US-02.01 : liste paginée, fiche, création, modification versionnée, désactivation et raccordement minimal des exigences conservées.
+
 ## Erreurs
 
 - Privilégier `application/problem+json` (RFC 9457) ; distinguer erreur de format, violation métier, introuvable, conflit, non authentifié, interdit.
