@@ -56,7 +56,7 @@ Validations exécutées dans le devcontainer Podman :
 
 ## Limites et suivi
 
-La livraison locale a été acceptée explicitement par le représentant du projet après présentation du bilan : voir l’[acceptation US-01.03](acceptance-2026-11-08.md#validation-de-us-0103). Le hash du code livré et de sa validation est enregistré dans `tracking/stories.json` lors du versionnement. Cette acceptation complète celle des seules règles REF-03.
+La livraison locale a été acceptée explicitement par le représentant du projet après présentation du bilan : voir l’[acceptation US-01.03](acceptance-2026-11-08.md#validation-de-us-0103). La révision de consolidation `44d06d0` est enregistrée dans `tracking/stories.json` ; les [régressions sur l’hôte](validation-2026-11-08-mise-exploration.md) couvrent ce code. Cette acceptation complète celle des seules règles REF-03.
 
 L’examen humain d’accessibilité (dont lecteur d’écran et zoom navigateur 200 %) et les intégrations réelles de liens profil/formation restent ouverts. Les dimensions étroites et les tests clavier automatisés ne valent pas recette humaine ni démonstration complète WCAG AA. Le garde transactionnel devra être utilisé et vérifié par US-02.03 et US-03.02.
 

@@ -23,6 +23,7 @@ tags:
 - [Développement et validation US-01.03](quality/us-01-03-validation.md)
 - [Validation de l’environnement local Mise/Podman](quality/local-environment-validation.md)
 - [Développement et validation US-01.04](quality/us-01-04-validation.md)
+- [Régressions Mise et exploration](quality/validation-2026-11-08-mise-exploration.md)
 - [Suivi de l’avancement](development-tracking.md)
 - [Décisions ouvertes](architecture/open-questions.md)
 - [Périmètre MVP](domain/scope.md)

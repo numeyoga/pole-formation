@@ -81,7 +81,7 @@ Le 2026-11-08, après présentation de l’administration des compétences et du
 
 Cet accord accepte la livraison locale décrite dans le [rapport US-01.03](us-01-03-validation.md), dont création, modification, désactivation, parent fixé à la création et unicité globale des codes. Il autorise le passage à US-01.04 et le changement d’environnement décrit dans ADR 0013. La validation ne décrit pas d’essai individuel de zoom, lecteur d’écran ou scan humain ; aucune exécution de ces contrôles n’est inventée.
 
-La livraison acceptée était locale et non commitée. Sa révision est enregistrée dans `tracking/stories.json` lors de son versionnement. Les associations réelles profil/formation restent celles de US-02.03 et US-03.02 ; leur absence actuelle ne devient pas une fonctionnalité livrée par cet accord.
+La livraison acceptée était locale et non commitée. Sa révision de consolidation est `44d06d0`, référencée dans `tracking/stories.json` avec les régressions rejouées. Les associations réelles profil/formation restent celles de US-02.03 et US-03.02 ; leur absence actuelle ne devient pas une fonctionnalité livrée par cet accord.
 
 ## Limites des preuves
 

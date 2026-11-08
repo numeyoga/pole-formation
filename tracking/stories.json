@@ -2,67 +2,115 @@
   "TECH-DEVCONTAINER": {
     "title": "Environnement de développement Podman",
     "implementation": "complete",
-    "commits": ["27679e0"],
+    "commits": [
+      "27679e0"
+    ],
     "validated_commit": "083f79a",
-    "code_paths": [".devcontainer/"],
+    "code_paths": [
+      ".devcontainer/"
+    ],
     "report": "docs/reference/quality/dev-container-validation.md",
     "remaining": [],
-    "acceptance": {"required": false, "reason": "Socle technique vérifié sous Podman ; Docker hors périmètre validé.", "evidence": "docs/reference/quality/acceptance-2026-11-08.md"}
+    "acceptance": {
+      "required": false,
+      "reason": "Socle technique vérifié sous Podman ; Docker hors périmètre validé.",
+      "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
+    }
   },
   "US-08.01": {
     "implementation": "complete",
-    "commits": ["9f2d2d4"],
-    "validated_commit": "7ee132f",
-    "code_paths": ["backend/", "frontend/", "api/"],
+    "commits": [
+      "9f2d2d4"
+    ],
+    "validated_commit": "44d06d0b10b65c6b6f754c71ec129801835f0ebf",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
     "report": "docs/reference/quality/us-08-01-validation.md",
     "remaining": [],
-    "acceptance": {"required": true, "evidence": "docs/reference/quality/acceptance-2026-11-08.md"}
+    "acceptance": {
+      "required": true,
+      "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
+    }
   },
   "US-08.02": {
     "implementation": "complete",
-    "commits": ["9f2d2d4", "6925193"],
-    "validated_commit": "7ee132f",
-    "code_paths": ["backend/", "frontend/", "api/"],
+    "commits": [
+      "9f2d2d4",
+      "6925193"
+    ],
+    "validated_commit": "44d06d0b10b65c6b6f754c71ec129801835f0ebf",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
     "report": "docs/reference/quality/us-08-02-validation.md",
     "remaining": [],
-    "acceptance": {"required": true, "evidence": "docs/reference/quality/acceptance-2026-11-08.md"}
+    "acceptance": {
+      "required": true,
+      "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
+    }
   },
   "US-01.01": {
     "implementation": "complete",
-    "commits": ["fdc6d04"],
-    "validated_commit": "7ee132f",
-    "code_paths": ["backend/", "frontend/", "api/"],
+    "commits": [
+      "fdc6d04"
+    ],
+    "validated_commit": "44d06d0b10b65c6b6f754c71ec129801835f0ebf",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
     "report": "docs/reference/quality/us-01-01-validation.md",
     "remaining": [],
-    "acceptance": {"required": true, "evidence": "docs/reference/quality/acceptance-2026-11-08.md"}
+    "acceptance": {
+      "required": true,
+      "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
+    }
   },
   "US-01.02": {
     "implementation": "complete",
-    "commits": ["fdc6d04", "7ee132f"],
-    "validated_commit": "7ee132f",
-    "code_paths": ["backend/", "frontend/", "api/"],
+    "commits": [
+      "fdc6d04",
+      "7ee132f"
+    ],
+    "validated_commit": "44d06d0b10b65c6b6f754c71ec129801835f0ebf",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
     "report": "docs/reference/quality/us-01-02-validation.md",
     "remaining": [],
-    "acceptance": {"required": true, "evidence": "docs/reference/quality/acceptance-2026-11-08.md"}
+    "acceptance": {
+      "required": true,
+      "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
+    }
   },
   "US-01.03": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/",
       "frontend/",
       "api/"
     ],
     "report": "docs/reference/quality/us-01-03-validation.md",
-    "remaining": [
-      "Enregistrer la révision de la livraison et de ses preuves techniques."
-    ],
+    "remaining": [],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
-    }
+    },
+    "validated_commit": "44d06d0b10b65c6b6f754c71ec129801835f0ebf",
+    "commits": [
+      "44d06d0b10b65c6b6f754c71ec129801835f0ebf"
+    ]
   },
   "US-01.04": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -74,11 +122,15 @@
     ],
     "acceptance": {
       "required": true
-    }
+    },
+    "validated_commit": "44d06d0b10b65c6b6f754c71ec129801835f0ebf",
+    "commits": [
+      "44d06d0b10b65c6b6f754c71ec129801835f0ebf"
+    ]
   },
   "TECH-MISE": {
     "title": "Développement local Mise et services Podman",
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "mise.toml",
       ".githooks/",
@@ -88,12 +140,14 @@
       "frontend/playwright.config.ts"
     ],
     "report": "docs/reference/quality/local-environment-validation.md",
-    "remaining": [
-      "Enregistrer la révision validée."
-    ],
+    "remaining": [],
     "acceptance": {
       "required": false,
       "reason": "Transition technique demandée explicitement, vérifiée par les contrôles locaux et les suites applicatives."
-    }
+    },
+    "validated_commit": "44d06d0b10b65c6b6f754c71ec129801835f0ebf",
+    "commits": [
+      "fa508e4"
+    ]
   }
 }
