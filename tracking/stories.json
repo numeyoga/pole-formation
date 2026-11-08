@@ -3,7 +3,7 @@
     "title": "Environnement de développement Podman",
     "implementation": "complete",
     "commits": ["27679e0"],
-    "validated_commit": "9f2d2d4",
+    "validated_commit": "083f79a",
     "code_paths": [".devcontainer/"],
     "report": "docs/reference/quality/dev-container-validation.md",
     "remaining": [],
