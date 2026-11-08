@@ -1,3 +1,3 @@
 #!/bin/sh
 set -eu
-exec scripts/in-devcontainer.sh python3 scripts/progress.py message --staged --file "$1"
+exec scripts/in-environment.sh python3 scripts/progress.py message --staged --file "$1"

@@ -1,0 +1,63 @@
+[tools]
+java = "27.0.1+0"
+node = "26.13.0"
+
+[env]
+PGHOST = "127.0.0.1"
+PGPORT = "5432"
+PGDATABASE = "pole_formation_dev"
+PGUSER = "pole_formation"
+PGPASSWORD = "pole_formation_dev"
+SPRING_DATASOURCE_URL = "jdbc:postgresql://127.0.0.1:5432/pole_formation_dev"
+SPRING_DATASOURCE_USERNAME = "pole_formation"
+SPRING_DATASOURCE_PASSWORD = "pole_formation_dev"
+DOCKER_HOST = "unix://{{env.XDG_RUNTIME_DIR}}/podman/podman.sock"
+TESTCONTAINERS_RYUK_DISABLED = "true"
+PLAYWRIGHT_WS_ENDPOINT = "ws://127.0.0.1:3000"
+PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"
+DEV_POSTGRES_SCRIPT = "{{env.HOME}}/.agents/skills/dev-postgres/scripts/devpg.sh"
+DEV_PLAYWRIGHT_SCRIPT = "{{env.HOME}}/.agents/skills/dev-playwright/scripts/devpw.sh"
+
+[tasks.setup]
+description = "Installer les dépendances locales et les hooks"
+run = ["npm --prefix frontend ci", "python3 scripts/progress.py install"]
+
+[tasks."db:up"]
+description = "Démarrer PostgreSQL local sous Podman"
+run = 'bash "$DEV_POSTGRES_SCRIPT" ensure'
+
+[tasks."db:stop"]
+description = "Arrêter PostgreSQL sans supprimer les données"
+run = 'bash "$DEV_POSTGRES_SCRIPT" stop'
+
+[tasks."browser:up"]
+description = "Démarrer le serveur Playwright partagé sous Podman"
+run = 'bash "$DEV_PLAYWRIGHT_SCRIPT" ensure'
+
+[tasks."browser:stop"]
+run = 'bash "$DEV_PLAYWRIGHT_SCRIPT" stop'
+
+[tasks.check]
+description = "Vérifier les outils locaux et les services Podman"
+run = "bash scripts/check-environment.sh"
+
+[tasks.build]
+description = "Construire le frontend et le JAR"
+run = ["npm --prefix frontend run generate:api", "npm --prefix frontend run build", "cd backend && ./mvnw -DskipTests package"]
+
+[tasks.dev]
+description = "Lancer l’application locale sur 8080"
+run = "java -jar backend/target/pole-formation-0.1.0-SNAPSHOT.jar --spring.profiles.active=dev"
+
+[tasks."test:backend"]
+run = "cd backend && ./mvnw verify"
+
+[tasks."test:frontend"]
+run = ["npm --prefix frontend run typecheck", "npm --prefix frontend test"]
+
+[tasks."test:e2e"]
+depends = ["browser:up"]
+run = "npm --prefix frontend run test:e2e"
+
+[tasks."test:scripts"]
+run = "python3 -m unittest discover -s scripts/tests"

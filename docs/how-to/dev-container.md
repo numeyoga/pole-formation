@@ -2,11 +2,13 @@
 title: "Développer dans le conteneur"
 created: 2026-11-07
 updated: 2026-11-08
-status: accepted
+status: superseded
 type: how-to
 ---
 
 # Comment développer dans le dev container
+
+Ce workflow est remplacé par le [développement local avec Mise et services Podman](local-development.md), conformément à ADR 0013. Les commandes ci-dessous décrivent l’ancien environnement.
 
 ## Sommaire
 - [Prérequis](#prérequis)

@@ -44,7 +44,7 @@ Un commit documentaire seul ne signifie pas que l’implémentation a commencé.
 
 ## Automatisation
 
-Le devcontainer exécute `python3 scripts/progress.py install` à sa création. Cette commande active les hooks versionnés `.githooks` par la configuration Git locale, puis génère le registre. Une configuration de hooks différente est conservée et signalée comme conflit à intégrer explicitement.
+`mise run setup` exécute `python3 scripts/progress.py install` sur l’hôte. Cette commande active les hooks versionnés `.githooks` par la configuration Git locale, puis génère le registre. Une configuration de hooks différente est conservée et signalée comme conflit à intégrer explicitement.
 
 | Événement Git | Traitement |
 |---|---|
@@ -52,11 +52,11 @@ Le devcontainer exécute `python3 scripts/progress.py install` à sa création. 
 | Validation du message | Identifiant de story existant exigé pour les changements dans `backend/`, `frontend/` ou `api/` |
 | Après commit, checkout ou fusion | Régénération du registre avec le nouvel historique |
 
-Les hooks s’exécutent dans le devcontainer, directement ou via un relais Podman/Docker si Git est utilisé sur l’hôte. Sans workspace actif, le relais signale l’erreur ; aucun outil du projet n’est lancé directement sur l’hôte. Les hooks ne lancent pas les suites applicatives et ne créent aucun commit supplémentaire.
+Les hooks s’exécutent sur l’hôte via `scripts/in-environment.sh` et Mise, sans workspace conteneurisé actif. Les hooks ne lancent pas les suites applicatives et ne créent aucun commit supplémentaire.
 
 ## Preuves et limites
 
-Le manifeste ne déduit jamais une recette humaine du seul passage des tests. Une clôture nécessitant cette recette doit référencer un fichier de preuve existant, sans reste à faire. Une exemption de recette humaine doit être justifiée ; le devcontainer est suivi comme socle technique validé sous Podman.
+Le manifeste ne déduit jamais une recette humaine du seul passage des tests. Une clôture nécessitant cette recette doit référencer un fichier de preuve existant, sans reste à faire. Une exemption de recette humaine doit être justifiée ; le devcontainer historique et l’environnement Mise/Podman sont suivis comme socles techniques.
 
 Les preuves initiales se rapportent aux commits déjà validés. Si du code évolue, le statut devient automatiquement « À revalider » après commit. Le remplacement de `validated_commit` nécessite une nouvelle exécution effective des validations et un rapport correspondant ; le script ne certifie pas lui-même leur résultat.
 

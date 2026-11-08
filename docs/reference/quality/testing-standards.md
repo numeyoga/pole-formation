@@ -23,7 +23,7 @@ tags:
 - **Unitaires** : JUnit + AssertJ ; Mockito pour les dépendances nécessaires, sans mocker des valeurs/domaine pur.
 - **Intégration** : Testcontainers + PostgreSQL réel ; migrations Flyway testées ; tests de ports/adaptateurs ; contrats API et erreurs.
 - **Métier** : tests explicites RG-001 à RG-010, notamment non-inférence de compétences individuelles.
-- Distinguer tests rapides des tests avec base ; Maven Wrapper est retenu. `./mvnw test` exécute JUnit et PostgreSQL Testcontainers depuis `/backend`, dans le devcontainer.
+- Distinguer tests rapides des tests avec base ; Maven Wrapper est retenu. `./mvnw test` exécute JUnit et PostgreSQL Testcontainers depuis `/backend`, sur l’hôte avec Mise et le socket Podman.
 
 ## Frontend
 

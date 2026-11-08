@@ -39,7 +39,7 @@ Ce fichier est le **point d'entrée IA**. Ne pas charger tout `/docs` systémati
 - Session HTTP Spring Security avec protections CSRF et autorisations serveur ; **ne pas enregistrer de secrets ni jetons dans localStorage**.
 - **Tests obligatoires** adaptés : JUnit et Testcontainers côté serveur ; Vitest, Playwright, `@axe-core/playwright` et scénarios clavier/focus côté client. Axe **ne suffit pas** à démontrer WCAG AA.
 - Version Java **27** acceptée, avec mise à jour régulière et vérification de la compatibilité de la distribution Spring Boot choisie.
-- **Développement local obligatoire dans le dev container** défini sous `.devcontainer/` ; ne pas installer ou lancer les outils du projet directement sur l’hôte. Suivre [le guide](docs/how-to/dev-container.md).
+- **Développement local sur l’hôte avec Mise (jdx)** : versions Java et Node fixées dans `mise.toml`, commandes via `mise exec` ou `mise run`. PostgreSQL et Testcontainers utilisent Podman. Ne plus exécuter le développement dans le devcontainer. Suivre [le guide local](docs/how-to/local-development.md).
 - Marquer les exemples comme exemples ; ne pas présenter des fonctionnalités non implémentées comme réalisées.
 - **Suivi d’avancement** : consulter le [registre généré](docs/generated/development-progress.md) et suivre le [guide](docs/how-to/track-development.md). Les commits applicatifs mentionnent une story du backlog. Après validation, enregistrer les preuves et le reste à faire dans `tracking/stories.json` ; ne jamais inventer une recette humaine ni éditer la vue générée. Les hooks gèrent le rafraîchissement automatique.
 
@@ -55,7 +55,7 @@ Ce fichier est le **point d'entrée IA**. Ne pas charger tout `/docs` systémati
 | Accessibilité | [accessibility](docs/reference/quality/accessibility.md), [test how-to](docs/how-to/test-accessibility.md) |
 | CI / validation | [testing-standards](docs/reference/quality/testing-standards.md) |
 | Avancement / clôture d’une story | [Suivi du développement](docs/how-to/track-development.md) |
-| Environnement de développement | [Guide dev container](docs/how-to/dev-container.md) |
+| Environnement de développement | [Guide Mise et développement local](docs/how-to/local-development.md) |
 
 ## Processus de travail
 

@@ -23,7 +23,7 @@ Le représentant du projet a demandé le 2026-11-08 un registre central d’avan
 
 Une vue Markdown locale est générée depuis le backlog, l’historique Git et un manifeste de preuves versionné. Les hooks Git valident les métadonnées préparées et les références de stories, puis régénèrent la vue après commit, checkout et fusion. Leur activation est automatique à la création du devcontainer.
 
-La vue est ignorée par Git afin d’éviter un fichier obsolète dès que son propre commit change le HEAD. Les commits et les preuves demeurent les sources pérennes. Le script et ses tests utilisent Python standard, exécuté dans le devcontainer.
+La vue est ignorée par Git afin d’éviter un fichier obsolète dès que son propre commit change le HEAD. Les commits et les preuves demeurent les sources pérennes. Le script et ses tests utilisent Python standard. Depuis ADR 0013, les hooks et les commandes s’exécutent sur l’hôte avec Mise ; le devcontainer n’est plus requis.
 
 Les statuts distinguent fondation partielle, implémentation à recetter, code à revalider et clôture. Une preuve technique est périmée lorsque le contenu du code diffère du commit validé ; aucun succès de test ni accord humain n’est inventé.
 
