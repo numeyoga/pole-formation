@@ -17,6 +17,7 @@ type: reference
 - [Validation de US-01.01](#validation-de-us-0101)
 - [Validation de US-01.02](#validation-de-us-0102)
 - [Validation de US-01.03](#validation-de-us-0103)
+- [Validation de US-01.04](#validation-de-us-0104)
 - [Limites des preuves](#limites-des-preuves)
 
 ## Accord enregistré
@@ -34,6 +35,8 @@ Cet accord valide fonctionnellement les premières livraisons présentées. Il e
 | US-08.02 — Journal des changements sensibles | Fondations `9f2d2d4`, livraison complète `6925193` | Livraison locale acceptée et clôturée sur confirmation finale utilisateur |
 | US-01.01 — Administrer les domaines | `fdc6d04` | Livraison locale acceptée et clôturée sur validation utilisateur |
 | US-01.02 — Administrer les sous-domaines | `7ee132f` | Livraison locale acceptée et clôturée sur validation utilisateur |
+| US-01.03 — Administrer les compétences | `44d06d0` | Livraison locale acceptée et clôturée sur validation utilisateur |
+| US-01.04 — Explorer le référentiel | `44d06d0` | Livraison locale acceptée et clôturée sur validation utilisateur |
 
 Les autres stories du backlog ne sont pas déclarées développées par cet accord.
 
@@ -82,6 +85,14 @@ Le 2026-11-08, après présentation de l’administration des compétences et du
 Cet accord accepte la livraison locale décrite dans le [rapport US-01.03](us-01-03-validation.md), dont création, modification, désactivation, parent fixé à la création et unicité globale des codes. Il autorise le passage à US-01.04 et le changement d’environnement décrit dans ADR 0013. La validation ne décrit pas d’essai individuel de zoom, lecteur d’écran ou scan humain ; aucune exécution de ces contrôles n’est inventée.
 
 La livraison acceptée était locale et non commitée. Sa révision de consolidation est `44d06d0`, référencée dans `tracking/stories.json` avec les régressions rejouées. Les associations réelles profil/formation restent celles de US-02.03 et US-03.02 ; leur absence actuelle ne devient pas une fonctionnalité livrée par cet accord.
+
+## Validation de US-01.04
+
+Le 2026-11-08, après présentation de l’explorateur disponible sur l’application locale et du bilan (53 tests serveur et 22 parcours navigateur réussis), le représentant du projet a déclaré : « je valide ».
+
+Cet accord accepte US-01.04 dans le périmètre de la révision `44d06d0` : navigation des trois niveaux, recherche par code ou libellé avec chemin complet, conservation de l’historique et des statuts désactivés, décrits dans le [rapport de validation](us-01-04-validation.md). La preuve technique existante reste rattachée à cette révision ; aucun changement applicatif n’accompagne la clôture.
+
+La validation ne détaille pas de nouveau scan humain, d’essai individuel de zoom à 200 % ou de lecteur d’écran ; leur exécution n’est pas affirmée. Ces limites restent documentées, sans être confondues avec un refus d’acceptation de la livraison. Aucune story de l’epic suivant n’est acceptée par cet accord.
 
 ## Limites des preuves
 

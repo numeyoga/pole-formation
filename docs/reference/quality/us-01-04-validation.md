@@ -61,7 +61,7 @@ Deux défauts ont été arrêtés avant livraison : [DEF-008](../../../revue/def
 
 ## Limites et recette
 
-L’accord utilisateur précédent accepte US-01.03 et le changement d’environnement ; il ne vaut pas recette de US-01.04. La nouvelle story reste à recetter. Les contrôles humains de zoom à 200 % et de lecteur d’écran ne sont pas affirmés. Axe et les scénarios clavier automatisés ne démontrent pas une conformité WCAG AA complète.
+Le représentant du projet a accepté explicitement US-01.04 après présentation de la livraison locale et du bilan technique : voir l’[accord enregistré](acceptance-2026-11-08.md#validation-de-us-0104). La story est clôturée pour la révision `44d06d0`, sans changement de code ni renouvellement artificiel du hash de validation. Les contrôles humains de zoom à 200 % et de lecteur d’écran ne sont pas affirmés. Axe et les scénarios clavier automatisés ne démontrent pas une conformité WCAG AA complète.
 
 Les liens métier réels entre compétences, profils et formations restent couverts par US-02.03 et US-03.02. L’exploration conserve le référentiel historique disponible ; elle n’invente aucune acquisition individuelle de compétence.
 

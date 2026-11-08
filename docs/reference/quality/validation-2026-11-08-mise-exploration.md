@@ -39,6 +39,6 @@ Les détails des scénarios et des défauts corrigés figurent dans les rapports
 
 ## Acceptation et limites
 
-US-01.03 est acceptée explicitement par le représentant du projet : voir l’[accord enregistré](acceptance-2026-11-08.md#validation-de-us-0103). US-01.04 reste à recetter ; cet accord antérieur ne lui est pas étendu.
+US-01.03 est acceptée explicitement par le représentant du projet : voir l’[accord enregistré](acceptance-2026-11-08.md#validation-de-us-0103). US-01.04 a ensuite reçu son propre [accord utilisateur](acceptance-2026-11-08.md#validation-de-us-0104) sur la même révision, après présentation du bilan. Cet accord clôture la story sans réutiliser l’acceptation de US-01.03.
 
 Les contrôles manuels de lecteur d’écran et de zoom à 200 % ne sont pas affirmés. La validation automatisée n’est pas une certification WCAG. Les futures associations réelles profil/formation sont vérifiées dans leurs stories respectives.
