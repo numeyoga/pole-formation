@@ -190,7 +190,7 @@
     ]
   },
   "US-02.03": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -198,12 +198,15 @@
     ],
     "report": "docs/reference/quality/us-02-03-validation.md",
     "remaining": [
-      "Consolider la livraison dans un commit et rattacher les preuves au hash testé.",
       "Recette métier humaine des associations et reclassements.",
       "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
     ],
     "acceptance": {
       "required": true
-    }
+    },
+    "validated_commit": "d7cadc40596fa254af9d058a3b329abfe1022ba8",
+    "commits": [
+      "d7cadc40596fa254af9d058a3b329abfe1022ba8"
+    ]
   }
 }

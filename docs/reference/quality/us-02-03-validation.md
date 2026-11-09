@@ -54,4 +54,4 @@ La recette métier de US-02.03 reste à effectuer. Le lecteur d’écran et le z
 
 Le JAR exécuté sur `http://localhost:8080/` a pour SHA-256 `5f46554f3a6de4e8dfda38b20982917caf6389934b3475fe22ab2e7933182874`. Le serveur reste disponible pour recette ; Chromium partagé est arrêté après les tests.
 
-La livraison et les preuves sont présentes dans la copie de travail ; aucun hash de validation n’est attribué avant son versionnement. Le manifeste conserve ce travail en cours de consolidation pour éviter de rattacher les tests au précédent commit.
+La livraison validée est `d7cadc40596fa254af9d058a3b329abfe1022ba8`. Le code applicatif est identique à celui des validations consignées. La recette métier de US-02.03 et US-02.04 sera réalisée conjointement, conformément à la demande utilisateur du 2026-11-09 ; aucune acceptation métier de ces deux stories n’est déclarée.
