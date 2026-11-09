@@ -7,7 +7,7 @@ import { requirementMessages as r } from '../../../shared/i18n/fr';
 import { ApiError } from '../../../shared/http/session';
 import { messages,profileMessages as m } from '../../../shared/i18n/fr';
 
-interface ChildrenState {busy:boolean;items:RequirementView[];error:string}
+interface ChildrenState {busy:boolean;items:RequirementView[];error:string;selected:{id:string;label:string}|null}
 export class ProfilesPanel extends LitElement {
   static properties={data:{state:true},busy:{state:true},error:{state:true},notice:{state:true},editing:{state:true},pending:{state:true},formError:{state:true},fields:{state:true},childViews:{state:true},stale:{state:true}};
   declare data:ProfilePage|null;
@@ -21,8 +21,8 @@ export class ProfilesPanel extends LitElement {
     *{box-sizing:border-box;}h2{font-size:var(--text-section);margin:0;}p{margin-block:var(--space-small);}
     header,.actions,nav{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-small);}
     form,fieldset,label{display:grid;gap:var(--space-small);}fieldset{border:0;padding:0;margin:0;}
-    input,textarea,button{font:inherit;min-block-size:var(--control-height);padding:var(--space-control);border:var(--border-width) solid var(--color-border);border-radius:var(--control-radius);}
-    input,textarea{max-inline-size:100%;color:var(--color-text);background:var(--color-surface);}
+    input,textarea,select,button{font:inherit;min-block-size:var(--control-height);padding:var(--space-control);border:var(--border-width) solid var(--color-border);border-radius:var(--control-radius);}
+    input,textarea,select{max-inline-size:100%;color:var(--color-text);background:var(--color-surface);}
     button{inline-size:fit-content;max-inline-size:100%;color:var(--color-primary);background:var(--color-surface);cursor:pointer;}
     button:hover{color:var(--color-hover);text-decoration:underline;}button:disabled{opacity:var(--disabled-opacity);cursor:default;}
     [aria-invalid=true]{border-color:var(--color-danger);}[role=alert],.field-error{color:var(--color-danger);}
@@ -31,6 +31,8 @@ export class ProfilesPanel extends LitElement {
     .table-container{overflow:auto;margin-block:var(--space-normal);}table{inline-size:100%;min-inline-size:var(--table-min-width);border-collapse:collapse;}
     caption{text-align:start;padding-block:var(--space-small);}th,td{text-align:start;vertical-align:top;padding:var(--space-control);border-block-end:var(--border-width) solid var(--color-border);overflow-wrap:anywhere;}
     td:nth-child(3){white-space:nowrap;}
+    .requirements-filter{display:grid;gap:var(--space-small);margin-block:var(--space-normal);max-inline-size:var(--control-width);}
+    select{inline-size:100%;min-inline-size:0;}
     summary{cursor:pointer;min-block-size:var(--control-height);padding-block:var(--space-small);}
     dialog{inline-size:var(--control-width);max-inline-size:calc(100% - var(--space-page));padding:var(--space-section);border:var(--border-width) solid var(--color-border);border-radius:var(--control-radius);color:var(--color-text);background:var(--color-surface);}
   `;
@@ -88,22 +90,48 @@ export class ProfilesPanel extends LitElement {
     await this.loadChildren(profile);
   }
   private async loadChildren(profile:ProfileView){
-    const generation=this.generation;this.childViews={...this.childViews,[profile.id]:{busy:true,items:[],error:''}};
-    try{const items=await profilesApi.children(profile.id);if(generation===this.generation)this.childViews={...this.childViews,[profile.id]:{busy:false,items,error:''}};}
-    catch(error){if(generation===this.generation)this.childViews={...this.childViews,[profile.id]:{busy:false,items:[],error:this.message(error)}};}
+    const generation=this.generation;const selected=this.childViews[profile.id]?.selected??null;
+    this.childViews={...this.childViews,[profile.id]:{busy:true,items:[],error:'',selected}};
+    try{const items=await profilesApi.children(profile.id);if(generation===this.generation)this.childViews={...this.childViews,[profile.id]:{busy:false,items,error:'',selected}};}
+    catch(error){if(generation===this.generation)this.childViews={...this.childViews,[profile.id]:{busy:false,items:[],error:this.message(error),selected}};}
   }
   private async requirementSaved(event:CustomEvent<{profile:ProfileView}>){
     await this.loadChildren(event.detail.profile);this.notice=r.saved;
     await this.updateComplete;this.renderRoot.querySelector<HTMLElement>('#profiles-title')?.focus();
   }
   private showRequirement(profile:ProfileView,requirement:RequirementView|null=null){void this.renderRoot.querySelector<RequirementsEditor>('requirements-editor')!.show(profile,requirement);}
+  private selectClassification(profileId:string,event:Event){
+    const state=this.childViews[profileId];const id=(event.currentTarget as HTMLSelectElement).value;
+    const item=state.items.find(item=>item.classificationId===id);
+    const selected=item?{id:item.classificationId,label:item.classificationLabel}:null;
+    this.childViews={...this.childViews,[profileId]:{...state,selected}};
+  }
+  private renderRequirements(profile:ProfileView){
+    const state=this.childViews[profile.id];if(!state)return nothing;
+    if(state.busy)return html`<p role="status">${m.requirementsLoading}</p>`;
+    if(state.error)return html`<p role="alert">${state.error}</p><button type="button" @click=${()=>this.loadChildren(profile)}>${m.requirementsRetry}</button>`;
+    if(!state.items.length)return html`<p>${m.requirementsEmpty}</p>`;
+    const classifications=new Map(state.items.map(item=>[item.classificationId,item.classificationLabel]));
+    if(state.selected&&!classifications.has(state.selected.id))classifications.set(state.selected.id,state.selected.label);
+    const visible=state.selected?state.items.filter(item=>item.classificationId===state.selected!.id):state.items;
+    return html`
+      <div class="requirements-filter"><label for=${`requirement-filter-${profile.id}`}>${m.requirementsFilter}</label>
+        <select id=${`requirement-filter-${profile.id}`} @change=${(event:Event)=>this.selectClassification(profile.id,event)}>
+          <option value="" ?selected=${!state.selected}>${m.requirementsAll}</option>
+          ${[...classifications].map(([id,label])=>html`<option value=${id} ?selected=${state.selected?.id===id}>${label}</option>`)}
+        </select>
+      </div>
+      <p role="status" aria-label=${m.requirementsResults}>${m.requirementsCount(visible.length,state.items.length)}</p>
+      ${visible.length?html`<ul>${visible.map(child=>html`<li>${child.competencyLabel} — ${child.classificationLabel} <button type="button" aria-label=${`${r.reclassify} ${child.competencyLabel}`} @click=${()=>this.showRequirement(profile,child)}>${r.reclassify}</button></li>`)}</ul>`:html`<p>${m.requirementsNoMatch}</p>`}
+    `;
+  }
   render(){return html`
     <section aria-labelledby="profiles-title"><header><h2 id="profiles-title" tabindex="-1">${m.title}</h2><button ?disabled=${this.busy} @click=${()=>this.open(null)}>${m.create}</button><button ?disabled=${this.busy} @click=${()=>this.load(this.data?.page??0)}>${m.refresh}</button></header>
       ${this.error?html`<p role="alert">${this.error}</p>`:nothing}
       <p role="status" aria-label=${m.status}>${this.busy?m.loading:this.notice}</p>
       ${this.data&&!this.data.items.length?html`<p>${m.empty}</p>`:nothing}
       ${this.data?.items.length?html`<div class="table-container" tabindex="0" role="region" aria-label=${m.table}><table><caption>${m.caption}</caption><thead><tr><th scope="col">${m.code}</th><th scope="col">${m.label}</th><th scope="col">${m.state}</th><th scope="col">${m.actions}</th></tr></thead><tbody>${this.data.items.map(profile=>html`<tr><td>${profile.code}</td><td>${profile.label}<p>${profile.description}</p></td><td>${profile.status}</td><td><div class="actions"><button ?disabled=${this.busy} aria-label=${`${m.modify} ${profile.label}`} @click=${()=>this.open(profile)}>${m.modify}</button><button ?disabled=${this.busy||!profile.active} aria-label=${`${m.deactivate} ${profile.label}`} @click=${()=>this.confirm(profile)}>${m.deactivate}</button></div>
-        <p>${!profile.active?r.inactiveProfile:nothing}</p><button type="button" ?disabled=${this.busy||!profile.active} aria-label=${`${r.add} à ${profile.label}`} @click=${()=>this.showRequirement(profile)}>${r.add}</button><details @toggle=${(event:Event)=>this.showChildren(event,profile)}><summary>${m.requirements} ${profile.label}</summary>${this.childViews[profile.id]?.busy?html`<p role="status">${m.requirementsLoading}</p>`:this.childViews[profile.id]?.error?html`<p role="alert">${this.childViews[profile.id].error}</p><button @click=${()=>this.loadChildren(profile)}>${m.requirementsRetry}</button>`:this.childViews[profile.id]?.items.length?html`<ul>${this.childViews[profile.id].items.map(child=>html`<li>${child.competencyLabel} — ${child.classificationLabel} <button type="button" aria-label=${`${r.reclassify} ${child.competencyLabel}`} @click=${()=>this.showRequirement(profile,child)}>${r.reclassify}</button></li>`)}</ul>`:html`<p>${m.requirementsEmpty}</p>`}</details>
+        <p>${!profile.active?r.inactiveProfile:nothing}</p><button type="button" ?disabled=${this.busy||!profile.active} aria-label=${`${r.add} à ${profile.label}`} @click=${()=>this.showRequirement(profile)}>${r.add}</button><details @toggle=${(event:Event)=>this.showChildren(event,profile)}><summary>${m.requirements} ${profile.label}</summary>${this.renderRequirements(profile)}</details>
       </td></tr>`)}</tbody></table></div>`:nothing}
       ${this.data&&this.data.total>this.data.size?html`<nav aria-label=${m.pagination}><button ?disabled=${this.busy||this.data.page===0} @click=${()=>this.load(this.data!.page-1)}>${m.previous}</button><span aria-current="page">Page ${this.data.page+1}</span><button ?disabled=${this.busy||(this.data.page+1)*this.data.size>=this.data.total} @click=${()=>this.load(this.data!.page+1)}>${m.next}</button></nav>`:nothing}
     </section>

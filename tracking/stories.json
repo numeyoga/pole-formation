@@ -208,5 +208,22 @@
     "commits": [
       "d7cadc40596fa254af9d058a3b329abfe1022ba8"
     ]
+  },
+  "US-02.04": {
+    "implementation": "partial",
+    "code_paths": [
+      "frontend/src/features/profiles/",
+      "frontend/src/shared/i18n/fr.ts",
+      "frontend/tests/requirements.spec.ts"
+    ],
+    "report": "docs/reference/quality/us-02-04-validation.md",
+    "remaining": [
+      "Rattacher les preuves au commit de livraison.",
+      "Recette métier humaine conjointe de US-02.03 et US-02.04.",
+      "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
+    ],
+    "acceptance": {
+      "required": true
+    }
   }
 }

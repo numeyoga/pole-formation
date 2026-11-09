@@ -74,3 +74,44 @@ test('requirement choices paginate, recover from network failure and detect a co
   await page.unroute('**/api/referentiels/profils-emploi/competences-disponibles?*');await editor.getByRole('button',{name:'Recharger les choix et l’exigence'}).click();await expect(editor.getByRole('alert')).toHaveCount(0);
   await editor.getByLabel('Rechercher une compétence par code ou libellé').fill('ABSENT-'+f.unique);await editor.getByRole('button',{name:'Rechercher les compétences',exact:true}).click();await expect(editor.getByText('Aucune compétence active pour cette recherche.')).toBeVisible();
 });
+
+test('profile requirements can be filtered by historical classification with keyboard and accessible results',async({page})=>{
+  const f=await fixture(page,3);const root=`/api/referentiels/profils-emploi/${f.profile.id}/exigences`;
+  for(const [index,classification] of [f.first,f.first,f.second].entries()){
+    expect((await page.request.post(root,{headers:f.headers,data:{competencyId:f.competencies[index].id,classificationId:classification.id}})).status()).toBe(201);
+  }
+  await page.getByRole('button',{name:'Se déconnecter',exact:true}).click();await login(page,'admin');
+  const csrf=await(await page.request.get('/api/auth/csrf')).json();
+  expect((await page.request.put(`/api/referentiels/classifications/${f.first.id}`,{headers:{[csrf.headerName]:csrf.token},data:{code:f.first.code,label:f.first.label,sortOrder:0,active:false,version:0}})).status()).toBe(204);
+  await page.getByRole('button',{name:'Se déconnecter',exact:true}).click();await login(page,'gestionnaire');await page.getByRole('button',{name:'Profils d’emploi',exact:true}).click();
+  const details=f.row.locator('details');const summary=details.locator('summary');await summary.focus();await page.keyboard.press('Enter');
+  await expect(details.getByRole('listitem')).toHaveCount(3);
+  const filter=details.getByLabel('Filtrer les exigences par classification',{exact:true});
+  await page.keyboard.press('Tab');await expect(filter).toBeFocused();await page.keyboard.press('ArrowDown');
+  await expect(details.getByRole('listitem')).toHaveCount(2);await expect(details.getByRole('status',{name:'Résultats des exigences'})).toHaveText('2 exigences sur 3.');
+  await filter.selectOption(f.second.id);await expect(details.getByRole('listitem')).toHaveCount(1);await expect(details.getByRole('listitem')).toContainText(f.competencies[2].label);
+  await filter.selectOption(f.first.id);await expect(details.getByRole('listitem')).toHaveCount(2);
+  expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
+  await page.setViewportSize({width:375,height:812});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await details.screenshot({path:'test-results/profile-requirements-filter-mobile.png'});expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
+  await filter.selectOption('');await expect(details.getByRole('listitem')).toHaveCount(3);
+  await summary.click();await summary.click();await expect(filter).toHaveValue('');
+});
+
+test('requirement filters stay local to each profile, retry errors and refresh after reclassification',async({page})=>{
+  const f=await fixture(page);const root=`/api/referentiels/profils-emploi/${f.profile.id}/exigences`;
+  const created=await page.request.post(root,{headers:f.headers,data:{competencyId:f.competencies[0].id,classificationId:f.first.id}});expect(created.status()).toBe(201);
+  const emptyCode=`000-PROF-${9999999999999-Date.now()}`;
+  const emptyResponse=await page.request.post('/api/referentiels/profils-emploi',{headers:f.headers,data:{code:emptyCode,label:f.unique+' vide'}});expect(emptyResponse.status()).toBe(201);
+  const panel=page.getByRole('region',{name:'Profils d’emploi',exact:true});await panel.getByRole('button',{name:'Actualiser les profils',exact:true}).click();
+  await page.route(`**${root}`,route=>route.abort());await f.row.locator('summary').click();
+  const details=f.row.locator('details');await expect(details.getByRole('alert')).toContainText('indisponible');await expect(details.getByText('Aucune exigence.')).toHaveCount(0);
+  await page.unroute(`**${root}`);await details.getByRole('button',{name:'Réessayer les exigences'}).click();
+  const filter=details.getByLabel('Filtrer les exigences par classification',{exact:true});await filter.selectOption(f.first.id);
+  const empty=panel.getByRole('row').filter({hasText:emptyCode}).locator('details');await empty.locator('summary').click();await expect(empty.getByText('Aucune exigence.',{exact:true})).toBeVisible();
+  await expect(empty.getByLabel('Filtrer les exigences par classification',{exact:true})).toHaveCount(0);await expect(filter).toHaveValue(f.first.id);
+  await details.getByRole('button',{name:`Reclasser l’exigence ${f.competencies[0].label}`,exact:true}).click();
+  const editor=page.getByRole('dialog',{name:'Reclasser l’exigence',exact:true});await editor.getByLabel('Classification',{exact:true}).selectOption(f.second.id);await editor.getByRole('button',{name:'Enregistrer l’exigence',exact:true}).click();await expect(editor).not.toBeVisible();
+  await expect(filter).toHaveValue(f.first.id);await expect(details.getByText('Aucune exigence pour cette classification.',{exact:true})).toBeVisible();await expect(details.getByRole('listitem')).toHaveCount(0);
+  await filter.selectOption('');await expect(details.getByRole('listitem')).toHaveCount(1);await expect(details.getByRole('listitem')).toContainText(f.second.label);
+});
