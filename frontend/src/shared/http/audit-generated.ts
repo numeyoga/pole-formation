@@ -15,7 +15,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    subjectType?: "COMPTE" | "PARTICIPATION" | "CRENEAU" | "AFFECTATIONS";
+                    subjectType?: "COMPTE" | "PARTICIPATION" | "CRENEAU" | "AFFECTATIONS" | "FORMATION";
                     subjectId?: string;
                     sessionId?: string;
                     beforeSequence?: string;
@@ -229,7 +229,7 @@ export interface components {
             actor: string;
             action: string;
             /** @enum {string} */
-            subjectType: "COMPTE" | "PARTICIPATION" | "CRENEAU" | "AFFECTATIONS";
+            subjectType: "COMPTE" | "PARTICIPATION" | "CRENEAU" | "AFFECTATIONS" | "FORMATION";
             subjectId: string;
             /** Format: uuid */
             sessionId: string | null;

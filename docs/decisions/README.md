@@ -30,3 +30,5 @@ tags:
 - [ADR 0015 – Configuration des classifications](ADR-0015-classifications.md)
 
 - [ADR 0016 – Association et reclassement des exigences](ADR-0016-profile-requirements.md)
+
+- [ADR 0017 – Catalogue et cycle de vie des formations](ADR-0017-formations.md)

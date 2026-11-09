@@ -5,9 +5,9 @@ import { ApiError } from '../../access/adapters/access-api';
 import { messages, roles, states } from '../../../shared/i18n/fr';
 
 const client=createClient<paths>({credentials:'same-origin'});
-const actions:Record<string,string>={CORRECTION_PRESENCE:'Correction de présence après clôture',CHANGEMENT_ROLE:'Changement de rôle',MODIFICATION_CRENEAU:'Modification de créneau',REMPLACEMENT_INTERVENANTS:'Remplacement des intervenants',DESISTEMENT:'Désistement',REACTIVATION_PARTICIPATION:'Réactivation de participation'};
-const types:Record<string,string>={COMPTE:'Compte',PARTICIPATION:'Participation',CRENEAU:'Créneau',AFFECTATIONS:'Affectations de session'};
-const fields:Record<string,string>={state:'État',role:'Rôle',startsAt:'Début',endsAt:'Fin',instructorIds:'Intervenants'};
+const actions:Record<string,string>={CREATION_FORMATION:'Création de formation',MODIFICATION_FORMATION:'Modification de formation',ACTIVATION_FORMATION:'Activation de formation',ARCHIVAGE_FORMATION:'Archivage de formation',REACTIVATION_FORMATION:'Réactivation de formation',CORRECTION_PRESENCE:'Correction de présence après clôture',CHANGEMENT_ROLE:'Changement de rôle',MODIFICATION_CRENEAU:'Modification de créneau',REMPLACEMENT_INTERVENANTS:'Remplacement des intervenants',DESISTEMENT:'Désistement',REACTIVATION_PARTICIPATION:'Réactivation de participation'};
+const types:Record<string,string>={FORMATION:'Formation',COMPTE:'Compte',PARTICIPATION:'Participation',CRENEAU:'Créneau',AFFECTATIONS:'Affectations de session'};
+const fields:Record<string,string>={code:'Code',title:'Intitulé',objectives:'Objectifs',description:'Description',durationMinutes:'Durée indicative (minutes)',version:'Version',state:'État',role:'Rôle',startsAt:'Début',endsAt:'Fin',instructorIds:'Intervenants'};
 function value(value:unknown):string {
   if(Array.isArray(value))return value.map(item=>String(item)).join(', ')||'Aucun';
   if(typeof value==='string')return states[value]??(roles as Record<string,string>)[value]??value;

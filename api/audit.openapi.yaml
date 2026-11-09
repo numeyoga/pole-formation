@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Pôle formation — journal et changements sensibles
-  version: 0.2.0
+  version: 0.3.0
 servers: [{url: /}]
 security: [{session: []}]
 paths:
@@ -9,7 +9,7 @@ paths:
     get:
       description: Gestionnaires et administrateurs uniquement. Ordre décroissant de séquence ; curseur exclusif, sans total instable.
       parameters:
-        - {name: subjectType, in: query, schema: {type: string, enum: [COMPTE, PARTICIPATION, CRENEAU, AFFECTATIONS]}}
+        - {name: subjectType, in: query, schema: {type: string, enum: [COMPTE, PARTICIPATION, CRENEAU, AFFECTATIONS, FORMATION]}}
         - {name: subjectId, in: query, schema: {type: string, minLength: 1, maxLength: 100}}
         - {name: sessionId, in: query, schema: {type: string, format: uuid}}
         - {name: beforeSequence, in: query, schema: {type: string, pattern: '^[1-9][0-9]*$', maxLength: 19}}
@@ -126,7 +126,7 @@ components:
         occurredAt: {type: string, format: date-time}
         actor: {type: string}
         action: {type: string}
-        subjectType: {type: string, enum: [COMPTE, PARTICIPATION, CRENEAU, AFFECTATIONS]}
+        subjectType: {type: string, enum: [COMPTE, PARTICIPATION, CRENEAU, AFFECTATIONS, FORMATION]}
         subjectId: {type: string}
         sessionId: {type: [string, 'null'], format: uuid}
         before: {type: object, additionalProperties: true}

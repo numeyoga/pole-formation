@@ -20,3 +20,5 @@
 - Conserver `verbatimModuleSyntax` et distinguer imports de types et imports d’enregistrement ; vérifier chaque ouverture de composant dans le bundle de production (DEF-015, récurrence DEF-010).
 
 - Construire les requêtes JSON structurellement, sans substitution dépendante de l’ordre des champs ; fournir une version courante et vérifier le motif exact des refus métier (DEF-016).
+
+- Avant de focaliser un contrôle après un traitement asynchrone, rétablir sa disponibilité puis attendre le rendu ; vérifier aussi le focus quand le bouton de rechargement disparaît (DEF-017).

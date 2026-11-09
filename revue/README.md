@@ -28,3 +28,5 @@ Le [suivi](suivi.md) contient les statuts courants et la [checklist](checklist-p
 | [DEF-015](defauts/2026-11-09-DEF-015-import-editeur.md) | 2026-11-09 | Éditeur non enregistré après suppression de son import | Imports explicites et verbatimModuleSyntax | corrigé localement, US-02.03 |
 
 | [DEF-016](defauts/2026-11-09-DEF-016-test-inactivite-version.md) | 2026-11-09 | Version périmée masquant le contrôle d’inactivité | Préconditions explicites et assertion du motif | corrigé localement, US-02.03 |
+
+| [DEF-017](defauts/2026-11-09-DEF-017-focus-formulaire-desactive.md) | 2026-11-09 | Focus demandé avant réactivation du formulaire | Assertions de focus après rechargement | corrigé localement, US-03.01 |

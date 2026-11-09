@@ -1,7 +1,7 @@
 ---
 title: "Cycles de vie et transitions"
 created: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-09
 version: "1.0.0"
 status: "baseline-v1.0"
 diataxis: "reference"
@@ -18,7 +18,7 @@ diataxis: "reference"
 
 ## Formation
 
-États de travail proposés : `Brouillon → Active → Archivée → Active` (réactivation). Réactivation validée : vérifier code unique, champs obligatoires, absence d'incohérence bloquante ; historique inchangé. Aucune nouvelle session depuis une formation archivée.
+États confirmés explicitement le 2026-11-09 dans REF-07 : `Brouillon → Active → Archivée → Active` (réactivation), avec archivage également possible depuis Brouillon. Réactivation validée : vérifier code unique, champs obligatoires, absence d'incohérence bloquante ; historique inchangé. Toute nouvelle session applicative requiert une formation Active.
 
 ## Session
 

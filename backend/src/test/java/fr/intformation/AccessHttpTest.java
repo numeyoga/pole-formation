@@ -161,6 +161,111 @@ class AccessHttpTest {
     }
 
     static final String PROFILES="/api/referentiels/profils-emploi";
+    String formationBody(String code,String title,long version){
+        return json.writeValueAsString(java.util.Map.of("code",code,"title",title,"objectives","Objectifs exemple","description","Description exemple","durationMinutes",90,"version",version));
+    }
+    JsonNode newFormation(Browser user) throws Exception {
+        var response=user.call("POST","/api/formations",formationBody("FOR-"+java.util.UUID.randomUUID(),"Formation exemple",0),true);
+        assertThat(response.statusCode()).isEqualTo(201);return json.readTree(response.body());
+    }
+    @Test void formations_start_as_draft_and_follow_the_validated_lifecycle_with_audit() throws Exception {
+        var manager=as("gestionnaire");var formation=newFormation(manager);String path="/api/formations/"+formation.get("id").asString();
+        assertThat(formation.get("state").asString()).isEqualTo("BROUILLON");assertThat(formation.get("version").asLong()).isZero();
+        assertThat(manager.put(path,formationBody(formation.get("code").asString(),"Formation modifiée",0)).statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST",path+"/activation","{\"version\":1}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST",path+"/activation","{\"version\":2}",true).statusCode()).isEqualTo(409);
+        assertThat(manager.call("POST",path+"/archivage","{\"version\":2}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST",path+"/reactivation","{\"version\":3}",true).statusCode()).isEqualTo(204);
+        var current=json.readTree(manager.get(path).body());assertThat(current.get("id").asString()).isEqualTo(formation.get("id").asString());
+        assertThat(current.get("title").asString()).isEqualTo("Formation modifiée");assertThat(current.get("state").asString()).isEqualTo("ACTIVE");assertThat(current.get("version").asLong()).isEqualTo(4);
+        var events=json.readTree(manager.get("/api/audit?subjectType=FORMATION&subjectId="+formation.get("id").asString()).body()).get("items");
+        assertThat(events.size()).isEqualTo(5);assertThat(events.get(0).get("action").asString()).isEqualTo("REACTIVATION_FORMATION");
+        assertThat(events.get(0).get("before").get("state").asString()).isEqualTo("ARCHIVEE");assertThat(events.get(0).get("after").get("state").asString()).isEqualTo("ACTIVE");
+    }
+    @Test void formation_archiving_and_reactivation_preserve_sessions_and_participations() throws Exception {
+        var manager=as("gestionnaire");var formation=newFormation(manager);String path="/api/formations/"+formation.get("id").asString();
+        assertThat(manager.call("POST",path+"/sessions","{\"title\":\"Session brouillon\"}",true).statusCode()).isEqualTo(409);
+        assertThat(manager.call("POST",path+"/activation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        var sessionResponse=manager.call("POST",path+"/sessions","{\"title\":\"Session exemple\"}",true);assertThat(sessionResponse.statusCode()).isEqualTo(201);
+        String session=json.readTree(sessionResponse.body()).get("id").asString();
+        db.sql("UPDATE training_session SET formation_id=:formation WHERE id=:session").param("formation",java.util.UUID.fromString(formation.get("id").asString())).param("session",java.util.UUID.fromString(S1)).update();
+        try{
+            String peopleBefore=manager.get(people(S1)).body();String sessionsBefore=manager.get(path+"/sessions").body();
+            assertThat(json.readTree(sessionsBefore).size()).isEqualTo(2);
+            assertThat(manager.call("POST",path+"/archivage","{\"version\":1}",true).statusCode()).isEqualTo(204);
+            var refused=manager.call("POST",path+"/sessions","{\"title\":\"Nouvelle session refusée\"}",true);
+            assertThat(refused.statusCode()).isEqualTo(409);assertThat(json.readTree(refused.body()).get("detail").asString()).contains("active");
+            assertThat(manager.get(people(S1)).body()).isEqualTo(peopleBefore);assertThat(manager.get(path+"/sessions").body()).isEqualTo(sessionsBefore);
+            assertThat(manager.call("POST",path+"/reactivation","{\"version\":2}",true).statusCode()).isEqualTo(204);
+            assertThat(manager.get(path+"/sessions").body()).isEqualTo(sessionsBefore);assertThat(manager.get(people(S1)).body()).isEqualTo(peopleBefore);
+        }finally{
+            db.sql("UPDATE training_session SET formation_id=NULL WHERE id=:id").param("id",java.util.UUID.fromString(S1)).update();
+            db.sql("DELETE FROM training_session WHERE id=:id").param("id",java.util.UUID.fromString(session)).update();
+        }
+    }
+    @Test void formation_archive_is_atomic_with_audit_and_supports_drafts() throws Exception {
+        var manager=as("gestionnaire");var formation=newFormation(manager);String path="/api/formations/"+formation.get("id").asString();
+        db.sql("CREATE FUNCTION fail_formation_audit_test() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.subject_type='FORMATION' THEN RAISE EXCEPTION 'audit unavailable'; END IF; RETURN NEW; END $$").update();
+        db.sql("CREATE TRIGGER fail_formation_audit_test BEFORE INSERT ON access_audit FOR EACH ROW EXECUTE FUNCTION fail_formation_audit_test()").update();
+        try{
+            assertThat(manager.call("POST",path+"/archivage","{\"version\":0}",true).statusCode()).isEqualTo(500);
+            var current=json.readTree(manager.get(path).body());assertThat(current.get("state").asString()).isEqualTo("BROUILLON");assertThat(current.get("version").asLong()).isZero();
+        }finally{db.sql("DROP TRIGGER fail_formation_audit_test ON access_audit").update();db.sql("DROP FUNCTION fail_formation_audit_test()").update();}
+        assertThat(manager.call("POST",path+"/archivage","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST",path+"/archivage","{\"version\":1}",true).statusCode()).isEqualTo(409);
+        assertThat(manager.call("POST",path+"/reactivation","{\"version\":1}",true).statusCode()).isEqualTo(204);
+    }
+    @Test void formations_validate_fields_codes_permissions_and_numeric_versions() throws Exception {
+        var manager=as("gestionnaire");var formation=newFormation(manager);String path="/api/formations/"+formation.get("id").asString();
+        for(var invalid:java.util.List.of(java.util.Map.of("code"," ","title","Titre"),java.util.Map.of("code","X".repeat(65),"title","Titre"),java.util.Map.of("code","X","title"," "),java.util.Map.of("code","X","title","T".repeat(201)),java.util.Map.of("code","X","title","Titre","description","D".repeat(4001)),java.util.Map.of("code","X","title","Titre","objectives","O".repeat(4001)),java.util.Map.of("code","X","title","Titre","durationMinutes",0),java.util.Map.of("code","X","title","Titre","durationMinutes",1.5))){
+            assertThat(manager.call("POST","/api/formations",json.writeValueAsString(invalid),true).statusCode()).isEqualTo(400);
+        }
+        var instructor=as("intervenant");
+        assertThat(instructor.put(path,formationBody("INTERDIT","Interdit",0)).statusCode()).isEqualTo(403);
+        assertThat(instructor.call("POST","/api/formations",formationBody("INTERDIT","Interdit",0),true).statusCode()).isEqualTo(403);
+        for(String action:java.util.List.of("activation","archivage","reactivation"))assertThat(instructor.call("POST",path+"/"+action,"{\"version\":0}",true).statusCode()).isEqualTo(403);
+        assertThat(instructor.get(path+"/sessions").statusCode()).isEqualTo(403);
+        assertThat(instructor.call("POST",path+"/sessions","{\"title\":\"Interdit\"}",true).statusCode()).isEqualTo(403);
+        assertThat(manager.call("POST",path+"/archivage","{\"version\":0}",false).statusCode()).isEqualTo(403);
+        assertThat(manager.call("POST",path+"/archivage","{\"version\":0.5}",true).statusCode()).isEqualTo(400);
+        assertThat(manager.put(path,formationBody(formation.get("code").asString(),"Version périmée",1)).statusCode()).isEqualTo(409);
+        assertThat(manager.call("POST",path+"/archivage","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        var duplicate=manager.call("POST","/api/formations",formationBody(formation.get("code").asString().toLowerCase(),"Doublon archivé",0),true);
+        assertThat(duplicate.statusCode()).isEqualTo(409);assertThat(json.readTree(duplicate.body()).get("fieldErrors").has("code")).isTrue();
+        assertThat(manager.get("/api/formations/"+java.util.UUID.randomUUID()).statusCode()).isEqualTo(404);
+        var minimal=manager.call("POST","/api/formations",json.writeValueAsString(java.util.Map.of("code","  MIN-"+java.util.UUID.randomUUID()+"  ","title","  Titre minimal  ")),true);
+        assertThat(minimal.statusCode()).isEqualTo(201);assertThat(json.readTree(minimal.body()).get("title").asString()).isEqualTo("Titre minimal");assertThat(json.readTree(minimal.body()).get("durationMinutes").isNull()).isTrue();
+    }
+    @Test void concurrent_formation_creates_and_transitions_have_one_winner() throws Exception {
+        var manager=as("gestionnaire");var other=as("admin");String code="FOR-RACE-"+java.util.UUID.randomUUID();String body=formationBody(code,"Course",0);
+        try(var executor=java.util.concurrent.Executors.newFixedThreadPool(2)){
+            var first=executor.submit(()->manager.call("POST","/api/formations",body,true).statusCode());var second=executor.submit(()->other.call("POST","/api/formations",body,true).statusCode());
+            assertThat(java.util.List.of(first.get(),second.get())).containsExactlyInAnyOrder(201,409);
+            var formation=newFormation(manager);String path="/api/formations/"+formation.get("id").asString()+"/activation";
+            var edit1=executor.submit(()->manager.call("POST",path,"{\"version\":0}",true).statusCode());var edit2=executor.submit(()->other.call("POST",path,"{\"version\":0}",true).statusCode());
+            assertThat(java.util.List.of(edit1.get(),edit2.get())).containsExactlyInAnyOrder(204,409);
+        }
+    }
+
+    @Test void formation_audit_filter_keeps_management_permissions() throws Exception {
+        assertThat(as("gestionnaire").get("/api/audit?subjectType=FORMATION").statusCode()).isEqualTo(200);
+        assertThat(as("intervenant").get("/api/audit?subjectType=FORMATION").statusCode()).isEqualTo(403);
+    }
+
+    @Test void formation_catalog_is_paginated_and_restricted_to_management() throws Exception {
+        String root="/api/formations";var manager=as("gestionnaire");newFormation(manager);newFormation(manager);
+        var response=manager.get(root+"?page=0&size=2");assertThat(response.statusCode()).isEqualTo(200);
+        var page=json.readTree(response.body());assertThat(page.get("page").asInt()).isZero();assertThat(page.get("size").asInt()).isEqualTo(2);
+        assertThat(page.get("items").isArray()).isTrue();assertThat(page.get("total").asLong()).isGreaterThanOrEqualTo(2);
+        assertThat(page.get("items").size()).isEqualTo(2);
+        var next=json.readTree(manager.get(root+"?page=1&size=1").body());
+        assertThat(next.get("items").get(0).get("id").asString()).isEqualTo(page.get("items").get(1).get("id").asString());
+        assertThat(manager.get(root+"?page=-1").statusCode()).isEqualTo(400);
+        assertThat(manager.get(root+"?size=101").statusCode()).isEqualTo(400);
+        assertThat(as("intervenant").get(root).statusCode()).isEqualTo(403);
+        assertThat(new Browser().get(root).statusCode()).isEqualTo(401);
+    }
+
     @Test void requirement_reclassification_preserves_identity_and_rejects_stale_or_inactive_targets() throws Exception {
         var manager=as("gestionnaire");var admin=as("admin");var parent=competencyParent(manager);
         var competency=json.readTree(manager.call("POST","/api/referentiels/competences",competencyBody(parent.get("id").asString(),"RECLASS-"+java.util.UUID.randomUUID(),"Compétence reclassée"),true).body());

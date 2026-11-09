@@ -9,6 +9,14 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @RestControllerAdvice
 public class ApiErrors {
+    @ExceptionHandler(fr.intformation.formations.domain.Formation.InvalidField.class)
+    ProblemDetail formationField(fr.intformation.formations.domain.Formation.InvalidField error){
+        var problem=ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,error.getMessage());problem.setProperty("fieldErrors",java.util.Map.of(error.field(),error.getMessage()));return problem;
+    }
+    @ExceptionHandler(fr.intformation.formations.domain.Formation.DuplicateCode.class)
+    ProblemDetail duplicateFormation(fr.intformation.formations.domain.Formation.DuplicateCode error){
+        var problem=ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,error.getMessage());problem.setProperty("fieldErrors",java.util.Map.of("code",error.getMessage()));return problem;
+    }
     @ExceptionHandler(fr.intformation.classifications.domain.Classification.InvalidField.class)
     ProblemDetail classificationField(fr.intformation.classifications.domain.Classification.InvalidField error){
         var problem=ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,error.getMessage());problem.setProperty("fieldErrors",java.util.Map.of(error.field(),error.getMessage()));return problem;

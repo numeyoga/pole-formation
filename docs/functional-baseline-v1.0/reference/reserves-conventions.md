@@ -1,7 +1,7 @@
 ---
 title: "Réserves documentaires et conventions de conception"
 created: 2026-11-07
-updated: 2026-11-08
+updated: 2026-11-09
 version: "1.5.0"
 status: "baseline-v1.0"
 diataxis: "reference"
@@ -23,9 +23,9 @@ Le document initial « Pôle formation INT — Contexte et spécification métie
 
 ## Conventions proposées (non arbitrages supplémentaires)
 
-1. Pour les domaines, sous-domaines et compétences, l’unicité et la normalisation sont validées par REF-01, REF-02 et REF-03 ; le parent d’un sous-domaine ou d’une compétence est fixé à la création. Pour les autres types de référentiels, les modalités détaillées restent à arbitrer. Les ID techniques ne changent pas.
+1. Pour les domaines, sous-domaines et compétences, l’unicité et la normalisation sont validées par REF-01, REF-02 et REF-03 ; le parent d’un sous-domaine ou d’une compétence est fixé à la création. Les formations sont confirmées dans REF-07. Pour les autres types de référentiels, les modalités détaillées restent à arbitrer. Les ID techniques ne changent pas.
 3. Une session sans créneau ne peut passer de Brouillon à Planifiée.
-4. Les états de Formation et Session proposés sont Brouillon/Active/Archivée et Brouillon/Planifiée/Terminée/Annulée.
+4. Les états de Formation sont confirmés par REF-07 : Brouillon/Active/Archivée. Les états de Session proposés restent Brouillon/Planifiée/Terminée/Annulée.
 6. Une réduction de capacité au-dessous du nombre de places occupées est refusée.
 7. Le fuseau métier d’entrée et de restitution reste à préciser ; les instants du contrat API comportent un décalage explicite et le journal affiche UTC.
 8. Les formulaires de création valident les champs minimaux ; nom/prénom et identifiant professionnel sont obligatoires pour le collaborateur.

@@ -69,7 +69,7 @@ export class AuditLog extends LitElement {
           <option value="COMPTE">Comptes</option>
           <option value="PARTICIPATION">Participations</option>
           <option value="CRENEAU">Créneaux</option>
-          <option value="AFFECTATIONS">Affectations</option>
+          <option value="AFFECTATIONS">Affectations</option><option value="FORMATION">Formations</option>
         </select>
         <label for="audit-session">Session</label><select id="audit-session" name="session"><option value="">Toutes les sessions</option>${this.sessions.map(s=>html`<option value=${s.id}>${s.title}</option>`)}</select>
         <label for="audit-subject">Identifiant de l’objet (facultatif)</label><input id="audit-subject" name="subject" maxlength="100" type="search">

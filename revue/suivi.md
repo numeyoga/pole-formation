@@ -20,3 +20,5 @@
 | DEF-015 | 🟠 | Éditeur non enregistré après suppression de son import | [fiche](defauts/2026-11-09-DEF-015-import-editeur.md) | `profiles-panel.ts`, `tsconfig.json` | corrigé localement | Import explicite, verbatimModuleSyntax et parcours Chromium ; récurrence DEF-010 | 2026-11-09 |
 
 | DEF-016 | 🟠 | Version périmée masquant le contrôle d’inactivité | [fiche](defauts/2026-11-09-DEF-016-test-inactivite-version.md) | `AccessHttpTest.java` | corrigé localement | JSON structurel, motif explicite, mutation détectée ; récurrence DEF-011 | 2026-11-09 |
+
+| DEF-017 | 🟠 | Focus demandé avant réactivation du formulaire | [fiche](defauts/2026-11-09-DEF-017-focus-formulaire-desactive.md) | `formations-panel.ts` | corrigé localement | Réactivation, rendu puis focus ; assertions navigateur sur édition et confirmation | 2026-11-09 |

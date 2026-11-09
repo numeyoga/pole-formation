@@ -31,6 +31,8 @@ Le [contrat des profils d’emploi](../../../api/profiles.openapi.yaml) couvre U
 
 Le [contrat des classifications](../../../api/classifications.openapi.yaml) couvre US-02.02 : consultation paginée triée par ordre puis code, filtre des valeurs actives, création et modification du code, libellé, ordre et activation. Écriture réservée à l’administrateur fonctionnel ; lecture accessible aussi au gestionnaire.
 
+Le [contrat des formations](../../../api/formations.openapi.yaml) couvre US-03.01 : catalogue paginé, création Brouillon, modification versionnée, activation, archivage et réactivation audités, ainsi que consultation et raccordement minimal des sessions. Le journal expose aussi le type `FORMATION`. La transition des anciennes sessions sans rattachement connu est explicitée dans [ADR 0017](../../decisions/ADR-0017-formations.md).
+
 ## Erreurs
 
 - Privilégier `application/problem+json` (RFC 9457) ; distinguer erreur de format, violation métier, introuvable, conflit, non authentifié, interdit.

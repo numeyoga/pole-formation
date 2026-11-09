@@ -18,7 +18,7 @@ public final class AuditService {
     public List<AuditStore.Event> read(String user,AuditStore.Query query) {
         policy.require(accounts.actor(user),READ_AUDIT);
         if(query.limit()<1 || query.limit()>100 || (query.beforeSequence()!=null && query.beforeSequence()<1)) throw new IllegalArgumentException("Pagination invalide.");
-        if(query.subjectType()!=null && !Set.of("COMPTE","PARTICIPATION","CRENEAU","AFFECTATIONS").contains(query.subjectType())) throw new IllegalArgumentException("Type d’objet invalide.");
+        if(query.subjectType()!=null && !Set.of("COMPTE","PARTICIPATION","CRENEAU","AFFECTATIONS","FORMATION").contains(query.subjectType())) throw new IllegalArgumentException("Type d’objet invalide.");
         if(query.subjectId()!=null && (query.subjectId().isBlank() || query.subjectId().length()>100)) throw new IllegalArgumentException("Identifiant invalide.");
         return audit.read(query);
     }

@@ -66,6 +66,8 @@ Les 41 lignes ci-dessous regroupent **10 décisions de modèle**, **10 arbitrage
 
 | REF-05 | Classifications, conventions confirmées explicitement le 2026-11-08 pendant US-02.02 : reprise des limites des profils (code 1–64 caractères, libellé 1–200, espaces externes retirés), code obligatoire et unique sans casse même après désactivation ; ordre entier positif ou nul ; contrôle de version pour les modifications complètes concurrentes. Identité technique et exigences existantes conservées. Aucune sémantique métier ni classification officielle prédéfinie. |
 | REF-06 | Exigences : détection des reclassements concurrents confirmée explicitement le 2026-11-09 ; version obligatoire, conflit 409 et rechargement avant nouvelle tentative, sans écrasement silencieux. Identité et couple profil-compétence conservés. |
+| REF-07 | Formations : conventions confirmées explicitement le 2026-11-09. Code 1–64 et intitulé 1–200 obligatoires, espaces externes retirés, code unique sans casse même après archivage ; objectifs/description facultatifs de 4 000 caractères, durée indicative facultative en minutes entières positives, version obligatoire. Cycle Brouillon → Active → Archivée → Active, archivage depuis Brouillon autorisé ; nouvelles sessions seulement depuis une formation Active. |
+| LEG-01 | Transition confirmée le 2026-11-09 : sessions de démonstration antérieures conservées sans inventer leur correspondance de formation ; toutes les nouvelles sessions applicatives sont rattachées. Rattachement de l’historique traité avec US-05.01, exception transitoire à INV-07. |
 
 ## Principes de gouvernance
 

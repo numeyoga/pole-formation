@@ -1,0 +1,216 @@
+openapi: 3.1.0
+info: {title: Pôle formation — catalogue de formations, version: 0.1.0}
+servers: [{url: /}]
+security: [{session: []}]
+paths:
+  /api/formations:
+    get:
+      description: Catalogue paginé pour gestionnaire et administrateur, tous états, tri par code sans casse puis identifiant.
+      parameters:
+        - {name: page, in: query, schema: {type: integer, minimum: 0, default: 0}}
+        - {name: size, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+      responses:
+        '200':
+          description: Page du catalogue
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Page'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+    post:
+      description: Crée une formation Brouillon. Code réservé sans casse, y compris après archivage. Création auditée atomiquement.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Fields'}
+      responses:
+        '201':
+          description: Formation créée
+          headers:
+            Location: {schema: {type: string}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Formation'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/formations/{id}:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      responses:
+        '200':
+          description: Fiche, y compris archivée
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Formation'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+    put:
+      description: Modifie les champs, en conservant identité et état. Version obligatoire ; modification auditée.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - {$ref: '#/components/schemas/Fields'}
+                - type: object
+                  required: [version]
+                  properties:
+                    version: {type: integer, format: int64, minimum: 0}
+      responses:
+        '204': {description: Formation modifiée}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/formations/{id}/activation:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    post:
+      description: Brouillon vers Active. Version obligatoire, transition auditée atomiquement.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Version'}
+      responses:
+        '204': {description: Transition effectuée}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/formations/{id}/archivage:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    post:
+      description: Brouillon ou Active vers Archivée, historique inchangé. Version obligatoire, transition auditée atomiquement.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Version'}
+      responses:
+        '204': {description: Transition effectuée}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/formations/{id}/reactivation:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    post:
+      description: Archivée vers Active, champs obligatoires, code unique et cohérence contrôlés. Version obligatoire, transition auditée atomiquement.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Version'}
+      responses:
+        '204': {description: Transition effectuée}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/formations/{id}/sessions:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      responses:
+        '200':
+          description: Sessions conservées quel que soit l’état de la formation, triées par intitulé sans casse puis identifiant
+          content:
+            application/json:
+              schema: {type: array, items: {$ref: '#/components/schemas/Session'}}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+    post:
+      description: Raccordement minimal de session Brouillon. Formation Active obligatoire, vérifiée sous le même verrou que l’archivage. Planification complète dans US-05.01.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title: {type: string, minLength: 1, maxLength: 200}
+      responses:
+        '201':
+          description: Session Brouillon créée et rattachée à la formation
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Session'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+components:
+  securitySchemes:
+    session: {type: apiKey, in: cookie, name: JSESSIONID}
+  parameters:
+    Id: {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+    Csrf: {name: X-CSRF-TOKEN, in: header, required: true, schema: {type: string}}
+  responses:
+    Error:
+      description: Erreur de format, champ, droits, ressource absente, code réservé, transition interdite ou version périmée
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [status]
+            properties:
+              status: {type: integer}
+              detail: {type: string}
+              fieldErrors: {type: object, additionalProperties: {type: string}}
+  schemas:
+    Fields:
+      type: object
+      required: [code, title]
+      properties:
+        code: {type: string, minLength: 1, maxLength: 64}
+        title: {type: string, minLength: 1, maxLength: 200}
+        objectives: {type: string, maxLength: 4000, default: ''}
+        description: {type: string, maxLength: 4000, default: ''}
+        durationMinutes: {type: [integer, 'null'], minimum: 1, maximum: 2147483647}
+    Formation:
+      allOf:
+        - {$ref: '#/components/schemas/Fields'}
+        - type: object
+          required: [id, code, title, objectives, description, durationMinutes, state, version]
+          properties:
+            id: {type: string, format: uuid}
+            state: {type: string, enum: [BROUILLON, ACTIVE, ARCHIVEE]}
+            version: {type: integer, format: int64, minimum: 0}
+    Version:
+      type: object
+      required: [version]
+      properties:
+        version: {type: integer, format: int64, minimum: 0}
+    Page:
+      type: object
+      required: [items, total, page, size]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Formation'}}
+        total: {type: integer}
+        page: {type: integer}
+        size: {type: integer}
+    Session:
+      type: object
+      required: [id, title, state]
+      properties:
+        id: {type: string, format: uuid}
+        title: {type: string}
+        state: {type: string, enum: [BROUILLON, PLANIFIEE, TERMINEE, ANNULEE]}
