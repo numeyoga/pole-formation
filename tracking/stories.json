@@ -198,11 +198,11 @@
     ],
     "report": "docs/reference/quality/us-02-03-validation.md",
     "remaining": [
-      "Recette métier humaine conjointe de US-02.03 et US-02.04.",
       "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
     ],
     "acceptance": {
-      "required": true
+      "required": true,
+      "evidence": "docs/reference/quality/acceptance-2026-11-09.md"
     },
     "validated_commit": "d0f37dc5fc5779740eb775352ac6b56001499329",
     "commits": [
@@ -218,11 +218,11 @@
     ],
     "report": "docs/reference/quality/us-02-04-validation.md",
     "remaining": [
-      "Recette métier humaine conjointe de US-02.03 et US-02.04.",
       "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
     ],
     "acceptance": {
-      "required": true
+      "required": true,
+      "evidence": "docs/reference/quality/acceptance-2026-11-09.md"
     },
     "validated_commit": "d0f37dc5fc5779740eb775352ac6b56001499329",
     "commits": [
