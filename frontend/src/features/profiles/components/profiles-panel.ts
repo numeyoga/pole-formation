@@ -1,6 +1,9 @@
 import { LitElement,html,css,nothing } from 'lit';
 import { profilesApi,ProfileError } from '../adapters/profiles-api';
 import type { ProfileView,ProfilePage,RequirementView } from '../presentation/models';
+import './requirements-editor';
+import type { RequirementsEditor } from './requirements-editor';
+import { requirementMessages as r } from '../../../shared/i18n/fr';
 import { ApiError } from '../../../shared/http/session';
 import { messages,profileMessages as m } from '../../../shared/i18n/fr';
 
@@ -89,16 +92,22 @@ export class ProfilesPanel extends LitElement {
     try{const items=await profilesApi.children(profile.id);if(generation===this.generation)this.childViews={...this.childViews,[profile.id]:{busy:false,items,error:''}};}
     catch(error){if(generation===this.generation)this.childViews={...this.childViews,[profile.id]:{busy:false,items:[],error:this.message(error)}};}
   }
+  private async requirementSaved(event:CustomEvent<{profile:ProfileView}>){
+    await this.loadChildren(event.detail.profile);this.notice=r.saved;
+    await this.updateComplete;this.renderRoot.querySelector<HTMLElement>('#profiles-title')?.focus();
+  }
+  private showRequirement(profile:ProfileView,requirement:RequirementView|null=null){void this.renderRoot.querySelector<RequirementsEditor>('requirements-editor')!.show(profile,requirement);}
   render(){return html`
     <section aria-labelledby="profiles-title"><header><h2 id="profiles-title" tabindex="-1">${m.title}</h2><button ?disabled=${this.busy} @click=${()=>this.open(null)}>${m.create}</button><button ?disabled=${this.busy} @click=${()=>this.load(this.data?.page??0)}>${m.refresh}</button></header>
       ${this.error?html`<p role="alert">${this.error}</p>`:nothing}
       <p role="status" aria-label=${m.status}>${this.busy?m.loading:this.notice}</p>
       ${this.data&&!this.data.items.length?html`<p>${m.empty}</p>`:nothing}
       ${this.data?.items.length?html`<div class="table-container" tabindex="0" role="region" aria-label=${m.table}><table><caption>${m.caption}</caption><thead><tr><th scope="col">${m.code}</th><th scope="col">${m.label}</th><th scope="col">${m.state}</th><th scope="col">${m.actions}</th></tr></thead><tbody>${this.data.items.map(profile=>html`<tr><td>${profile.code}</td><td>${profile.label}<p>${profile.description}</p></td><td>${profile.status}</td><td><div class="actions"><button ?disabled=${this.busy} aria-label=${`${m.modify} ${profile.label}`} @click=${()=>this.open(profile)}>${m.modify}</button><button ?disabled=${this.busy||!profile.active} aria-label=${`${m.deactivate} ${profile.label}`} @click=${()=>this.confirm(profile)}>${m.deactivate}</button></div>
-        <details @toggle=${(event:Event)=>this.showChildren(event,profile)}><summary>${m.requirements} ${profile.label}</summary>${this.childViews[profile.id]?.busy?html`<p role="status">${m.requirementsLoading}</p>`:this.childViews[profile.id]?.error?html`<p role="alert">${this.childViews[profile.id].error}</p><button @click=${()=>this.loadChildren(profile)}>${m.requirementsRetry}</button>`:this.childViews[profile.id]?.items.length?html`<ul>${this.childViews[profile.id].items.map(child=>html`<li>${child.competencyLabel} — ${child.classificationLabel}</li>`)}</ul>`:html`<p>${m.requirementsEmpty}</p>`}</details>
+        <p>${!profile.active?r.inactiveProfile:nothing}</p><button type="button" ?disabled=${this.busy||!profile.active} aria-label=${`${r.add} à ${profile.label}`} @click=${()=>this.showRequirement(profile)}>${r.add}</button><details @toggle=${(event:Event)=>this.showChildren(event,profile)}><summary>${m.requirements} ${profile.label}</summary>${this.childViews[profile.id]?.busy?html`<p role="status">${m.requirementsLoading}</p>`:this.childViews[profile.id]?.error?html`<p role="alert">${this.childViews[profile.id].error}</p><button @click=${()=>this.loadChildren(profile)}>${m.requirementsRetry}</button>`:this.childViews[profile.id]?.items.length?html`<ul>${this.childViews[profile.id].items.map(child=>html`<li>${child.competencyLabel} — ${child.classificationLabel} <button type="button" aria-label=${`${r.reclassify} ${child.competencyLabel}`} @click=${()=>this.showRequirement(profile,child)}>${r.reclassify}</button></li>`)}</ul>`:html`<p>${m.requirementsEmpty}</p>`}</details>
       </td></tr>`)}</tbody></table></div>`:nothing}
       ${this.data&&this.data.total>this.data.size?html`<nav aria-label=${m.pagination}><button ?disabled=${this.busy||this.data.page===0} @click=${()=>this.load(this.data!.page-1)}>${m.previous}</button><span aria-current="page">Page ${this.data.page+1}</span><button ?disabled=${this.busy||(this.data.page+1)*this.data.size>=this.data.total} @click=${()=>this.load(this.data!.page+1)}>${m.next}</button></nav>`:nothing}
     </section>
+    <requirements-editor @requirement-saved=${this.requirementSaved}></requirements-editor>
     <dialog id="profile-editor" aria-labelledby="profile-editor-title" @cancel=${(event:Event)=>{if(this.busy)event.preventDefault();}}><h2 id="profile-editor-title">${this.editing?m.edit:m.create}</h2><p role="status" aria-label=${m.formStatus}>${this.busy?m.saving:''}</p>
       ${this.formError?html`<p id="profile-form-error" role="alert" tabindex="-1">${this.formError}</p>`:nothing}
       ${this.stale?html`<button ?disabled=${this.busy} @click=${this.reloadEditing}>${m.reload}</button>`:nothing}

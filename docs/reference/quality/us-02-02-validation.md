@@ -1,7 +1,7 @@
 ---
 title: "Développement et validation de US-02.02"
 created: 2026-11-08
-updated: 2026-11-08
+updated: 2026-11-09
 status: accepted
 type: reference
 ---
@@ -50,6 +50,6 @@ Les tests d’exigences vérifient le raccordement minimal existant ; l’édite
 
 ## Limites et suivi
 
-La recette métier humaine, le lecteur d’écran et le zoom navigateur réel à 200 % restent à effectuer. Axe et la réduction du viewport ne démontrent pas à eux seuls WCAG AA. Les données des parcours sont fictives et locales. Aucune valeur officielle ni sens métier de classification n’est fixé.
+La [recette métier est acceptée le 2026-11-09](acceptance-2026-11-09.md). Le lecteur d’écran et le zoom navigateur réel à 200 % restent à effectuer. Axe et la réduction du viewport ne démontrent pas à eux seuls WCAG AA. Les données des parcours sont fictives et locales. Aucune valeur officielle ni sens métier de classification n’est fixé.
 
-La livraison applicative validée est `de6aa484452518b17042ce90e7a365c7bb25052f`. Aucun code applicatif n’a changé entre les validations finales et ce commit. Le manifeste rattache la preuve à cette révision ; aucune acceptation humaine n’est déclarée.
+La livraison applicative validée est `de6aa484452518b17042ce90e7a365c7bb25052f`. Aucun code applicatif n’a changé entre les validations finales et ce commit. Le manifeste rattache la preuve à cette révision ; l’acceptation métier est référencée séparément dans le manifeste.

@@ -28,3 +28,24 @@ test('expired sessions are presented explicitly',async()=>{
   await expect(profilesApi.list()).rejects.toBeInstanceOf(ProfileError);
   await expect(profilesApi.list()).rejects.toThrow('Votre session a expiré. Connectez-vous à nouveau.');
 });
+test('requirements retain reference ids and concurrency version',async()=>{
+  const item={id:'r',profileId:'p',competencyId:'c',competencyLabel:'Compétence',classificationId:'k',classificationLabel:'Classification historique',version:7};
+  vi.stubGlobal('fetch',vi.fn().mockResolvedValue(Response.json([item])));
+  const {profilesApi}=await import('./profiles-api');
+  expect(await profilesApi.children('p')).toEqual([{id:'r',competencyId:'c',competencyLabel:'Compétence',classificationId:'k',classificationLabel:'Classification historique',version:7}]);
+});
+test('available choices preserve pagination and request active classifications',async()=>{
+  const fetch=vi.fn().mockImplementation(()=>Promise.resolve(Response.json({items:[{id:'c',code:'C1',label:'Compétence'}],total:15,page:1,size:10})));
+  vi.stubGlobal('fetch',fetch);const {profilesApi}=await import('./profiles-api');
+  expect(await profilesApi.competencyChoices('C1',1)).toEqual({items:[{id:'c',label:'C1 — Compétence'}],total:15,page:1,size:10});
+  expect(new URL(fetch.mock.calls[0][0].url).searchParams.get('q')).toBe('C1');
+  await profilesApi.classificationChoices(1);
+  expect(new URL(fetch.mock.calls[1][0].url).searchParams.get('activeOnly')).toBe('true');
+});
+test('reclassification sends the observed version and CSRF token',async()=>{
+  const fetch=vi.fn().mockImplementation((request:Request)=>Promise.resolve(request.url.endsWith('/api/auth/csrf')?Response.json({headerName:'X-CSRF-TOKEN',token:'csrf'}):new Response(null,{status:204})));
+  vi.stubGlobal('fetch',fetch);const {profilesApi}=await import('./profiles-api');
+  await profilesApi.reclassify('p',{id:'r',competencyId:'c',competencyLabel:'C',classificationId:'old',classificationLabel:'Old',version:7},'new');
+  const request:Request=fetch.mock.calls[1][0];expect(request.method).toBe('PUT');expect(request.headers.get('X-CSRF-TOKEN')).toBe('csrf');
+  expect(await request.json()).toEqual({classificationId:'new',version:7});
+});

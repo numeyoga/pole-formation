@@ -178,15 +178,32 @@
     ],
     "report": "docs/reference/quality/us-02-02-validation.md",
     "remaining": [
-      "Recette métier humaine de la configuration des classifications.",
       "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
     ],
     "acceptance": {
-      "required": true
+      "required": true,
+      "evidence": "docs/reference/quality/acceptance-2026-11-09.md"
     },
     "validated_commit": "de6aa484452518b17042ce90e7a365c7bb25052f",
     "commits": [
       "de6aa484452518b17042ce90e7a365c7bb25052f"
     ]
+  },
+  "US-02.03": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
+    "report": "docs/reference/quality/us-02-03-validation.md",
+    "remaining": [
+      "Consolider la livraison dans un commit et rattacher les preuves au hash testé.",
+      "Recette métier humaine des associations et reclassements.",
+      "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
+    ],
+    "acceptance": {
+      "required": true
+    }
   }
 }

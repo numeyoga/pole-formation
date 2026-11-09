@@ -2,7 +2,7 @@
 title: "Contrat API et sécurité HTTP"
 description: "Frontière REST, DTO, erreurs et sécurité de session."
 created: 2026-11-07
-updated: 2026-11-08
+updated: 2026-11-09
 status: accepted
 type: reference
 tags:
@@ -27,7 +27,7 @@ tags:
 - Le frontend transforme DTO → modèles de présentation ; le backend est autorité sur règles et données.
 - Les endpoints d’accès et habilitations sont définis dans le [contrat OpenAPI](../../../api/openapi.yaml). Le [contrat du journal](../../../api/audit.openapi.yaml) couvre les changements sensibles et le [contrat des domaines](../../../api/domains.openapi.yaml) décrit US-01.01. Le [contrat des sous-domaines](../../../api/subdomains.openapi.yaml) couvre US-01.02 : consultation paginée et filtrée, création, modification, désactivation et raccordement compatible des compétences. Le [contrat des compétences](../../../api/competencies.openapi.yaml) couvre US-01.03 : consultation, filtre, création, modification et désactivation. Le [contrat d’exploration](../../../api/explorer.openapi.yaml) couvre la recherche paginée par code/libellé, avec le chemin et le statut des trois niveaux.
 
-Le [contrat des profils d’emploi](../../../api/profiles.openapi.yaml) couvre US-02.01 : liste paginée, fiche, création, modification versionnée, désactivation et raccordement minimal des exigences conservées.
+Le [contrat des profils d’emploi](../../../api/profiles.openapi.yaml) couvre US-02.01 : liste paginée, fiche, création, modification versionnée, désactivation et exigences conservées. US-02.03 complète ce contrat : création d’une exigence unique par couple profil-compétence, choix paginés de compétences actives et reclassement versionné vers une classification active.
 
 Le [contrat des classifications](../../../api/classifications.openapi.yaml) couvre US-02.02 : consultation paginée triée par ordre puis code, filtre des valeurs actives, création et modification du code, libellé, ordre et activation. Écriture réservée à l’administrateur fonctionnel ; lecture accessible aussi au gestionnaire.
 

@@ -22,6 +22,15 @@ public class ProfileController {
         var result=service.list(user.getName(),page,size);return new ProfilePage(result.items().stream().map(this::dto).toList(),result.total(),page,size);
     }
     @GetMapping("/{id}") ProfileResponse get(Principal user,@PathVariable UUID id){return dto(service.get(user.getName(),id));}
+    @GetMapping("/competences-disponibles") ProfileStore.Choices competencyChoices(Principal user,@RequestParam(defaultValue="") String q,@RequestParam(defaultValue="0") int page,@RequestParam(defaultValue="20") int size){return service.competencyChoices(user.getName(),q,page,size);}
+    public record Reclassification(UUID classificationId,java.math.BigDecimal version){}
+    @PutMapping("/{id}/exigences/{requirementId}") @ResponseStatus(HttpStatus.NO_CONTENT)
+    void reclassify(Principal user,@PathVariable UUID id,@PathVariable UUID requirementId,@RequestBody Reclassification body){
+        Long version;
+        try{version=body.version()==null?null:body.version().longValueExact();}
+        catch(ArithmeticException error){throw new JobProfile.InvalidField("version","Version entière invalide.");}
+        service.reclassify(user.getName(),id,requirementId,body.classificationId(),version);
+    }
     public record RequirementChange(UUID competencyId,UUID classificationId){}
     @GetMapping("/{id}/exigences") List<ProfileStore.Requirement> requirements(Principal user,@PathVariable UUID id){return service.requirements(user.getName(),id);}
     @PostMapping("/{id}/exigences") @ResponseStatus(HttpStatus.CREATED)

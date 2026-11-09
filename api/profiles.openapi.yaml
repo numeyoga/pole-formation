@@ -1,5 +1,5 @@
 openapi: 3.1.0
-info: {title: Pôle formation — profils-emploi, version: 0.6.0}
+info: {title: Pôle formation — profils-emploi, version: 0.8.0}
 servers: [{url: /}]
 security: [{session: []}]
 paths:
@@ -116,7 +116,7 @@ paths:
         '403': {$ref: '#/components/responses/Error'}
         '404': {$ref: '#/components/responses/Error'}
     post:
-      description: Raccordement minimal pour US-02.01. Profil, compétence et classification doivent être actifs. Une seule exigence par couple profil-compétence. Administration complète dans US-02.03.
+      description: Créer une exigence. Profil, compétence et classification doivent être actifs. Une seule exigence par couple profil-compétence.
       parameters: [{$ref: '#/components/parameters/Csrf'}]
       requestBody:
         required: true
@@ -134,6 +134,61 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/Requirement'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/referentiels/profils-emploi/competences-disponibles:
+    get:
+      description: Choix de compétences actives, recherchées littéralement par code ou libellé et triées par libellé sans casse puis identifiant. Le statut du parent ne modifie pas celui de la compétence.
+      parameters:
+        - {name: q, in: query, schema: {type: string, maxLength: 200, default: ''}}
+        - {name: page, in: query, schema: {type: integer, minimum: 0, default: 0}}
+        - {name: size, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+      responses:
+        '200':
+          description: Choix paginés
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, page, size]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, code, label]
+                      properties:
+                        id: {type: string, format: uuid}
+                        code: {type: string}
+                        label: {type: string}
+                  total: {type: integer}
+                  page: {type: integer}
+                  size: {type: integer}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/referentiels/profils-emploi/{id}/exigences/{requirementId}:
+    parameters:
+      - {$ref: '#/components/parameters/Id'}
+      - {name: requirementId, in: path, required: true, schema: {type: string, format: uuid}}
+    put:
+      description: Reclasse une exigence sans changer son identité ni son couple profil-compétence. Classification cible active obligatoire, même si identique à la précédente. Les références historiques inactives restent conservées. Version obligatoire ; conflit 409 si périmée.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [classificationId, version]
+              properties:
+                classificationId: {type: string, format: uuid}
+                version: {type: integer, format: int64, minimum: 0}
+      responses:
+        '204': {description: Classification modifiée et version incrémentée}
         '400': {$ref: '#/components/responses/Error'}
         '401': {$ref: '#/components/responses/Error'}
         '403': {$ref: '#/components/responses/Error'}
@@ -170,7 +225,7 @@ components:
         version: {type: integer, format: int64}
     Requirement:
       type: object
-      required: [id, profileId, competencyId, competencyLabel, classificationId, classificationLabel]
+      required: [id, profileId, competencyId, competencyLabel, classificationId, classificationLabel, version]
       properties:
         id: {type: string, format: uuid}
         profileId: {type: string, format: uuid}
@@ -178,3 +233,4 @@ components:
         competencyLabel: {type: string}
         classificationId: {type: string, format: uuid}
         classificationLabel: {type: string}
+        version: {type: integer, format: int64, minimum: 0}

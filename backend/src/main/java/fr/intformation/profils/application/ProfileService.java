@@ -26,6 +26,17 @@ public final class ProfileService {
         if(classificationId==null)throw new JobProfile.InvalidField("classificationId","Classification requise.");
         return store.addRequirement(id,competencyId,classificationId);
     }
+    public ProfileStore.Choices competencyChoices(String user,String query,int page,int size){
+        authorize(user);
+        if(page<0 || size<1 || size>100 || query.length()>200)throw new IllegalArgumentException("Recherche invalide.");
+        return store.competencyChoices(query.strip(),page,size);
+    }
+    public void reclassify(String user,UUID profileId,UUID requirementId,UUID classificationId,Long version){
+        authorize(user);
+        if(classificationId==null)throw new JobProfile.InvalidField("classificationId","Classification requise.");
+        if(version==null || version<0)throw new JobProfile.InvalidField("version","Version invalide.");
+        store.reclassify(profileId,requirementId,classificationId,version);
+    }
     public void update(String user,UUID id,String code,String label,String description,Long version){authorize(user);store.update(id,code,label,description,version);}
     public void deactivate(String user,UUID id,Long version){
         authorize(user);if(version==null || version<0)throw new JobProfile.InvalidField("version","Version requise.");store.deactivate(id,version);

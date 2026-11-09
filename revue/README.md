@@ -24,3 +24,7 @@ Le [suivi](suivi.md) contient les statuts courants et la [checklist](checklist-p
 | [DEF-012](defauts/2026-11-08-DEF-012-jar-remplace-en-execution.md) | 2026-11-08 | Serveur local conservé après reconstruction du JAR | Vérification du port utilisé pour la recette après build | corrigé, US-02.01 |
 | [DEF-013](defauts/2026-11-08-DEF-013-entiers-json.md) | 2026-11-08 | Ordre JSON décimal accepté comme entier | Test HTTP de fraction et conversion numérique exacte | corrigé localement, US-02.02 |
 | [DEF-014](defauts/2026-11-08-DEF-014-attente-defilement.md) | 2026-11-08 | Assertion avant la fin du défilement clavier | Assertion réessayée sur l’effet observable | corrigé localement, US-02.02 |
+
+| [DEF-015](defauts/2026-11-09-DEF-015-import-editeur.md) | 2026-11-09 | Éditeur non enregistré après suppression de son import | Imports explicites et verbatimModuleSyntax | corrigé localement, US-02.03 |
+
+| [DEF-016](defauts/2026-11-09-DEF-016-test-inactivite-version.md) | 2026-11-09 | Version périmée masquant le contrôle d’inactivité | Préconditions explicites et assertion du motif | corrigé localement, US-02.03 |

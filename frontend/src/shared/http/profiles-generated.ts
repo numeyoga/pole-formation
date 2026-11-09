@@ -251,7 +251,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** @description Raccordement minimal pour US-02.01. Profil, compétence et classification doivent être actifs. Une seule exigence par couple profil-compétence. Administration complète dans US-02.03. */
+        /** @description Créer une exigence. Profil, compétence et classification doivent être actifs. Une seule exigence par couple profil-compétence. */
         post: {
             parameters: {
                 query?: never;
@@ -296,6 +296,115 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/referentiels/profils-emploi/competences-disponibles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Choix de compétences actives, recherchées littéralement par code ou libellé et triées par libellé sans casse puis identifiant. Le statut du parent ne modifie pas celui de la compétence. */
+        get: {
+            parameters: {
+                query?: {
+                    q?: string;
+                    page?: number;
+                    size?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Choix paginés */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            items: {
+                                /** Format: uuid */
+                                id: string;
+                                code: string;
+                                label: string;
+                            }[];
+                            total: number;
+                            page: number;
+                            size: number;
+                        };
+                    };
+                };
+                400: components["responses"]["Error"];
+                401: components["responses"]["Error"];
+                403: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/referentiels/profils-emploi/{id}/exigences/{requirementId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: components["parameters"]["Id"];
+                requirementId: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** @description Reclasse une exigence sans changer son identité ni son couple profil-compétence. Classification cible active obligatoire, même si identique à la précédente. Les références historiques inactives restent conservées. Version obligatoire ; conflit 409 si périmée. */
+        put: {
+            parameters: {
+                query?: never;
+                header: {
+                    "X-CSRF-TOKEN": components["parameters"]["Csrf"];
+                };
+                path: {
+                    id: components["parameters"]["Id"];
+                    requirementId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        classificationId: string;
+                        /** Format: int64 */
+                        version: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Classification modifiée et version incrémentée */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                400: components["responses"]["Error"];
+                401: components["responses"]["Error"];
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -321,6 +430,8 @@ export interface components {
             /** Format: uuid */
             classificationId: string;
             classificationLabel: string;
+            /** Format: int64 */
+            version: number;
         };
     };
     responses: {

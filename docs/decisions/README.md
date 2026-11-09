@@ -2,7 +2,7 @@
 title: "Journal des décisions (ADR)"
 description: "Décisions structurantes et alternatives."
 created: 2026-11-07
-updated: 2026-11-08
+updated: 2026-11-09
 status: accepted
 type: index
 tags:
@@ -28,3 +28,5 @@ tags:
 - [ADR 0014 – Administration des profils d’emploi](ADR-0014-job-profiles.md)
 
 - [ADR 0015 – Configuration des classifications](ADR-0015-classifications.md)
+
+- [ADR 0016 – Association et reclassement des exigences](ADR-0016-profile-requirements.md)

@@ -1,9 +1,11 @@
 import createClient from 'openapi-fetch';
 import type { paths,components } from '../../../shared/http/profiles-generated';
-import type { ProfileView,ProfilePage,RequirementView } from '../presentation/models';
+import type { ProfileView,ProfilePage,RequirementView,RequirementChoices } from '../presentation/models';
 import { ApiError,csrfHeaders } from '../../../shared/http/session';
 import { messages } from '../../../shared/i18n/fr';
 
+import type { paths as ClassificationPaths } from '../../../shared/http/classifications-generated';
+const classificationClient=createClient<ClassificationPaths>({credentials:'same-origin'});
 const client=createClient<paths>({credentials:'same-origin'});
 export class ProfileError extends ApiError {
   constructor(status:number,message:string,public fields:Record<string,string>={}){super(status,message);}
@@ -22,5 +24,9 @@ export const profilesApi={
   async create(code:string,label:string,description:string){return profileView(await unwrap(await client.POST('/api/referentiels/profils-emploi',{params:{header:await csrfHeaders()},body:{code,label,description}})));},
   async update(profile:ProfileView,code:string,label:string,description:string){await unwrap(await client.PUT('/api/referentiels/profils-emploi/{id}',{params:{path:{id:profile.id},header:await csrfHeaders()},body:{code,label,description,version:profile.version}}));},
   async deactivate(profile:ProfileView){await unwrap(await client.POST('/api/referentiels/profils-emploi/{id}/desactivation',{params:{path:{id:profile.id},header:await csrfHeaders()},body:{version:profile.version}}));},
-  async children(id:string):Promise<RequirementView[]>{return (await unwrap(await client.GET('/api/referentiels/profils-emploi/{id}/exigences',{params:{path:{id}}}))).map(({id,competencyLabel,classificationLabel})=>({id,competencyLabel,classificationLabel}));},
+  async competencyChoices(q='',page=0):Promise<RequirementChoices>{const result=await unwrap(await client.GET('/api/referentiels/profils-emploi/competences-disponibles',{params:{query:{q,page,size:10}}}));return {...result,items:result.items.map(item=>({id:item.id,label:`${item.code} — ${item.label}`}))};},
+  async classificationChoices(page=0):Promise<RequirementChoices>{const result=await unwrap(await classificationClient.GET('/api/referentiels/classifications',{params:{query:{page,size:10,activeOnly:true}}}));return {...result,items:result.items.map(item=>({id:item.id,label:`${item.code} — ${item.label}`}))};},
+  async addRequirement(profileId:string,competencyId:string,classificationId:string){return unwrap(await client.POST('/api/referentiels/profils-emploi/{id}/exigences',{params:{path:{id:profileId},header:await csrfHeaders()},body:{competencyId,classificationId}}));},
+  async reclassify(profileId:string,item:RequirementView,classificationId:string){await unwrap(await client.PUT('/api/referentiels/profils-emploi/{id}/exigences/{requirementId}',{params:{path:{id:profileId,requirementId:item.id},header:await csrfHeaders()},body:{classificationId,version:item.version}}));},
+  async children(id:string):Promise<RequirementView[]>{return (await unwrap(await client.GET('/api/referentiels/profils-emploi/{id}/exigences',{params:{path:{id}}}))).map(({id,competencyId,competencyLabel,classificationId,classificationLabel,version})=>({id,competencyId,competencyLabel,classificationId,classificationLabel,version}));},
 };

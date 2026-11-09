@@ -22,10 +22,10 @@ class ClassificationMigrationTest {
             sql.execute("INSERT INTO profile_requirement VALUES ('54000000-0000-0000-0000-000000000001','53000000-0000-0000-0000-000000000001','52000000-0000-0000-0000-000000000001','60000000-0000-0000-0000-000000000001')");
         }
         var migration=Flyway.configure().dataSource(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(),POSTGRES.getPassword()).locations("classpath:db/migration").load();migration.migrate();migration.migrate();
-        try(var connection=DriverManager.getConnection(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(),POSTGRES.getPassword());var sql=connection.createStatement();var rows=sql.executeQuery("SELECT r.id,k.id,k.code,k.label,k.active,k.sort_order,k.version FROM profile_requirement r JOIN requirement_classification k ON k.id=r.classification_id")){
+        try(var connection=DriverManager.getConnection(POSTGRES.getJdbcUrl(),POSTGRES.getUsername(),POSTGRES.getPassword());var sql=connection.createStatement();var rows=sql.executeQuery("SELECT r.id,k.id,k.code,k.label,k.active,k.sort_order,k.version,r.version FROM profile_requirement r JOIN requirement_classification k ON k.id=r.classification_id")){
             assertThat(rows.next()).isTrue();assertThat(rows.getString(1)).isEqualTo("54000000-0000-0000-0000-000000000001");
             assertThat(rows.getString(2)).isEqualTo("60000000-0000-0000-0000-000000000001");assertThat(rows.getString(3)).isEqualTo("LEGACY-60000000-0000-0000-0000-000000000001");
-            assertThat(rows.getString(4)).isEqualTo("Historique");assertThat(rows.getBoolean(5)).isFalse();assertThat(rows.getInt(6)).isZero();assertThat(rows.getLong(7)).isZero();assertThat(rows.next()).isFalse();
+            assertThat(rows.getString(4)).isEqualTo("Historique");assertThat(rows.getBoolean(5)).isFalse();assertThat(rows.getInt(6)).isZero();assertThat(rows.getLong(7)).isZero();assertThat(rows.getLong(8)).isZero();assertThat(rows.next()).isFalse();
         }
     }
 }

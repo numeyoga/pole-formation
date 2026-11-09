@@ -34,15 +34,36 @@ public class PostgresProfileStore implements ProfileStore {
     }
     public List<Requirement> requirements(UUID id){
         get(id);
-        return db.sql("SELECT r.id,r.profile_id,r.competency_id,c.label AS competency_label,r.classification_id,k.label AS classification_label FROM profile_requirement r JOIN competency_reference c ON c.id=r.competency_id JOIN requirement_classification k ON k.id=r.classification_id WHERE r.profile_id=:id ORDER BY lower(c.label),r.id")
-            .param("id",id).query((rs,i)->new Requirement(rs.getObject("id",UUID.class),rs.getObject("profile_id",UUID.class),rs.getObject("competency_id",UUID.class),rs.getString("competency_label"),rs.getObject("classification_id",UUID.class),rs.getString("classification_label"))).list();
+        return db.sql("SELECT r.id,r.profile_id,r.competency_id,c.label AS competency_label,r.classification_id,r.version,k.label AS classification_label FROM profile_requirement r JOIN competency_reference c ON c.id=r.competency_id JOIN requirement_classification k ON k.id=r.classification_id WHERE r.profile_id=:id ORDER BY lower(c.label),r.id")
+            .param("id",id).query((rs,i)->new Requirement(rs.getObject("id",UUID.class),rs.getObject("profile_id",UUID.class),rs.getObject("competency_id",UUID.class),rs.getString("competency_label"),rs.getObject("classification_id",UUID.class),rs.getString("classification_label"),rs.getLong("version"))).list();
+    }
+    public Choices competencyChoices(String query,int page,int size){
+        String filter=" FROM competency_reference WHERE active=true AND (position(lower(:query) in lower(code))>0 OR position(lower(:query) in lower(label))>0)";
+        long total=db.sql("SELECT count(*)"+filter).param("query",query).query(Long.class).single();
+        var items=db.sql("SELECT id,code,label"+filter+" ORDER BY lower(label),id LIMIT :size OFFSET :offset")
+            .param("query",query).param("size",size).param("offset",(long)page*size)
+            .query((rs,i)->new CompetencyChoice(rs.getObject("id",UUID.class),rs.getString("code"),rs.getString("label"))).list();
+        return new Choices(items,total,page,size);
+    }
+    @Transactional
+    public void reclassify(UUID profileId,UUID requirementId,UUID classificationId,long expectedVersion){
+        profiles.findLocked(profileId).orElseThrow(NotFound::new);
+        long current=db.sql("SELECT version FROM profile_requirement WHERE id=:id AND profile_id=:profile FOR UPDATE")
+            .param("id",requirementId).param("profile",profileId).query(Long.class).optional().orElseThrow(NotFound::new);
+        if(current!=expectedVersion)throw new fr.intformation.habilitations.domain.AccessPolicy.Conflict("Cette exigence a été modifiée. Rechargez les exigences avant de recommencer.");
+        requireClassificationActive(classificationId);
+        db.sql("UPDATE profile_requirement SET classification_id=:classification,version=version+1 WHERE id=:id")
+            .param("classification",classificationId).param("id",requirementId).update();
+    }
+    private void requireClassificationActive(UUID classificationId){
+        boolean active=db.sql("SELECT active FROM requirement_classification WHERE id=:id FOR UPDATE").param("id",classificationId).query(Boolean.class).optional().orElseThrow(NotFound::new);
+        if(!active)throw new fr.intformation.habilitations.domain.AccessPolicy.Conflict("Cette classification est désactivée.");
     }
     @Transactional
     public Requirement addRequirement(UUID id,UUID competencyId,UUID classificationId){
         value(profiles.findLocked(id).orElseThrow(NotFound::new)).requireActive();
         competencies.requireActive(competencyId);
-        boolean active=db.sql("SELECT active FROM requirement_classification WHERE id=:id FOR UPDATE").param("id",classificationId).query(Boolean.class).optional().orElseThrow(NotFound::new);
-        if(!active)throw new fr.intformation.habilitations.domain.AccessPolicy.Conflict("Cette classification est désactivée.");
+        requireClassificationActive(classificationId);
         UUID requirementId=UUID.randomUUID();
         try{db.sql("INSERT INTO profile_requirement(id,profile_id,competency_id,classification_id) VALUES (:id,:profile,:competency,:classification)").param("id",requirementId).param("profile",id).param("competency",competencyId).param("classification",classificationId).update();}
         catch(DataIntegrityViolationException error){
