@@ -56,4 +56,4 @@ Le backend et les contrats API sont identiques à `d7cadc4`, dont les 66 tests s
 
 L’utilisateur a demandé le 2026-11-09 : « commit et enchaine, je validerai les 2 en même temps ». La recette métier de US-02.03 et US-02.04 demeure donc ouverte ; aucune acceptation implicite n’est enregistrée. Le lecteur d’écran et le zoom navigateur réel à 200 % restent des contrôles humains distincts. Un viewport étroit et axe ne démontrent pas à eux seuls WCAG AA.
 
-Le JAR final disponible sur `http://localhost:8080/` a pour SHA-256 `a7ca6a8fde0d2c7e4841a916edfa37f46dabf68f1357b6b7dd533915940c13dc`. Le manifeste conserve un statut de livraison partielle jusqu’au rattachement des preuves à un commit contenant le code testé.
+Le JAR final disponible sur `http://localhost:8080/` a pour SHA-256 `a7ca6a8fde0d2c7e4841a916edfa37f46dabf68f1357b6b7dd533915940c13dc`. La livraison validée est `d0f37dc5fc5779740eb775352ac6b56001499329`. Les preuves techniques de US-02.03 et US-02.04 sont rattachées à cette révision commune, avec recette métier encore requise.

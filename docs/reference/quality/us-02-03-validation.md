@@ -29,7 +29,7 @@ Association d’une compétence classifiée depuis les profils d’emploi et rec
 | Concurrence | Deux reclassements d’une même version produisent 204 et 409 ; rechargement explicite dans l’interface |
 | Historique | Références conservées après désactivation ; classification courante visible, sans réintroduction parmi les choix actifs |
 
-La détection des conflits est confirmée par l’utilisateur le 2026-11-09 sous REF-06 et [ADR 0016](../../decisions/ADR-0016-profile-requirements.md). Le reclassement porte seulement sur la classification ; le couple profil-compétence demeure fixe. L’interface de filtrage des exigences reste US-02.04.
+La détection des conflits est confirmée par l’utilisateur le 2026-11-09 sous REF-06 et [ADR 0016](../../decisions/ADR-0016-profile-requirements.md). Le reclassement porte seulement sur la classification ; le couple profil-compétence demeure fixe. L’interface de filtrage des exigences est livrée par [US-02.04](us-02-04-validation.md).
 
 ## Stratégie et preuves
 
@@ -52,6 +52,8 @@ L’ouverture initiale du dialogue a révélé [DEF-015](../../../revue/defauts/
 
 La recette métier de US-02.03 reste à effectuer. Le lecteur d’écran et le zoom navigateur réel à 200 % restent des contrôles humains distincts. Axe et le viewport étroit ne démontrent pas à eux seuls WCAG AA. Données fictives locales uniquement ; aucune classification officielle ni compétence acquise individuellement.
 
-Le JAR exécuté sur `http://localhost:8080/` a pour SHA-256 `5f46554f3a6de4e8dfda38b20982917caf6389934b3475fe22ab2e7933182874`. Le serveur reste disponible pour recette ; Chromium partagé est arrêté après les tests.
+Le JAR de la livraison initiale de US-02.03 a pour SHA-256 `5f46554f3a6de4e8dfda38b20982917caf6389934b3475fe22ab2e7933182874`. Le [rapport de US-02.04](us-02-04-validation.md) identifie le JAR de la livraison commune disponible pour recette. Chromium partagé est arrêté après les tests.
 
 La livraison validée est `d7cadc40596fa254af9d058a3b329abfe1022ba8`. Le code applicatif est identique à celui des validations consignées. La recette métier de US-02.03 et US-02.04 sera réalisée conjointement, conformément à la demande utilisateur du 2026-11-09 ; aucune acceptation métier de ces deux stories n’est déclarée.
+
+La revalidation technique commune se rapporte à `d0f37dc5fc5779740eb775352ac6b56001499329` : 17 tests Vitest, build TypeScript/Vite et assemblage du JAR réussis ; 8 parcours navigateur des profils et exigences réussis, dont les parcours d’association, de doublon, de reclassement et de conflit de US-02.03. Les 2 nouveaux parcours de consultation sont rejoués avec succès sur le JAR final après le dernier ajustement du libellé affiché. Backend et contrats API sont identiques à `d7cadc4` ; leurs tests serveur ne sont pas présentés comme rejoués. Le manifeste utilise cette révision de livraison commune sans modifier l’attente de recette humaine.
