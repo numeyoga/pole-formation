@@ -202,7 +202,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-09.md"
     },
-    "validated_commit": "d0f37dc5fc5779740eb775352ac6b56001499329",
+    "validated_commit": "0a2023213655163c6618796dd64b9cc60dbbf5fa",
     "commits": [
       "d7cadc40596fa254af9d058a3b329abfe1022ba8"
     ]
@@ -220,13 +220,13 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-09.md"
     },
-    "validated_commit": "d0f37dc5fc5779740eb775352ac6b56001499329",
+    "validated_commit": "0a2023213655163c6618796dd64b9cc60dbbf5fa",
     "commits": [
       "d0f37dc5fc5779740eb775352ac6b56001499329"
     ]
   },
   "US-03.01": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -234,12 +234,15 @@
     ],
     "report": "docs/reference/quality/us-03-01-validation.md",
     "remaining": [
-      "Rattacher les preuves au commit de livraison.",
       "Recette métier humaine du catalogue et du cycle de vie des formations.",
       "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
     ],
     "acceptance": {
       "required": true
-    }
+    },
+    "validated_commit": "0a2023213655163c6618796dd64b9cc60dbbf5fa",
+    "commits": [
+      "0a2023213655163c6618796dd64b9cc60dbbf5fa"
+    ]
   }
 }

@@ -60,6 +60,6 @@ Le formulaire à 375 pixels a été inspecté visuellement. Les contrôles natif
 
 La recette métier humaine de US-03.01 reste à effectuer. L’acceptation d’accessibilité de US-02.03/US-02.04 ne vaut pas recette de cette nouvelle interface. Lecteur d’écran et zoom navigateur réel à 200 % restent à examiner. Axe et un viewport étroit ne prouvent pas à eux seuls WCAG AA.
 
-Données fictives locales uniquement. Les anciennes sessions sans correspondance de formation restent explicitement à rapprocher, selon LEG-01. La livraison sera rattachée au commit contenant le code testé ; aucune recette utilisateur ni preuve de test non exécuté n’est déduite du seul commit.
+Données fictives locales uniquement. Les anciennes sessions sans correspondance de formation restent explicitement à rapprocher, selon LEG-01. La livraison validée est `0a2023213655163c6618796dd64b9cc60dbbf5fa`. Le code applicatif est identique à celui des validations consignées ; aucune recette utilisateur ni preuve de test non exécuté n’est déduite du seul commit.
 
 Le JAR disponible sur `http://localhost:8080/` a pour SHA-256 `6a18f1c2aca7c12687bf4c4c47cc6d17f3b765a90791fdda1774867ca987e958`. Le serveur est conservé pour recette ; Chromium partagé est arrêté après la validation.
