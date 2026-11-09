@@ -31,6 +31,8 @@ L’acceptation porte sur la révision commune `d0f37dc5fc5779740eb775352ac6b560
 
 Aucun changement applicatif ni nouveau test technique n’accompagne cet enregistrement. Les preuves techniques restent rattachées à la même révision ; les scénarios exécutés individuellement par l’utilisateur ne sont pas détaillés.
 
+Le représentant du projet a ensuite confirmé : « l'accessebilité est bonne, enchaine ». Cette confirmation accepte les contrôles d’accessibilité restants de US-02.03 et US-02.04 et clôture ces deux livraisons sur la même révision commune. L’outil et les scénarios de contrôle ne sont pas détaillés ; aucun essai au lecteur d’écran ou zoom n’est présenté comme exécuté par l’agent.
+
 ## Limites
 
-L’utilisateur ne détaille pas les scénarios exécutés individuellement. Aucun nouveau contrôle au lecteur d’écran ou au zoom réel à 200 % n’est déclaré. Ces contrôles restent ouverts dans le manifeste. L’accord initial sur US-02.02 ne portait pas sur US-02.03 ; cette dernière est acceptée par la confirmation conjointe ci-dessus.
+L’utilisateur ne détaille pas les scénarios exécutés individuellement. Aucun nouveau contrôle au lecteur d’écran ou au zoom réel à 200 % n’est déclaré. La confirmation complémentaire ci-dessus clôt leur suivi pour US-02.03 et US-02.04. Le suivi d’accessibilité propre à US-02.02 reste inchangé. L’accord initial sur US-02.02 ne portait pas sur US-02.03 ; cette dernière est acceptée par la confirmation conjointe ci-dessus.

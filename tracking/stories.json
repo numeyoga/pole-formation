@@ -197,9 +197,7 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-02-03-validation.md",
-    "remaining": [
-      "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
-    ],
+    "remaining": [],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-09.md"
@@ -217,9 +215,7 @@
       "frontend/tests/requirements.spec.ts"
     ],
     "report": "docs/reference/quality/us-02-04-validation.md",
-    "remaining": [
-      "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
-    ],
+    "remaining": [],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-09.md"
