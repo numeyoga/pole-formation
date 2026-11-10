@@ -254,11 +254,11 @@
     ],
     "report": "docs/reference/quality/us-03-02-validation.md",
     "remaining": [
-      "Recette métier humaine des associations formations et compétences.",
       "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
     ],
     "acceptance": {
-      "required": true
+      "required": true,
+      "evidence": "docs/reference/quality/acceptance-2026-11-10.md"
     },
     "validated_commit": "ec924794f2b1c478bb155aaaa28a3fdfb263a9bf",
     "commits": [
@@ -275,11 +275,11 @@
     ],
     "report": "docs/reference/quality/us-03-03-validation.md",
     "remaining": [
-      "Recette métier humaine de la recherche et de la consultation des formations.",
       "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
     ],
     "acceptance": {
-      "required": true
+      "required": true,
+      "evidence": "docs/reference/quality/acceptance-2026-11-10.md"
     },
     "validated_commit": "ec924794f2b1c478bb155aaaa28a3fdfb263a9bf",
     "commits": [
