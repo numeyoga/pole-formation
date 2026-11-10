@@ -23,7 +23,7 @@ public class FormationController {
     public record SessionChange(String title){}
     private Integer duration(BigDecimal value){try{return value==null?null:value.intValueExact();}catch(ArithmeticException error){throw new Formation.InvalidField("durationMinutes","Durée entière invalide.");}}
     private Long version(BigDecimal value){try{return value==null?null:value.longValueExact();}catch(ArithmeticException error){throw new Formation.InvalidField("version","Version entière invalide.");}}
-    @GetMapping FormationPage list(Principal user,@RequestParam(defaultValue="0") int page,@RequestParam(defaultValue="20") int size){var result=service.list(user.getName(),page,size);return new FormationPage(result.items().stream().map(this::dto).toList(),result.total(),page,size);}
+    @GetMapping FormationPage list(Principal user,@RequestParam(defaultValue="") String q,@RequestParam(defaultValue="0") int page,@RequestParam(defaultValue="20") int size){var result=service.list(user.getName(),q,page,size);return new FormationPage(result.items().stream().map(this::dto).toList(),result.total(),page,size);}
     @GetMapping("/{id}") FormationResponse get(Principal user,@PathVariable UUID id){return dto(service.get(user.getName(),id));}
     @PostMapping ResponseEntity<FormationResponse> create(Principal user,@RequestBody Change body){var created=service.create(user.getName(),body.code(),body.title(),body.objectives(),body.description(),duration(body.durationMinutes()));return ResponseEntity.created(URI.create("/api/formations/"+created.id())).body(dto(created));}
     @PutMapping("/{id}") @ResponseStatus(HttpStatus.NO_CONTENT)

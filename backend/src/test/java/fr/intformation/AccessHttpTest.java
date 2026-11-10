@@ -246,6 +246,49 @@ class AccessHttpTest {
         assertThat(json.readTree(manager.get(root+"/competences").body()).get("total").asLong()).isEqualTo(1);
     }
 
+    @Test void formation_search_matches_code_or_title_without_case_and_paginates_results() throws Exception {
+        var manager=as("gestionnaire");String prefix="SEARCH-FOR-"+java.util.UUID.randomUUID();
+        var first=manager.call("POST","/api/formations",formationBody(prefix+"-A","Atelier "+prefix,0),true);assertThat(first.statusCode()).isEqualTo(201);
+        var second=manager.call("POST","/api/formations",formationBody(prefix+"-B","Séminaire "+prefix,0),true);assertThat(second.statusCode()).isEqualTo(201);
+        newFormation(manager);
+        String search="/api/formations?q="+prefix.toLowerCase(java.util.Locale.ROOT)+"&size=1";
+        var response=manager.get(search);assertThat(response.statusCode()).isEqualTo(200);var page=json.readTree(response.body());
+        assertThat(page.get("total").asLong()).isEqualTo(2);assertThat(page.get("items").size()).isEqualTo(1);assertThat(page.get("items").get(0).get("id")).isEqualTo(json.readTree(first.body()).get("id"));
+        assertThat(json.readTree(manager.get(search+"&page=1").body()).get("items").get(0).get("id")).isEqualTo(json.readTree(second.body()).get("id"));
+        String title=java.net.URLEncoder.encode("  ATELIER "+prefix+"  ",java.nio.charset.StandardCharsets.UTF_8);
+        var byTitle=json.readTree(manager.get("/api/formations?q="+title).body());assertThat(byTitle.get("total").asLong()).isEqualTo(1);
+        assertThat(byTitle.get("items").get(0).get("id")).isEqualTo(json.readTree(first.body()).get("id"));
+    }
+
+    @Test void formation_search_is_literal_and_keeps_active_sessionless_and_archived_history() throws Exception {
+        var manager=as("gestionnaire");String prefix="LITERAL-"+java.util.UUID.randomUUID();
+        var created=manager.call("POST","/api/formations",formationBody(prefix+"%_","Sans session",0),true);assertThat(created.statusCode()).isEqualTo(201);var formation=json.readTree(created.body());
+        assertThat(manager.call("POST","/api/formations",formationBody(prefix+"XY","Autre offre",0),true).statusCode()).isEqualTo(201);
+        String root="/api/formations/"+formation.get("id").asString();
+        assertThat(manager.call("POST",root+"/activation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        String search="/api/formations?q="+prefix+"%25_";
+        var active=json.readTree(manager.get(search).body());assertThat(active.get("total").asLong()).isEqualTo(1);assertThat(active.get("items").get(0).get("state").asString()).isEqualTo("ACTIVE");
+        assertThat(json.readTree(manager.get(root+"/sessions").body()).isEmpty()).isTrue();
+        var parent=competencyParent(manager);var competency=json.readTree(manager.call("POST","/api/referentiels/competences",competencyBody(parent.get("id").asString(),prefix,"Compétence historique recherchée"),true).body());
+        var association=manager.call("POST",root+"/competences",json.writeValueAsString(java.util.Map.of("competencyId",competency.get("id").asString())),true);assertThat(association.statusCode()).isEqualTo(201);
+        assertThat(manager.call("POST",root+"/archivage","{\"version\":1}",true).statusCode()).isEqualTo(204);
+        var archived=json.readTree(manager.get(search).body());assertThat(archived.get("total").asLong()).isEqualTo(1);assertThat(archived.get("items").get(0).get("description").asString()).isEqualTo("Description exemple");assertThat(archived.get("items").get(0).get("state").asString()).isEqualTo("ARCHIVEE");
+        assertThat(json.readTree(manager.get(root).body()).get("description").asString()).isEqualTo("Description exemple");assertThat(json.readTree(manager.get(root+"/competences").body()).get("items").get(0)).isEqualTo(json.readTree(association.body()));
+    }
+    @Test void formation_search_validates_query_and_rechecks_current_permissions() throws Exception {
+        var manager=as("gestionnaire");newFormation(manager);
+        String search="/api/formations?q=";
+        assertThat(manager.get(search+"x".repeat(201)).statusCode()).isEqualTo(400);
+        assertThat(manager.get(search+"x".repeat(200)).statusCode()).isEqualTo(200);
+        assertThat(json.readTree(manager.get(search+java.util.UUID.randomUUID()).body()).get("total").asLong()).isZero();
+        assertThat(json.readTree(manager.get(search+"%20%20").body()).get("total")).isEqualTo(json.readTree(manager.get("/api/formations").body()).get("total"));
+        assertThat(as("admin").get(search+"FOR").statusCode()).isEqualTo(200);
+        assertThat(as("intervenant").get(search+"FOR").statusCode()).isEqualTo(403);
+        assertThat(new Browser().get(search+"FOR").statusCode()).isEqualTo(401);
+        db.sql("UPDATE app_account SET role='INTERVENANT' WHERE username='gestionnaire'").update();
+        assertThat(manager.get(search+"FOR").statusCode()).isEqualTo(403);
+    }
+
     @Test void formations_start_as_draft_and_follow_the_validated_lifecycle_with_audit() throws Exception {
         var manager=as("gestionnaire");var formation=newFormation(manager);String path="/api/formations/"+formation.get("id").asString();
         assertThat(formation.get("state").asString()).isEqualTo("BROUILLON");assertThat(formation.get("version").asLong()).isZero();

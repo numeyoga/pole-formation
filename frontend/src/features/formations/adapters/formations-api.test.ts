@@ -34,3 +34,8 @@ test('choices encode literal searches and coverage retains page metadata',async(
  const url=new URL((fetch.mock.calls[0][0] as Request).url);expect(url.searchParams.get('q')).toBe('%_');expect(url.searchParams.get('page')).toBe('1');
  expect(await formationsApi.coverage('f',2)).toEqual({items:[{id:'l',competencyId:'c',code:'A%_',label:'Choix',status:'Inactive'}],page:2,size:10,total:21});
 });
+test('catalogue search sends the literal submitted query and requested page',async()=>{
+ const fetch=vi.fn().mockResolvedValue(Response.json({items:[],page:2,size:10,total:0}));vi.stubGlobal('fetch',fetch);
+ const {formationsApi}=await import('./formations-api');expect(await formationsApi.list(2,'Atelier %_ & Démo')).toEqual({items:[],page:2,size:10,total:0});
+ const url=new URL((fetch.mock.calls[0][0] as Request).url);expect(url.pathname).toBe('/api/formations');expect(url.searchParams.get('q')).toBe('Atelier %_ & Démo');expect(url.searchParams.get('page')).toBe('2');
+});

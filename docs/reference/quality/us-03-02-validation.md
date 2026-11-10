@@ -14,6 +14,7 @@ type: reference
 - [Persistance et concurrence](#persistance-et-concurrence)
 - [Stratégie et preuves](#stratégie-et-preuves)
 - [Limites et recette](#limites-et-recette)
+- [Revalidation pour recette conjointe](#revalidation-pour-recette-conjointe)
 
 ## Périmètre
 
@@ -53,8 +54,14 @@ Le premier passage axe a détecté [DEF-018](../../../revue/defauts/2026-11-10-D
 
 ## Limites et recette
 
-Recette métier humaine de cette story et examen humain d’accessibilité (lecteur d’écran, zoom navigateur réel à 200 %) restent à effectuer. Les contrôles axe et clavier automatisés ne démontrent pas à eux seuls WCAG AA. Données fictives locales uniquement. La recherche des formations reste US-03.03.
+Recette métier humaine de cette story et examen humain d’accessibilité (lecteur d’écran, zoom navigateur réel à 200 %) restent à effectuer. Les contrôles axe et clavier automatisés ne démontrent pas à eux seuls WCAG AA. Données fictives locales uniquement. La recherche des formations est désormais couverte par [US-03.03](us-03-03-validation.md).
 
-L’application est disponible sur `http://localhost:8080/` pour recette. SHA-256 du JAR testé : `8321fc8572874cd734ee1af17f30ccaf53d17fa7cd94f322206ac9060e633473`. Le serveur PostgreSQL reste actif pour l’application ; le serveur Chromium partagé est arrêté après validation.
+La livraison initiale utilisait le JAR de SHA-256 : `8321fc8572874cd734ee1af17f30ccaf53d17fa7cd94f322206ac9060e633473`. Le serveur PostgreSQL reste actif pour l’application ; le serveur Chromium partagé est arrêté après validation.
 
-Livraison validée : `4541bfb4e557d2e54e6b507505dc71e4f27bab1d`. La recette humaine reste requise ; aucune acceptation utilisateur n’est déduite des tests automatisés.
+Livraison initiale validée : `4541bfb4e557d2e54e6b507505dc71e4f27bab1d`. La recette humaine reste requise ; aucune acceptation utilisateur n’est déduite des tests automatisés.
+
+## Revalidation pour recette conjointe
+
+Le 2026-11-10, l’utilisateur a demandé d’enchaîner US-03.03 et de valider les deux stories ensuite. Aucune acceptation humaine n’est enregistrée. Les parcours des associations sont rejoués avec la recherche du catalogue : **82 tests backend**, dont **66 scénarios HTTP**, **26 tests Vitest**, **8 parcours Playwright du catalogue** (dont les deux parcours d’association) et **13 tests Python** réussis. Axe et les scénarios clavier du dialogue passent à nouveau. Voir les [preuves de US-03.03](us-03-03-validation.md).
+
+La version proposée pour les deux recettes est disponible sur `http://localhost:8080/`, avec le JAR de SHA-256 `c75d37eb21f38bd08bdf807c59e3e4ca006f82c0c9a963baa6e2e1e05689c084`. Les contrôles humains restant à effectuer sont inchangés.

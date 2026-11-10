@@ -18,7 +18,13 @@ public class PostgresFormationStore implements FormationStore {
     private static final RowMapper<Formation> ROW=(rs,i)->new Formation(rs.getObject("id",UUID.class),rs.getString("code"),rs.getString("title"),rs.getString("objectives"),rs.getString("description"),rs.getObject("duration_minutes",Integer.class),Formation.State.valueOf(rs.getString("state")),rs.getLong("version"));
     private final fr.intformation.referentiel.application.CompetencyAvailability competencies;
     public PostgresFormationStore(JdbcClient db,PostgresAuditLog audit,fr.intformation.referentiel.application.CompetencyAvailability competencies){this.db=db;this.audit=audit;this.competencies=competencies;}
-    public Page list(int page,int size){return new Page(db.sql("SELECT * FROM formation ORDER BY lower(code),id LIMIT :size OFFSET :offset").param("size",size).param("offset",(long)page*size).query(ROW).list(),db.sql("SELECT count(*) FROM formation").query(Long.class).single(),page,size);}
+    public Page list(String query,int page,int size){
+        String filter=" FROM formation WHERE position(lower(:query) in lower(code))>0 OR position(lower(:query) in lower(title))>0";
+        var items=db.sql("SELECT *"+filter+" ORDER BY lower(code),id LIMIT :size OFFSET :offset")
+            .param("query",query).param("size",size).param("offset",(long)page*size).query(ROW).list();
+        long total=db.sql("SELECT count(*)"+filter).param("query",query).query(Long.class).single();
+        return new Page(items,total,page,size);
+    }
     public Formation get(UUID id){return find(id,false);}
     private Formation find(UUID id,boolean lock){return db.sql("SELECT * FROM formation WHERE id=:id"+(lock?" FOR UPDATE":"")).param("id",id).query(ROW).optional().orElseThrow(NotFound::new);}
     private Map<String,Object> snapshot(Formation f){

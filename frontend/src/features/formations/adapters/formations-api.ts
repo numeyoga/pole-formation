@@ -21,7 +21,7 @@ export const formationsApi={
   async coverage(id:string,page=0):Promise<CoveragePage>{const result=await unwrap(await client.GET('/api/formations/{id}/competences',{params:{path:{id},query:{page,size:10}}}));return {...result,items:result.items.map(coverageView)};},
   async competencyChoices(q='',page=0):Promise<CompetencyChoices>{return unwrap(await client.GET('/api/formations/competences-disponibles',{params:{query:{q,page,size:10}}}));},
   async associate(id:string,competencyId:string){return coverageView(await unwrap(await client.POST('/api/formations/{id}/competences',{params:{path:{id},header:await csrfHeaders()},body:{competencyId}})));},
-  async list(page=0):Promise<FormationPage>{const result=await unwrap(await client.GET('/api/formations',{params:{query:{page,size:10}}}));return {...result,items:result.items.map(formationView)};},
+  async list(page=0,q=''):Promise<FormationPage>{const result=await unwrap(await client.GET('/api/formations',{params:{query:{q,page,size:10}}}));return {...result,items:result.items.map(formationView)};},
   async get(id:string):Promise<FormationView>{return formationView(await unwrap(await client.GET('/api/formations/{id}',{params:{path:{id}}})));},
   async create(fields:FormationFields){return formationView(await unwrap(await client.POST('/api/formations',{params:{header:await csrfHeaders()},body:fields})));},
   async update(item:FormationView,fields:FormationFields){await unwrap(await client.PUT('/api/formations/{id}',{params:{path:{id:item.id},header:await csrfHeaders()},body:{...fields,version:item.version}}));},

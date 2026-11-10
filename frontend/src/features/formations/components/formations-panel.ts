@@ -12,6 +12,7 @@ export class FormationsPanel extends LitElement {
   declare editing:FormationView|null;declare pending:{item:FormationView;action:FormationAction}|null;
   declare formError:string;declare fields:Record<string,string>;declare stale:boolean;declare sessionViews:Record<string,SessionState>;
   private generation=0;
+  private query='';
   constructor(){super();this.data=null;this.busy=false;this.error='';this.notice='';this.editing=null;this.pending=null;this.formError='';this.fields={};this.stale=false;this.sessionViews={};}
   static styles=css`
     :host{display:block;margin-block-start:var(--space-section);padding:var(--space-section);background:var(--color-surface);border:var(--border-width) solid var(--color-border);border-radius:var(--control-radius);}
@@ -19,6 +20,7 @@ export class FormationsPanel extends LitElement {
     header,.actions,nav{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-small);}
     form,fieldset,label{display:grid;gap:var(--space-small);}fieldset{border:0;padding:0;margin:0;min-inline-size:0;}
     input,textarea,select,button{font:inherit;min-block-size:var(--control-height);padding:var(--space-control);border:var(--border-width) solid var(--color-border);border-radius:var(--control-radius);}
+    .search{margin-block:var(--space-normal);}.search label{min-inline-size:0;}.search input{inline-size:100%;min-inline-size:0;}
     input,textarea,select{max-inline-size:100%;color:var(--color-text);background:var(--color-surface);}
     button{inline-size:fit-content;max-inline-size:100%;color:var(--color-primary);background:var(--color-surface);cursor:pointer;}
     button:hover{color:var(--color-hover);text-decoration:underline;}button:disabled{opacity:var(--disabled-opacity);cursor:default;}
@@ -37,9 +39,17 @@ export class FormationsPanel extends LitElement {
   private message(error:unknown){return error instanceof ApiError?error.message:messages.network;}
   private async load(page=0){
     const generation=++this.generation;this.busy=true;this.error='';this.sessionViews={};
-    try{const data=await formationsApi.list(page);if(generation===this.generation){this.data=data;await this.updateComplete;for(const details of this.renderRoot.querySelectorAll<HTMLDetailsElement>('details[open]'))details.open=false;}}
+    try{const data=await formationsApi.list(page,this.query);if(generation===this.generation){this.data=data;await this.updateComplete;for(const details of this.renderRoot.querySelectorAll<HTMLDetailsElement>('details[open]'))details.open=false;}}
     catch(error){if(generation===this.generation){this.error=this.message(error);if(error instanceof ApiError&&[401,403].includes(error.status))this.data=null;}}
     finally{if(generation===this.generation)this.busy=false;}
+  }
+  private async search(event:SubmitEvent){
+    event.preventDefault();if(this.busy)return;
+    this.query=String(new FormData(event.currentTarget as HTMLFormElement).get('q')).trim();this.data=null;this.notice='';await this.load();
+  }
+  private async clearSearch(){
+    if(this.busy)return;this.query='';this.data=null;this.notice='';this.renderRoot.querySelector<HTMLFormElement>('#formation-search')!.reset();await this.load();
+    await this.updateComplete;this.renderRoot.querySelector<HTMLInputElement>('#formation-query')?.focus();
   }
   private dialog(id:string){return this.renderRoot.querySelector<HTMLDialogElement>(id)!;}
   private async prepareForm(){
@@ -92,8 +102,12 @@ export class FormationsPanel extends LitElement {
   }
   render(){return html`
     <section aria-labelledby="formations-title"><header><h2 id="formations-title" tabindex="-1">${m.title}</h2><button type="button" ?disabled=${this.busy} @click=${()=>this.open(null)}>${m.create}</button><button type="button" ?disabled=${this.busy} @click=${()=>this.load(this.data?.page??0)}>${m.refresh}</button></header>
-      ${this.error?html`<p role="alert">${this.error}</p>`:nothing}<p role="status" aria-label=${m.status}>${this.busy?m.loading:this.notice}</p>
-      ${this.data&&!this.data.items.length?html`<p>${m.empty}</p>`:nothing}
+      <form id="formation-search" class="search" role="search" aria-label=${m.searchTitle} @submit=${this.search}>
+        <label for="formation-query">${m.searchLabel}</label><input id="formation-query" name="q" type="search" maxlength="200" aria-describedby="formation-search-help">
+        <p id="formation-search-help">${m.searchHelp}</p><div class="actions"><button type="submit" ?disabled=${this.busy}>${m.searchButton}</button><button type="button" ?disabled=${this.busy} @click=${this.clearSearch}>${m.clearSearch}</button></div>
+      </form>
+      ${this.error?html`<p role="alert">${this.error}</p>`:nothing}<p role="status" aria-label=${m.status}>${this.busy?m.loading:this.notice||(this.data?`${this.data.total} ${m.resultCount}`:'')}</p>
+      ${this.data&&!this.data.items.length?html`<p>${this.query?m.noResults:m.empty}</p>`:nothing}
       ${this.data?.items.length?html`<div class="table-container" tabindex="0" role="region" aria-label=${m.table}><table><caption>${m.caption}</caption><thead><tr><th scope="col">${m.code}</th><th scope="col">${m.label}</th><th scope="col">${m.state}</th><th scope="col">${m.actions}</th></tr></thead><tbody>${this.data.items.map(item=>html`<tr><td>${item.code}</td><td>${item.title}<p>${item.objectives}</p><p>${item.description}</p><p>${item.durationMinutes===null?'':`${item.durationMinutes} min`}</p></td><td>${item.status}</td><td><div class="actions">
         <button type="button" ?disabled=${this.busy} aria-label=${`${coverageMessages.title} : ${item.title}`} @click=${()=>this.renderRoot.querySelector<FormationCompetencies>('formation-competencies')!.show(item)}>${coverageMessages.title}</button>
         <button type="button" ?disabled=${this.busy} aria-label=${`${m.modify} ${item.title}`} @click=${()=>this.open(item)}>${m.modify}</button>

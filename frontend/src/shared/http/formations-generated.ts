@@ -11,10 +11,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catalogue paginé pour gestionnaire et administrateur, tous états, tri par code sans casse puis identifiant. */
+        /** @description Catalogue paginé pour gestionnaire et administrateur, tous états y compris archivés et formations sans session. Recherche littérale par sous-chaîne de code ou intitulé sans casse, espaces externes retirés, vide pour tout le catalogue. Tri par code sans casse puis identifiant. */
         get: {
             parameters: {
                 query?: {
+                    q?: string;
                     page?: number;
                     size?: number;
                 };

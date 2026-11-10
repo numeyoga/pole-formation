@@ -264,5 +264,21 @@
     "commits": [
       "4541bfb4e557d2e54e6b507505dc71e4f27bab1d"
     ]
+  },
+  "US-03.03": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
+    "report": "docs/reference/quality/us-03-03-validation.md",
+    "remaining": [
+      "Recette métier humaine de la recherche et de la consultation des formations.",
+      "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
+    ],
+    "acceptance": {
+      "required": true
+    }
   }
 }

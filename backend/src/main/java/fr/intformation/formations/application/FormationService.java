@@ -11,7 +11,11 @@ public final class FormationService {
     private final AccessPolicy policy=new AccessPolicy();
     public FormationService(FormationStore store,AccessStore accounts,Clock clock){this.store=store;this.accounts=accounts;this.clock=clock;}
     private void authorize(String user){policy.require(accounts.actor(user),AccessPolicy.Permission.WRITE_REFERENTIAL);}
-    public FormationStore.Page list(String user,int page,int size){authorize(user);if(page<0||size<1||size>100)throw new IllegalArgumentException("Pagination invalide.");return store.list(page,size);}
+    public FormationStore.Page list(String user,String query,int page,int size){
+        authorize(user);pagination(page,size);query=query==null?"":query.strip();
+        if(query.length()>200)throw new IllegalArgumentException("Recherche : 200 caractères maximum.");
+        return store.list(query,page,size);
+    }
     private void pagination(int page,int size){if(page<0||size<1||size>100)throw new IllegalArgumentException("Pagination invalide.");}
     public FormationStore.CoveragePage coverage(String user,UUID id,int page,int size){authorize(user);pagination(page,size);return store.coverage(id,page,size);}
     public FormationStore.Coverage associate(String user,UUID id,UUID competencyId){

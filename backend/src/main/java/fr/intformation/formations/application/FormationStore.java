@@ -14,7 +14,7 @@ public interface FormationStore {
     CoveragePage coverage(UUID id,int page,int size);
     Coverage associate(UUID id,UUID competencyId);
     Choices competencyChoices(String query,int page,int size);
-    Page list(int page,int size);
+    Page list(String query,int page,int size);
     Formation get(UUID id);
     Formation create(String actor,Formation formation,Instant now);
     void update(String actor,UUID id,String code,String title,String objectives,String description,Integer duration,Long version,Instant now);
