@@ -32,3 +32,5 @@ Le [suivi](suivi.md) contient les statuts courants et la [checklist](checklist-p
 | [DEF-017](defauts/2026-11-09-DEF-017-focus-formulaire-desactive.md) | 2026-11-09 | Focus demandé avant réactivation du formulaire | Assertions de focus après rechargement | corrigé localement, US-03.01 |
 
 | [DEF-018](defauts/2026-11-10-DEF-018-nom-accessible-competences-formation.md) | 2026-11-10 | Texte visible absent du nom accessible du bouton de compétences | Axe label-content-name-mismatch | corrigé localement, US-03.02 |
+
+| [DEF-019](defauts/2026-11-10-DEF-019-pagination-choix-masques.md) | 2026-11-10 | Pagination des options masquées confondue avec la liste vide d’associations | Parcours avec zéro association et plusieurs pages de choix visibles | corrigé localement, US-03.02 |

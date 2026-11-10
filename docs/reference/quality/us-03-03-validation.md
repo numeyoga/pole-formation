@@ -14,6 +14,7 @@ type: reference
 - [Contrat de recherche](#contrat-de-recherche)
 - [Stratégie et preuves](#stratégie-et-preuves)
 - [Limites et recette](#limites-et-recette)
+- [Revalidation après correction de la modale](#revalidation-après-correction-de-la-modale)
 
 ## Périmètre et critères
 
@@ -55,3 +56,11 @@ La recette métier humaine de US-03.02 et US-03.03 est différée à la demande 
 Version disponible sur `http://localhost:8080/` pour la recette conjointe. SHA-256 du JAR : `c75d37eb21f38bd08bdf807c59e3e4ca006f82c0c9a963baa6e2e1e05689c084`. PostgreSQL et l’application restent actifs ; le serveur Chromium partagé est arrêté après validation.
 
 Commit validé pour la recette conjointe : `109508832577c3a80ec433c3f045201cf22592bb`.
+
+## Revalidation après correction de la modale
+
+Le signalement de recette du 2026-11-10 est consigné dans [DEF-019](../../../revue/defauts/2026-11-10-DEF-019-pagination-choix-masques.md). La pagination des choix agissait sur les options masquées d’un select, alors que la liste d’associations pouvait être vide. Deux sections nommées avec totaux distinguent désormais les collections ; les compétences à associer sont des lignes radio visibles, et leur pagination indique « Page X sur Y ». Le focus rejoint le titre de la collection après changement de page.
+
+Validation : **26 tests Vitest**, TypeScript strict, build Vite et **9 parcours Playwright du catalogue réussis**, dont le nouveau scénario observé rouge avant correction (zéro association et onze choix, dix lignes puis une ligne visible). Espace, flèches, focus et absence de sélection reportée sur une autre ligne vérifiés ; zéro violation axe dans les états testés au bureau et à 375 pixels. Capture étroite inspectée visuellement. Backend et contrats inchangés depuis `1095088`, contrôle Git effectué ; les 82 tests backend de cette livraison restent la preuve de référence et ne sont pas déclarés rejoués ici.
+
+Version disponible pour recette sur `http://localhost:8080/`, JAR de SHA-256 `20160f61d6548ddcc71af23e3773fa73f44248c7d72599057d88d149379743fd`. Le serveur Chromium partagé est arrêté après validation. La recette métier et les examens humains d’accessibilité restent ouverts pour les deux stories.

@@ -81,6 +81,7 @@ export const formationMessages={
 };
 
 export const coverageMessages={
+  associatedTitle:'Compétences déjà associées',availableTitle:'Compétences à associer',associatedCount:'compétence(s) associée(s).',availableCount:'compétence(s) disponible(s).',page:'Page',of:'sur',
   title:'Compétences de la formation',help:'Associations pédagogiques sans niveau de maîtrise. Elles ne valident aucune acquisition individuelle.',
   activeHelp:'Une nouvelle association nécessite une formation et une compétence actives. Les liens historiques sont conservés.',
   search:'Rechercher une compétence par code ou libellé',searchButton:'Rechercher les compétences',choose:'Compétence à associer',placeholder:'Choisir une compétence',
