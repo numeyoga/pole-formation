@@ -76,3 +76,5 @@ Le signalement de recette du 2026-11-10 est consigné dans [DEF-019](../../../re
 Validation : **26 tests Vitest**, TypeScript strict, build Vite et **9 parcours Playwright du catalogue réussis**, dont le nouveau scénario observé rouge avant correction (zéro association et onze choix, dix lignes puis une ligne visible). Espace, flèches, focus et absence de sélection reportée sur une autre ligne vérifiés ; zéro violation axe dans les états testés au bureau et à 375 pixels. Capture étroite inspectée visuellement. Backend et contrats inchangés depuis `1095088`, contrôle Git effectué ; les 82 tests backend de cette livraison restent la preuve de référence et ne sont pas déclarés rejoués ici.
 
 Version disponible pour recette sur `http://localhost:8080/`, JAR de SHA-256 `20160f61d6548ddcc71af23e3773fa73f44248c7d72599057d88d149379743fd`. Le serveur Chromium partagé est arrêté après validation. La recette métier et les examens humains d’accessibilité restent ouverts pour les deux stories.
+
+Commit du correctif validé : `ec924794f2b1c478bb155aaaa28a3fdfb263a9bf`.

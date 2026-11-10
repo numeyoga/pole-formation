@@ -260,9 +260,10 @@
     "acceptance": {
       "required": true
     },
-    "validated_commit": "109508832577c3a80ec433c3f045201cf22592bb",
+    "validated_commit": "ec924794f2b1c478bb155aaaa28a3fdfb263a9bf",
     "commits": [
-      "4541bfb4e557d2e54e6b507505dc71e4f27bab1d"
+      "4541bfb4e557d2e54e6b507505dc71e4f27bab1d",
+      "ec924794f2b1c478bb155aaaa28a3fdfb263a9bf"
     ]
   },
   "US-03.03": {
@@ -280,7 +281,7 @@
     "acceptance": {
       "required": true
     },
-    "validated_commit": "109508832577c3a80ec433c3f045201cf22592bb",
+    "validated_commit": "ec924794f2b1c478bb155aaaa28a3fdfb263a9bf",
     "commits": [
       "109508832577c3a80ec433c3f045201cf22592bb"
     ]
