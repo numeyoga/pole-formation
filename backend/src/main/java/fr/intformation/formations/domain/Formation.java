@@ -43,5 +43,6 @@ public record Formation(UUID id,String code,String title,String objectives,Strin
         };
         return new Formation(id,code,title,objectives,description,durationMinutes,target,version+1);
     }
+    public void requireAssociationActive(){if(state!=State.ACTIVE)throw new Conflict("Une nouvelle association requiert une formation active.");}
     public void requireActive(){if(state!=State.ACTIVE)throw new Conflict("Une nouvelle session requiert une formation active.");}
 }

@@ -244,5 +244,21 @@
     "commits": [
       "0a2023213655163c6618796dd64b9cc60dbbf5fa"
     ]
+  },
+  "US-03.02": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
+    "report": "docs/reference/quality/us-03-02-validation.md",
+    "remaining": [
+      "Recette métier humaine des associations formations et compétences.",
+      "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
+    ],
+    "acceptance": {
+      "required": true
+    }
   }
 }

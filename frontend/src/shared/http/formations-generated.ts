@@ -377,6 +377,134 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/formations/competences-disponibles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Compétences actives, recherche littérale par code ou libellé, tri par libellé sans casse puis identifiant. Gestionnaire et administrateur. */
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    size?: number;
+                    q?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Choix paginés */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Choices"];
+                    };
+                };
+                400: components["responses"]["Error"];
+                401: components["responses"]["Error"];
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/formations/{id}/competences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: components["parameters"]["Id"];
+            };
+            cookie?: never;
+        };
+        /** @description Liens conservés pour tous les états de formation et compétences inactives incluses, tri par libellé de compétence sans casse puis identifiant du lien. */
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    size?: number;
+                };
+                header?: never;
+                path: {
+                    id: components["parameters"]["Id"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Compétences associées paginées */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CoveragePage"];
+                    };
+                };
+                400: components["responses"]["Error"];
+                401: components["responses"]["Error"];
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        /** @description Associe une compétence active à une formation Active, sans niveau ni classification. Contrôles et insertion atomiques avec verrouillage des deux références ; doublon refusé. Gestionnaire et administrateur. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    "X-CSRF-TOKEN": components["parameters"]["Csrf"];
+                };
+                path: {
+                    id: components["parameters"]["Id"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        competencyId: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Association créée */
+                201: {
+                    headers: {
+                        Location?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Coverage"];
+                    };
+                };
+                400: components["responses"]["Error"];
+                401: components["responses"]["Error"];
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+                409: components["responses"]["Error"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -414,6 +542,33 @@ export interface components {
             title: string;
             /** @enum {string} */
             state: "BROUILLON" | "PLANIFIEE" | "TERMINEE" | "ANNULEE";
+        };
+        Coverage: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            competencyId: string;
+            competencyCode: string;
+            competencyLabel: string;
+            active: boolean;
+        };
+        CoveragePage: {
+            items: components["schemas"]["Coverage"][];
+            total: number;
+            page: number;
+            size: number;
+        };
+        Choice: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            label: string;
+        };
+        Choices: {
+            items: components["schemas"]["Choice"][];
+            total: number;
+            page: number;
+            size: number;
         };
     };
     responses: {

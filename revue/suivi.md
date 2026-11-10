@@ -22,3 +22,5 @@
 | DEF-016 | 🟠 | Version périmée masquant le contrôle d’inactivité | [fiche](defauts/2026-11-09-DEF-016-test-inactivite-version.md) | `AccessHttpTest.java` | corrigé localement | JSON structurel, motif explicite, mutation détectée ; récurrence DEF-011 | 2026-11-09 |
 
 | DEF-017 | 🟠 | Focus demandé avant réactivation du formulaire | [fiche](defauts/2026-11-09-DEF-017-focus-formulaire-desactive.md) | `formations-panel.ts` | corrigé localement | Réactivation, rendu puis focus ; assertions navigateur sur édition et confirmation | 2026-11-09 |
+
+| DEF-018 | 🟠 | Texte visible absent du nom accessible du bouton de compétences | [fiche](defauts/2026-11-10-DEF-018-nom-accessible-competences-formation.md) | `formations-panel.ts` | corrigé localement | Même ressource pour texte visible et nom accessible contextualisé ; audit axe conservé | 2026-11-10 |

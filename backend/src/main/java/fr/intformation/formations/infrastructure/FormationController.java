@@ -19,6 +19,7 @@ public class FormationController {
     private FormationResponse dto(Formation f){return new FormationResponse(f.id(),f.code(),f.title(),f.objectives(),f.description(),f.durationMinutes(),f.state().name(),f.version());}
     public record Change(String code,String title,String objectives,String description,BigDecimal durationMinutes,BigDecimal version){}
     public record Version(BigDecimal version){}
+    public record AssociationChange(UUID competencyId){}
     public record SessionChange(String title){}
     private Integer duration(BigDecimal value){try{return value==null?null:value.intValueExact();}catch(ArithmeticException error){throw new Formation.InvalidField("durationMinutes","Durée entière invalide.");}}
     private Long version(BigDecimal value){try{return value==null?null:value.longValueExact();}catch(ArithmeticException error){throw new Formation.InvalidField("version","Version entière invalide.");}}
@@ -29,6 +30,15 @@ public class FormationController {
     void update(Principal user,@PathVariable UUID id,@RequestBody Change body){service.update(user.getName(),id,body.code(),body.title(),body.objectives(),body.description(),duration(body.durationMinutes()),version(body.version()));}
     @PostMapping("/{id}/{action:activation|archivage|reactivation}") @ResponseStatus(HttpStatus.NO_CONTENT)
     void transition(Principal user,@PathVariable UUID id,@PathVariable String action,@RequestBody Version body){service.transition(user.getName(),id,action,version(body.version()));}
+    @GetMapping("/competences-disponibles")
+    FormationStore.Choices competencyChoices(Principal user,@RequestParam(defaultValue="") String q,@RequestParam(defaultValue="0") int page,@RequestParam(defaultValue="20") int size){return service.competencyChoices(user.getName(),q,page,size);}
+    @GetMapping("/{id}/competences")
+    FormationStore.CoveragePage coverage(Principal user,@PathVariable UUID id,@RequestParam(defaultValue="0") int page,@RequestParam(defaultValue="20") int size){return service.coverage(user.getName(),id,page,size);}
+    @PostMapping("/{id}/competences")
+    ResponseEntity<FormationStore.Coverage> associate(Principal user,@PathVariable UUID id,@RequestBody AssociationChange body){
+        var created=service.associate(user.getName(),id,body.competencyId());
+        return ResponseEntity.created(URI.create("/api/formations/"+id+"/competences")).body(created);
+    }
     @GetMapping("/{id}/sessions") List<FormationStore.Session> sessions(Principal user,@PathVariable UUID id){return service.sessions(user.getName(),id);}
     @PostMapping("/{id}/sessions") @ResponseStatus(HttpStatus.CREATED)
     FormationStore.Session createSession(Principal user,@PathVariable UUID id,@RequestBody SessionChange body){return service.createSession(user.getName(),id,body.title());}

@@ -30,3 +30,5 @@ Le [suivi](suivi.md) contient les statuts courants et la [checklist](checklist-p
 | [DEF-016](defauts/2026-11-09-DEF-016-test-inactivite-version.md) | 2026-11-09 | Version périmée masquant le contrôle d’inactivité | Préconditions explicites et assertion du motif | corrigé localement, US-02.03 |
 
 | [DEF-017](defauts/2026-11-09-DEF-017-focus-formulaire-desactive.md) | 2026-11-09 | Focus demandé avant réactivation du formulaire | Assertions de focus après rechargement | corrigé localement, US-03.01 |
+
+| [DEF-018](defauts/2026-11-10-DEF-018-nom-accessible-competences-formation.md) | 2026-11-10 | Texte visible absent du nom accessible du bouton de compétences | Axe label-content-name-mismatch | corrigé localement, US-03.02 |

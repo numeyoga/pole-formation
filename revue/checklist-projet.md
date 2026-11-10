@@ -22,3 +22,5 @@
 - Construire les requêtes JSON structurellement, sans substitution dépendante de l’ordre des champs ; fournir une version courante et vérifier le motif exact des refus métier (DEF-016).
 
 - Avant de focaliser un contrôle après un traitement asynchrone, rétablir sa disponibilité puis attendre le rendu ; vérifier aussi le focus quand le bouton de rechargement disparaît (DEF-017).
+
+- Un aria-label contextualisant une action doit conserver l’intégralité du texte visible ; construire les deux à partir de la même ressource et vérifier axe avec le dialogue ouvert (DEF-018).

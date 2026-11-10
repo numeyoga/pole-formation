@@ -157,6 +157,65 @@ paths:
         '403': {$ref: '#/components/responses/Error'}
         '404': {$ref: '#/components/responses/Error'}
         '409': {$ref: '#/components/responses/Error'}
+  /api/formations/competences-disponibles:
+    get:
+      description: Compétences actives, recherche littérale par code ou libellé, tri par libellé sans casse puis identifiant. Gestionnaire et administrateur.
+      parameters:
+        - {name: page, in: query, schema: {type: integer, minimum: 0, default: 0}}
+        - {name: size, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+        - {name: q, in: query, schema: {type: string, maxLength: 200, default: ''}}
+      responses:
+        '200':
+          description: Choix paginés
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Choices'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+  /api/formations/{id}/competences:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      description: Liens conservés pour tous les états de formation et compétences inactives incluses, tri par libellé de compétence sans casse puis identifiant du lien.
+      parameters:
+        - {name: page, in: query, schema: {type: integer, minimum: 0, default: 0}}
+        - {name: size, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+      responses:
+        '200':
+          description: Compétences associées paginées
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/CoveragePage'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+    post:
+      description: Associe une compétence active à une formation Active, sans niveau ni classification. Contrôles et insertion atomiques avec verrouillage des deux références ; doublon refusé. Gestionnaire et administrateur.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [competencyId]
+              properties:
+                competencyId: {type: string, format: uuid}
+      responses:
+        '201':
+          description: Association créée
+          headers:
+            Location: {schema: {type: string}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Coverage'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
 components:
   securitySchemes:
     session: {type: apiKey, in: cookie, name: JSESSIONID}
@@ -214,3 +273,35 @@ components:
         id: {type: string, format: uuid}
         title: {type: string}
         state: {type: string, enum: [BROUILLON, PLANIFIEE, TERMINEE, ANNULEE]}
+    Coverage:
+      type: object
+      required: [id, competencyId, competencyCode, competencyLabel, active]
+      properties:
+        id: {type: string, format: uuid}
+        competencyId: {type: string, format: uuid}
+        competencyCode: {type: string}
+        competencyLabel: {type: string}
+        active: {type: boolean}
+    CoveragePage:
+      type: object
+      required: [items, total, page, size]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Coverage'}}
+        total: {type: integer}
+        page: {type: integer}
+        size: {type: integer}
+    Choice:
+      type: object
+      required: [id, code, label]
+      properties:
+        id: {type: string, format: uuid}
+        code: {type: string}
+        label: {type: string}
+    Choices:
+      type: object
+      required: [items, total, page, size]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Choice'}}
+        total: {type: integer}
+        page: {type: integer}
+        size: {type: integer}

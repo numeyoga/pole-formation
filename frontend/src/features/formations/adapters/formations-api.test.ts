@@ -19,3 +19,18 @@ test('field conflicts and expired sessions remain actionable',async()=>{
  const {formationsApi}=await import('./formations-api');await expect(formationsApi.get('f')).rejects.toMatchObject({status:409,fields:{code:'Code réservé'}});
  await expect(formationsApi.list()).rejects.toThrow('Votre session a expiré. Connectez-vous à nouveau.');
 });
+test('coverage mapping retains inactive historical links without mastery information',async()=>{
+ const {coverageView}=await import('./formations-api');
+ expect(coverageView({id:'link',competencyId:'c',competencyCode:'COMP',competencyLabel:'Compétence',active:false})).toEqual({id:'link',competencyId:'c',code:'COMP',label:'Compétence',status:'Inactive'});
+});
+test('coverage creation posts only the competency and CSRF token',async()=>{
+ const fetch=vi.fn().mockImplementation((request:Request)=>Promise.resolve(request.url.endsWith('/api/auth/csrf')?Response.json({headerName:'X-CSRF-TOKEN',token:'csrf'}):Response.json({id:'link',competencyId:'c',competencyCode:'COMP',competencyLabel:'Compétence',active:true},{status:201})));
+ vi.stubGlobal('fetch',fetch);const {formationsApi}=await import('./formations-api');expect(await formationsApi.associate('f','c')).toMatchObject({status:'Active'});
+ const request:Request=fetch.mock.calls[1][0];expect(request.url).toBe('http://localhost/api/formations/f/competences');expect(request.headers.get('X-CSRF-TOKEN')).toBe('csrf');expect(await request.json()).toEqual({competencyId:'c'});
+});
+test('choices encode literal searches and coverage retains page metadata',async()=>{
+ const fetch=vi.fn().mockResolvedValueOnce(Response.json({items:[{id:'c',code:'A%_',label:'Choix'}],page:1,size:10,total:11})).mockResolvedValueOnce(Response.json({items:[{id:'l',competencyId:'c',competencyCode:'A%_',competencyLabel:'Choix',active:false}],page:2,size:10,total:21}));
+ vi.stubGlobal('fetch',fetch);const {formationsApi}=await import('./formations-api');expect(await formationsApi.competencyChoices('%_',1)).toMatchObject({page:1,total:11});
+ const url=new URL((fetch.mock.calls[0][0] as Request).url);expect(url.searchParams.get('q')).toBe('%_');expect(url.searchParams.get('page')).toBe('1');
+ expect(await formationsApi.coverage('f',2)).toEqual({items:[{id:'l',competencyId:'c',code:'A%_',label:'Choix',status:'Inactive'}],page:2,size:10,total:21});
+});

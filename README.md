@@ -2,7 +2,7 @@
 title: "Pôle formation INT — référentiel du projet"
 description: "Entrée humaine et IA vers le monorepo et les documents Diátaxis."
 created: 2026-11-07
-updated: 2026-11-09
+updated: 2026-11-10
 status: accepted
 type: index
 tags:
@@ -14,7 +14,7 @@ tags:
 
 Application interne de centralisation du pôle formation INT : référentiels, formations, sessions, participations et pilotage de l'activité formation.
 
-> **Statut** : le socle local Mise/Podman, les habilitations, le journal des changements sensibles et la gestion des domaines, sous-domaines et compétences ainsi que l’exploration du référentiel et l’administration des profils d’emploi, des classifications et des associations de compétences classifiées et de leur consultation filtrée, ainsi que le catalogue de formations et son cycle de vie sont implémentés localement. Le reste du MVP décrit une cible ; certaines règles métier et intégrations restent à confirmer. Voir le [guide de lancement](docs/how-to/run-local-app.md), le [périmètre des habilitations](docs/reference/quality/us-08-01-validation.md), le [rapport du journal](docs/reference/quality/us-08-02-validation.md), le [rapport des domaines](docs/reference/quality/us-01-01-validation.md), celui des [sous-domaines](docs/reference/quality/us-01-02-validation.md) et celui des [compétences](docs/reference/quality/us-01-03-validation.md) et celui de l’[exploration](docs/reference/quality/us-01-04-validation.md) et des [profils d’emploi](docs/reference/quality/us-02-01-validation.md), des [classifications](docs/reference/quality/us-02-02-validation.md) et des [exigences](docs/reference/quality/us-02-03-validation.md) et de leur [consultation](docs/reference/quality/us-02-04-validation.md), ainsi que du [catalogue de formations](docs/reference/quality/us-03-01-validation.md).
+> **Statut** : le socle local Mise/Podman, les habilitations, le journal des changements sensibles et la gestion des domaines, sous-domaines et compétences ainsi que l’exploration du référentiel et l’administration des profils d’emploi, des classifications et des associations de compétences classifiées et de leur consultation filtrée, ainsi que le catalogue de formations, son cycle de vie et ses associations de compétences sont implémentés localement. Le reste du MVP décrit une cible ; certaines règles métier et intégrations restent à confirmer. Voir le [guide de lancement](docs/how-to/run-local-app.md), le [périmètre des habilitations](docs/reference/quality/us-08-01-validation.md), le [rapport du journal](docs/reference/quality/us-08-02-validation.md), le [rapport des domaines](docs/reference/quality/us-01-01-validation.md), celui des [sous-domaines](docs/reference/quality/us-01-02-validation.md) et celui des [compétences](docs/reference/quality/us-01-03-validation.md) et celui de l’[exploration](docs/reference/quality/us-01-04-validation.md) et des [profils d’emploi](docs/reference/quality/us-02-01-validation.md), des [classifications](docs/reference/quality/us-02-02-validation.md) et des [exigences](docs/reference/quality/us-02-03-validation.md) et de leur [consultation](docs/reference/quality/us-02-04-validation.md), ainsi que du [catalogue de formations](docs/reference/quality/us-03-01-validation.md) et de ses [associations de compétences](docs/reference/quality/us-03-02-validation.md).
 
 ## Sommaire
 
