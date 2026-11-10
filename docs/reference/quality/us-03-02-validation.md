@@ -65,3 +65,5 @@ Livraison initiale validée : `4541bfb4e557d2e54e6b507505dc71e4f27bab1d`. La rec
 Le 2026-11-10, l’utilisateur a demandé d’enchaîner US-03.03 et de valider les deux stories ensuite. Aucune acceptation humaine n’est enregistrée. Les parcours des associations sont rejoués avec la recherche du catalogue : **82 tests backend**, dont **66 scénarios HTTP**, **26 tests Vitest**, **8 parcours Playwright du catalogue** (dont les deux parcours d’association) et **13 tests Python** réussis. Axe et les scénarios clavier du dialogue passent à nouveau. Voir les [preuves de US-03.03](us-03-03-validation.md).
 
 La version proposée pour les deux recettes est disponible sur `http://localhost:8080/`, avec le JAR de SHA-256 `c75d37eb21f38bd08bdf807c59e3e4ca006f82c0c9a963baa6e2e1e05689c084`. Les contrôles humains restant à effectuer sont inchangés.
+
+Commit validé pour la recette conjointe : `109508832577c3a80ec433c3f045201cf22592bb`.

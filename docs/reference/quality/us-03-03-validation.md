@@ -53,3 +53,5 @@ La suite navigateur ciblée couvre les composants modifiés et la dépendance US
 La recette métier humaine de US-03.02 et US-03.03 est différée à la demande de l’utilisateur. Les deux stories restent à recetter ; les tests automatisés ne constituent pas une acceptation humaine. Lecteur d’écran et zoom navigateur réel à 200 % restent à examiner. Axe et un viewport étroit ne suffisent pas à démontrer WCAG AA. Données fictives locales uniquement.
 
 Version disponible sur `http://localhost:8080/` pour la recette conjointe. SHA-256 du JAR : `c75d37eb21f38bd08bdf807c59e3e4ca006f82c0c9a963baa6e2e1e05689c084`. PostgreSQL et l’application restent actifs ; le serveur Chromium partagé est arrêté après validation.
+
+Commit validé pour la recette conjointe : `109508832577c3a80ec433c3f045201cf22592bb`.

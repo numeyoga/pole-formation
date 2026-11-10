@@ -260,13 +260,13 @@
     "acceptance": {
       "required": true
     },
-    "validated_commit": "4541bfb4e557d2e54e6b507505dc71e4f27bab1d",
+    "validated_commit": "109508832577c3a80ec433c3f045201cf22592bb",
     "commits": [
       "4541bfb4e557d2e54e6b507505dc71e4f27bab1d"
     ]
   },
   "US-03.03": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -279,6 +279,10 @@
     ],
     "acceptance": {
       "required": true
-    }
+    },
+    "validated_commit": "109508832577c3a80ec433c3f045201cf22592bb",
+    "commits": [
+      "109508832577c3a80ec433c3f045201cf22592bb"
+    ]
   }
 }
