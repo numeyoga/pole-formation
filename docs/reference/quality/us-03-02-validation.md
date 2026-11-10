@@ -56,3 +56,5 @@ Le premier passage axe a détecté [DEF-018](../../../revue/defauts/2026-11-10-D
 Recette métier humaine de cette story et examen humain d’accessibilité (lecteur d’écran, zoom navigateur réel à 200 %) restent à effectuer. Les contrôles axe et clavier automatisés ne démontrent pas à eux seuls WCAG AA. Données fictives locales uniquement. La recherche des formations reste US-03.03.
 
 L’application est disponible sur `http://localhost:8080/` pour recette. SHA-256 du JAR testé : `8321fc8572874cd734ee1af17f30ccaf53d17fa7cd94f322206ac9060e633473`. Le serveur PostgreSQL reste actif pour l’application ; le serveur Chromium partagé est arrêté après validation.
+
+Livraison validée : `4541bfb4e557d2e54e6b507505dc71e4f27bab1d`. La recette humaine reste requise ; aucune acceptation utilisateur n’est déduite des tests automatisés.
