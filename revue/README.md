@@ -34,3 +34,5 @@ Le [suivi](suivi.md) contient les statuts courants et la [checklist](checklist-p
 | [DEF-018](defauts/2026-11-10-DEF-018-nom-accessible-competences-formation.md) | 2026-11-10 | Texte visible absent du nom accessible du bouton de compétences | Axe label-content-name-mismatch | corrigé localement, US-03.02 |
 
 | [DEF-019](defauts/2026-11-10-DEF-019-pagination-choix-masques.md) | 2026-11-10 | Pagination des options masquées confondue avec la liste vide d’associations | Parcours avec zéro association et plusieurs pages de choix visibles | corrigé localement, US-03.02 |
+
+| [DEF-020](defauts/2026-11-10-DEF-020-survol-boutons-desactives.md) | 2026-11-10 | Effets de survol sur les boutons désactivés | Comparaison du rendu au survol dans Chromium | corrigé localement |

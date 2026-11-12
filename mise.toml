@@ -61,3 +61,7 @@ run = "npm --prefix frontend run test:e2e"
 
 [tasks."test:scripts"]
 run = "python3 -m unittest discover -s scripts/tests"
+
+[tasks."db:reset-demo"]
+description = "Effacer les données de pole_formation_dev et recréer le jeu fictif de recette (application arrêtée)"
+run = "podman exec --interactive --env PGPASSWORD dev-postgres psql --host=127.0.0.1 --username=pole_formation --dbname=pole_formation_dev --set=ON_ERROR_STOP=1 --file=- < scripts/dev-demo.sql"

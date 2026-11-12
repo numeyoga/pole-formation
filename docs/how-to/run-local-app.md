@@ -1,7 +1,7 @@
 ---
 title: "Comment lancer et vérifier la première fonctionnalité"
 created: 2026-11-08
-updated: 2026-11-08
+updated: 2026-11-13
 status: accepted
 type: how-to
 ---
@@ -13,6 +13,7 @@ type: how-to
 - [Préparer](#préparer)
 - [Construire et lancer](#construire-et-lancer)
 - [Se connecter](#se-connecter)
+- [Réinitialiser les données fictives](#réinitialiser-les-données-fictives)
 - [Exécuter les validations](#exécuter-les-validations)
 
 ## Préparer
@@ -61,6 +62,18 @@ Si un autre gestionnaire a modifié une fiche, utiliser **Recharger la fiche** d
 Avec `admin` ou `gestionnaire`, consulter **Journal des changements sensibles**, puis filtrer par type ou session. Avec `admin`, ouvrir « Exemple — Session clôturée » et changer effectivement la présence de Camille Exemple : le journal affiche la correction avec auteur, date UTC et états avant/après. Un enregistrement du même état n’ajoute pas de changement fictif.
 
 Pour retrouver les deux événements d’une participation, choisir le type « Participations » et renseigner son identifiant dans le filtre d’objet. Les désistements/réactivations et modifications de planning sont actuellement accessibles par les endpoints du [contrat d’audit](../../api/audit.openapi.yaml) ; leurs formulaires complets seront ajoutés dans les stories correspondantes. Les événements antérieurs restent conservés après redémarrage.
+
+## Réinitialiser les données fictives
+
+Pour retrouver un jeu cohérent de recette après les essais et tests navigateur :
+
+1. Arrêter l’application locale avec Ctrl+C.
+2. Exécuter `mise run db:up`, puis `mise run db:reset-demo`.
+3. Relancer `mise run dev` et se reconnecter avec un compte fictif ci-dessus.
+
+La commande **efface toutes les données applicatives de `pole_formation_dev`**, y compris comptes, rôles modifiés et journal, puis installe le [jeu de démonstration](../reference/demo-data.md). Les cinq comptes sont recréés au redémarrage. Le script conserve le schéma et l’historique Flyway ; il refuse une autre base ou un autre rôle SQL. Il n’agit pas sur les bases Testcontainers ni sur les autres applications du service partagé.
+
+Les scénarios de US-04.01 et US-04.02 se parcourent depuis « Profils d’emploi », puis « Formations pertinentes pour … ». Choisir « Analyste de données » pour tester les deux paginations, « Coordinateur d’équipe » pour les besoins non couverts et les références historiques, et « Profil sans exigences » pour l’état vide.
 
 ## Exécuter les validations
 

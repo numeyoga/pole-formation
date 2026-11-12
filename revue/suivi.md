@@ -26,3 +26,5 @@
 | DEF-018 | 🟠 | Texte visible absent du nom accessible du bouton de compétences | [fiche](defauts/2026-11-10-DEF-018-nom-accessible-competences-formation.md) | `formations-panel.ts` | corrigé localement | Même ressource pour texte visible et nom accessible contextualisé ; audit axe conservé | 2026-11-10 |
 
 | DEF-019 | 🟠 | Pagination des choix masqués confondue avec la liste d’associations vide | [fiche](defauts/2026-11-10-DEF-019-pagination-choix-masques.md) | `formation-competencies.ts` | corrigé localement | Sections, totaux et choix radio visibles ; neuf parcours catalogue réussis, dont la régression initialement rouge | 2026-11-10 |
+
+| DEF-020 | 🟡 | Effets de survol sur les boutons désactivés | [fiche](defauts/2026-11-10-DEF-020-survol-boutons-desactives.md) | `frontend/src/features/` | corrigé localement | Survol limité aux boutons actifs et vérifié dans Chromium | 2026-11-10 |

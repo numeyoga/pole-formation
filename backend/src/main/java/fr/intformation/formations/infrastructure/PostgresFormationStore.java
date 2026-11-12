@@ -25,6 +25,63 @@ public class PostgresFormationStore implements FormationStore {
         long total=db.sql("SELECT count(*)"+filter).param("query",query).query(Long.class).single();
         return new Page(items,total,page,size);
     }
+    @Transactional(readOnly=true,isolation=org.springframework.transaction.annotation.Isolation.REPEATABLE_READ)
+    public Matches forProfile(UUID profileId,int page,int size){
+        requireProfile(profileId);
+        String filter="""
+             FROM formation f WHERE f.state='ACTIVE' AND EXISTS (
+                SELECT 1 FROM formation_competency fc
+                JOIN profile_requirement r ON r.competency_id=fc.competency_id
+                WHERE fc.formation_id=f.id AND r.profile_id=:profile)
+            """;
+        var items=db.sql("""
+            SELECT f.id,f.code,f.title,EXISTS(
+                SELECT 1 FROM training_session s WHERE s.formation_id=f.id AND s.state='PLANIFIEE'
+            ) AS has_planned_session
+            """+filter+" ORDER BY lower(f.code),f.id LIMIT :size OFFSET :offset")
+            .param("profile",profileId).param("size",size).param("offset",(long)page*size)
+            .query((rs,i)->new Match(rs.getObject("id",UUID.class),rs.getString("code"),rs.getString("title"),rs.getBoolean("has_planned_session"))).list();
+        long total=db.sql("SELECT count(*)"+filter).param("profile",profileId).query(Long.class).single();
+        return new Matches(items,total,page,size);
+    }
+    private void requireProfile(UUID id){
+        if(!db.sql("SELECT EXISTS(SELECT 1 FROM job_profile WHERE id=:id)").param("id",id).query(Boolean.class).single())throw new NotFound();
+    }
+    @Transactional(readOnly=true,isolation=org.springframework.transaction.annotation.Isolation.REPEATABLE_READ)
+    public ExplanationPage commonRequirements(UUID profileId,UUID formationId,int page,int size){
+        requireProfile(profileId);
+        return explanation(profileId,formationId,page,size);
+    }
+    @Transactional(readOnly=true,isolation=org.springframework.transaction.annotation.Isolation.REPEATABLE_READ)
+    public ExplanationPage uncoveredRequirements(UUID profileId,int page,int size){
+        requireProfile(profileId);
+        return explanation(profileId,null,page,size);
+    }
+    private ExplanationPage explanation(UUID profileId,UUID formationId,int page,int size){
+        String coverage="""
+            EXISTS (SELECT 1 FROM formation_competency fc JOIN formation f ON f.id=fc.formation_id
+                WHERE fc.competency_id=r.competency_id AND f.state='ACTIVE'
+            """+(formationId==null?")":" AND f.id=:formation)");
+        String filter="""
+             FROM profile_requirement r
+             JOIN competency_reference c ON c.id=r.competency_id
+             JOIN requirement_classification k ON k.id=r.classification_id
+             WHERE r.profile_id=:profile AND
+            """+(formationId==null?"NOT ":"")+coverage;
+        var count=db.sql("SELECT count(*)"+filter).param("profile",profileId);
+        if(formationId!=null)count.param("formation",formationId);
+        long total=count.query(Long.class).single();
+        if(formationId!=null && total==0)throw new NotFound();
+        var query=db.sql("""
+            SELECT c.id AS competency_id,c.code AS competency_code,c.label AS competency_label,c.active AS competency_active,
+                k.id AS classification_id,k.code AS classification_code,k.label AS classification_label,k.active AS classification_active
+            """+filter+" ORDER BY lower(c.code),c.id LIMIT :size OFFSET :offset")
+            .param("profile",profileId).param("size",size).param("offset",(long)page*size);
+        if(formationId!=null)query.param("formation",formationId);
+        var items=query.query((rs,i)->new ExplainedRequirement(rs.getObject("competency_id",UUID.class),rs.getString("competency_code"),rs.getString("competency_label"),rs.getBoolean("competency_active"),
+            rs.getObject("classification_id",UUID.class),rs.getString("classification_code"),rs.getString("classification_label"),rs.getBoolean("classification_active"))).list();
+        return new ExplanationPage(items,total,page,size);
+    }
     public Formation get(UUID id){return find(id,false);}
     private Formation find(UUID id,boolean lock){return db.sql("SELECT * FROM formation WHERE id=:id"+(lock?" FOR UPDATE":"")).param("id",id).query(ROW).optional().orElseThrow(NotFound::new);}
     private Map<String,Object> snapshot(Formation f){

@@ -2,6 +2,7 @@ import { LitElement,html,css,nothing } from 'lit';
 import { profilesApi,ProfileError } from '../adapters/profiles-api';
 import type { ProfileView,ProfilePage,RequirementView } from '../presentation/models';
 import './requirements-editor';
+import '../../formations/components/profile-formations';
 import type { RequirementsEditor } from './requirements-editor';
 import { requirementMessages as r } from '../../../shared/i18n/fr';
 import { ApiError } from '../../../shared/http/session';
@@ -24,7 +25,7 @@ export class ProfilesPanel extends LitElement {
     input,textarea,select,button{font:inherit;min-block-size:var(--control-height);padding:var(--space-control);border:var(--border-width) solid var(--color-border);border-radius:var(--control-radius);}
     input,textarea,select{max-inline-size:100%;color:var(--color-text);background:var(--color-surface);}
     button{inline-size:fit-content;max-inline-size:100%;color:var(--color-primary);background:var(--color-surface);cursor:pointer;}
-    button:hover{color:var(--color-hover);text-decoration:underline;}button:disabled{opacity:var(--disabled-opacity);cursor:default;}
+    button:where(:enabled):hover{color:var(--color-hover);text-decoration:underline;}button:disabled{opacity:var(--disabled-opacity);cursor:default;}
     [aria-invalid=true]{border-color:var(--color-danger);}[role=alert],.field-error{color:var(--color-danger);}
     [role=status]{color:var(--color-success);}
     :focus-visible{outline:var(--focus-width) solid var(--color-focus);outline-offset:var(--focus-width);}
@@ -131,7 +132,7 @@ export class ProfilesPanel extends LitElement {
       <p role="status" aria-label=${m.status}>${this.busy?m.loading:this.notice}</p>
       ${this.data&&!this.data.items.length?html`<p>${m.empty}</p>`:nothing}
       ${this.data?.items.length?html`<div class="table-container" tabindex="0" role="region" aria-label=${m.table}><table><caption>${m.caption}</caption><thead><tr><th scope="col">${m.code}</th><th scope="col">${m.label}</th><th scope="col">${m.state}</th><th scope="col">${m.actions}</th></tr></thead><tbody>${this.data.items.map(profile=>html`<tr><td>${profile.code}</td><td>${profile.label}<p>${profile.description}</p></td><td>${profile.status}</td><td><div class="actions"><button ?disabled=${this.busy} aria-label=${`${m.modify} ${profile.label}`} @click=${()=>this.open(profile)}>${m.modify}</button><button ?disabled=${this.busy||!profile.active} aria-label=${`${m.deactivate} ${profile.label}`} @click=${()=>this.confirm(profile)}>${m.deactivate}</button></div>
-        <p>${!profile.active?r.inactiveProfile:nothing}</p><button type="button" ?disabled=${this.busy||!profile.active} aria-label=${`${r.add} à ${profile.label}`} @click=${()=>this.showRequirement(profile)}>${r.add}</button><details @toggle=${(event:Event)=>this.showChildren(event,profile)}><summary>${m.requirements} ${profile.label}</summary>${this.renderRequirements(profile)}</details>
+        <p>${!profile.active?r.inactiveProfile:nothing}</p><button type="button" ?disabled=${this.busy||!profile.active} aria-label=${`${r.add} à ${profile.label}`} @click=${()=>this.showRequirement(profile)}>${r.add}</button><details @toggle=${(event:Event)=>this.showChildren(event,profile)}><summary>${m.requirements} ${profile.label}</summary>${this.renderRequirements(profile)}</details><profile-formations .profileId=${profile.id} .profileLabel=${`${profile.code} — ${profile.label}`}></profile-formations>
       </td></tr>`)}</tbody></table></div>`:nothing}
       ${this.data&&this.data.total>this.data.size?html`<nav aria-label=${m.pagination}><button ?disabled=${this.busy||this.data.page===0} @click=${()=>this.load(this.data!.page-1)}>${m.previous}</button><span aria-current="page">Page ${this.data.page+1}</span><button ?disabled=${this.busy||(this.data.page+1)*this.data.size>=this.data.total} @click=${()=>this.load(this.data!.page+1)}>${m.next}</button></nav>`:nothing}
     </section>

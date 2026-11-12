@@ -9,3 +9,9 @@ export interface CoverageView {id:string;competencyId:string;code:string;label:s
 export interface CoveragePage {items:CoverageView[];total:number;page:number;size:number}
 export interface CompetencyChoice {id:string;code:string;label:string}
 export interface CompetencyChoices {items:CompetencyChoice[];total:number;page:number;size:number}
+
+export interface ProfileFormationView {id:string;code:string;title:string;sessionStatus:string}
+export interface ProfileFormationsPage {items:ProfileFormationView[];total:number;page:number;size:number}
+
+export interface ExplainedRequirementView {id:string;code:string;label:string;competencyStatus:string;classification:string}
+export interface ExplanationPage {items:ExplainedRequirementView[];total:number;page:number;size:number}

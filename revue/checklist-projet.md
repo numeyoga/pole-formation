@@ -26,3 +26,5 @@
 - Un aria-label contextualisant une action doit conserver l’intégralité du texte visible ; construire les deux à partir de la même ressource et vérifier axe avec le dialogue ouvert (DEF-018).
 
 - Chaque pagination doit être adjacente aux éléments visibles qu’elle pilote, dans une section nommée avec total et page courante ; tester aussi une collection vide à côté d’une autre collection paginée (DEF-019).
+
+- Vérifier le rendu au survol des boutons actifs et désactivés, y compris les variantes principales (DEF-020).

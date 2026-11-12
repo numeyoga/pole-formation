@@ -24,7 +24,7 @@ export class ReferenceExplorer extends LitElement {
     label{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-small);inline-size:var(--control-width);min-inline-size:0;max-inline-size:100%;}form{margin-block:var(--space-normal);}
     input,button{font:inherit;min-block-size:var(--control-height);padding:var(--space-control);border:var(--border-width) solid var(--color-border);border-radius:var(--control-radius);color:var(--color-text);background:var(--color-surface);max-inline-size:100%;}
     input{inline-size:100%;min-inline-size:0;}button{color:var(--color-primary);cursor:pointer;}button:disabled{opacity:var(--disabled-opacity);cursor:default;}
-    button:hover{color:var(--color-hover);text-decoration:underline;}:focus-visible{outline:var(--focus-width) solid var(--color-focus);outline-offset:var(--focus-width);}
+    button:where(:enabled):hover{color:var(--color-hover);text-decoration:underline;}:focus-visible{outline:var(--focus-width) solid var(--color-focus);outline-offset:var(--focus-width);}
     ul,ol{padding-inline-start:var(--space-section);margin-block:var(--space-small);}li{padding-block:var(--space-small);overflow-wrap:anywhere;}
     summary{cursor:pointer;min-block-size:var(--control-height);padding-block:var(--space-small);overflow-wrap:anywhere;}
     p{margin-block:var(--space-small);overflow-wrap:anywhere;}[role=alert]{color:var(--color-danger);}nav{margin-block:var(--space-small);}

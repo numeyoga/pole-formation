@@ -26,6 +26,15 @@ public final class FormationService {
         if(query.length()>200)throw new IllegalArgumentException("Recherche : 200 caractères maximum.");
         return store.competencyChoices(query,page,size);
     }
+    public FormationStore.Matches forProfile(String user,UUID profileId,int page,int size){
+        authorize(user);pagination(page,size);return store.forProfile(profileId,page,size);
+    }
+    public FormationStore.ExplanationPage commonRequirements(String user,UUID profileId,UUID formationId,int page,int size){
+        authorize(user);pagination(page,size);return store.commonRequirements(profileId,formationId,page,size);
+    }
+    public FormationStore.ExplanationPage uncoveredRequirements(String user,UUID profileId,int page,int size){
+        authorize(user);pagination(page,size);return store.uncoveredRequirements(profileId,page,size);
+    }
     public Formation get(String user,UUID id){authorize(user);return store.get(id);}
     public Formation create(String user,String code,String title,String objectives,String description,Integer duration){
         authorize(user);return store.create(user,new Formation(UUID.randomUUID(),code,title,objectives,description,duration,Formation.State.BROUILLON,0),clock.instant());

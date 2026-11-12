@@ -6,6 +6,14 @@ import java.util.*;
 
 public interface FormationStore {
     record Page(List<Formation> items,long total,int page,int size) {}
+    record Match(UUID id,String code,String title,boolean hasPlannedSession) {}
+    record Matches(List<Match> items,long total,int page,int size) {}
+    Matches forProfile(UUID profileId,int page,int size);
+    record ExplainedRequirement(UUID competencyId,String competencyCode,String competencyLabel,boolean competencyActive,
+        UUID classificationId,String classificationCode,String classificationLabel,boolean classificationActive) {}
+    record ExplanationPage(List<ExplainedRequirement> items,long total,int page,int size) {}
+    ExplanationPage commonRequirements(UUID profileId,UUID formationId,int page,int size);
+    ExplanationPage uncoveredRequirements(UUID profileId,int page,int size);
     record Session(UUID id,String title,String state) {}
     record Coverage(UUID id,UUID competencyId,String competencyCode,String competencyLabel,boolean active) {}
     record CoveragePage(List<Coverage> items,long total,int page,int size) {}

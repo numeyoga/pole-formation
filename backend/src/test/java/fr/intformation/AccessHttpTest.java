@@ -168,6 +168,121 @@ class AccessHttpTest {
         var response=user.call("POST","/api/formations",formationBody("FOR-"+java.util.UUID.randomUUID(),"Formation exemple",0),true);
         assertThat(response.statusCode()).isEqualTo(201);return json.readTree(response.body());
     }
+    @Test void profile_formations_match_once_only_active_offers_and_report_planned_sessions() throws Exception {
+        var manager=as("gestionnaire");var parent=competencyParent(manager);
+        var profile=json.readTree(manager.call("POST",PROFILES,"{\"code\":\"MATCH-"+java.util.UUID.randomUUID()+"\",\"label\":\"Profil correspondances\"}",true).body());
+        String profileRoot=PROFILES+"/"+profile.get("id").asString(),path=profileRoot+"/formations";
+        assertThat(json.readTree(manager.get(path).body()).get("total").asLong()).isZero();
+        var first=json.readTree(manager.call("POST","/api/referentiels/competences",competencyBody(parent.get("id").asString(),"MATCH-A-"+java.util.UUID.randomUUID(),"Compétence A"),true).body());
+        var second=json.readTree(manager.call("POST","/api/referentiels/competences",competencyBody(parent.get("id").asString(),"MATCH-B-"+java.util.UUID.randomUUID(),"Compétence B"),true).body());
+        for(var competency:List.of(first,second))assertThat(manager.call("POST",profileRoot+"/exigences",json.writeValueAsString(java.util.Map.of("competencyId",competency.get("id").asString(),"classificationId","60000000-0000-0000-0000-000000000001")),true).statusCode()).isEqualTo(201);
+        var formation=newFormation(manager);String root="/api/formations/"+formation.get("id").asString();
+        assertThat(manager.call("POST",root+"/activation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        for(var competency:List.of(first,second))assertThat(manager.call("POST",root+"/competences",json.writeValueAsString(java.util.Map.of("competencyId",competency.get("id").asString())),true).statusCode()).isEqualTo(201);
+        newFormation(manager); // Unrelated draft must not appear.
+        var unrelated=newFormation(manager);assertThat(manager.call("POST","/api/formations/"+unrelated.get("id").asString()+"/activation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        var result=json.readTree(manager.get(path+"?size=1").body());assertThat(result.get("total").asLong()).isEqualTo(1);
+        assertThat(result.get("items").size()).isEqualTo(1);assertThat(result.get("items").get(0).get("id").asString()).isEqualTo(formation.get("id").asString());
+        assertThat(result.get("items").get(0).get("hasPlannedSession").asBoolean()).isFalse();
+        var session=json.readTree(manager.call("POST",root+"/sessions","{\"title\":\"Session exemple\"}",true).body());
+        assertThat(json.readTree(manager.get(path).body()).get("items").get(0).get("hasPlannedSession").asBoolean()).isFalse();
+        try{
+        for(String state:List.of("PLANIFIEE","TERMINEE","ANNULEE")){
+            db.sql("UPDATE training_session SET state=:state WHERE id=:id").param("state",state).param("id",java.util.UUID.fromString(session.get("id").asString())).update();
+            assertThat(json.readTree(manager.get(path).body()).get("items").get(0).get("hasPlannedSession").asBoolean()).isEqualTo(state.equals("PLANIFIEE"));
+        }
+        assertThat(manager.call("POST",root+"/archivage","{\"version\":1}",true).statusCode()).isEqualTo(204);
+        assertThat(json.readTree(manager.get(path).body()).get("total").asLong()).isZero();
+        assertThat(manager.call("POST",root+"/reactivation","{\"version\":2}",true).statusCode()).isEqualTo(204);
+        assertThat(json.readTree(manager.get(path).body()).get("total").asLong()).isEqualTo(1);
+        assertThat(json.readTree(manager.get(path+"?page=1&size=1").body()).get("items").size()).isZero();
+        var another=newFormation(manager);String anotherRoot="/api/formations/"+another.get("id").asString();
+        assertThat(manager.call("POST",anotherRoot+"/activation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST",anotherRoot+"/competences",json.writeValueAsString(java.util.Map.of("competencyId",first.get("id").asString())),true).statusCode()).isEqualTo(201);
+        var page0=json.readTree(manager.get(path+"?size=1").body());var page1=json.readTree(manager.get(path+"?size=1&page=1").body());
+        assertThat(page0.get("total").asLong()).isEqualTo(2);assertThat(page1.get("total").asLong()).isEqualTo(2);
+        assertThat(page0.get("items").size()).isEqualTo(1);assertThat(page1.get("items").size()).isEqualTo(1);
+        assertThat(page0.get("items").get(0).get("code").asString().compareToIgnoreCase(page1.get("items").get(0).get("code").asString())).isLessThan(0);
+        assertThat(manager.call("POST",profileRoot+"/desactivation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST","/api/referentiels/competences/"+first.get("id").asString()+"/desactivation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        assertThat(json.readTree(manager.get(path).body()).get("total").asLong()).isEqualTo(2);
+        }finally{db.sql("DELETE FROM training_session WHERE id=:id").param("id",java.util.UUID.fromString(session.get("id").asString())).update();}
+    }
+
+    @Test void profile_formations_validate_pagination_profile_and_current_permissions() throws Exception {
+        var manager=as("gestionnaire");
+        var profile=json.readTree(manager.call("POST",PROFILES,"{\"code\":\"MATCH-ACCESS-"+java.util.UUID.randomUUID()+"\",\"label\":\"Profil accès\"}",true).body());
+        String path=PROFILES+"/"+profile.get("id").asString()+"/formations";
+        assertThat(manager.get(path).statusCode()).isEqualTo(200);
+        assertThat(as("admin").get(path).statusCode()).isEqualTo(200);
+        assertThat(new Browser().get(path).statusCode()).isEqualTo(401);
+        assertThat(as("intervenant").get(path).statusCode()).isEqualTo(403);
+        assertThat(manager.get(PROFILES+"/"+java.util.UUID.randomUUID()+"/formations").statusCode()).isEqualTo(404);
+        assertThat(manager.get(path+"?page=-1").statusCode()).isEqualTo(400);
+        assertThat(manager.get(path+"?size=0").statusCode()).isEqualTo(400);
+        assertThat(manager.get(path+"?size=101").statusCode()).isEqualTo(400);
+        assertThat(manager.get(PROFILES+"/invalid/formations").statusCode()).isEqualTo(400);
+        db.sql("UPDATE app_account SET role='INTERVENANT' WHERE username='gestionnaire'").update();
+        assertThat(manager.get(path).statusCode()).isEqualTo(403);
+    }
+
+    @Test void match_explanations_use_profile_classifications_and_uncovered_needs_consider_all_active_offers() throws Exception {
+        var manager=as("gestionnaire");var admin=as("admin");var parent=competencyParent(manager);
+        String tag="EXPL-"+java.util.UUID.randomUUID();
+        var profile=json.readTree(manager.call("POST",PROFILES,json.writeValueAsString(java.util.Map.of("code",tag,"label","Profil explication")),true).body());
+        String root=PROFILES+"/"+profile.get("id").asString();
+        var classification=json.readTree(admin.call("POST","/api/referentiels/classifications",classificationBody(tag,"Classification spécifique",1,true,0),true).body());
+        var competencies=new java.util.ArrayList<JsonNode>();
+        for(int i=0;i<4;i++){
+            var c=json.readTree(manager.call("POST","/api/referentiels/competences",competencyBody(parent.get("id").asString(),tag+"-"+i,"Compétence "+i),true).body());competencies.add(c);
+            if(i<3)assertThat(manager.call("POST",root+"/exigences",json.writeValueAsString(java.util.Map.of("competencyId",c.get("id").asString(),"classificationId",i==0?"60000000-0000-0000-0000-000000000001":classification.get("id").asString())),true).statusCode()).isEqualTo(201);
+        }
+        var formation=newFormation(manager);String training="/api/formations/"+formation.get("id").asString();
+        assertThat(manager.call("POST",training+"/activation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        for(int i:List.of(0,1,3))assertThat(manager.call("POST",training+"/competences",json.writeValueAsString(java.util.Map.of("competencyId",competencies.get(i).get("id").asString())),true).statusCode()).isEqualTo(201);
+        String detail=root+"/formations/"+formation.get("id").asString()+"/correspondance",needs=root+"/besoins-non-couverts";
+        var response=manager.get(detail+"?size=1");assertThat(response.statusCode()).isEqualTo(200);
+        var first=json.readTree(response.body());assertThat(first.get("total").asLong()).isEqualTo(2);
+        assertThat(first.get("items").get(0).get("competencyId")).isEqualTo(competencies.get(0).get("id"));
+        assertThat(first.get("items").get(0).get("classificationId").asString()).isEqualTo("60000000-0000-0000-0000-000000000001");
+        var second=json.readTree(manager.get(detail+"?size=1&page=1").body()).get("items").get(0);
+        assertThat(second.get("competencyId")).isEqualTo(competencies.get(1).get("id"));assertThat(second.get("classificationLabel").asString()).isEqualTo("Classification spécifique");
+        assertThat(second.properties().stream().map(java.util.Map.Entry::getKey)).doesNotContain("score","level","mastery");
+        var missing=json.readTree(manager.get(needs).body());assertThat(missing.get("total").asLong()).isEqualTo(1);
+        assertThat(missing.get("items").get(0).get("competencyId")).isEqualTo(competencies.get(2).get("id"));
+        var cover=newFormation(manager);String other="/api/formations/"+cover.get("id").asString();
+        assertThat(manager.call("POST",other+"/activation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST",other+"/competences",json.writeValueAsString(java.util.Map.of("competencyId",competencies.get(2).get("id").asString())),true).statusCode()).isEqualTo(201);
+        assertThat(json.readTree(manager.get(needs).body()).get("total").asLong()).isZero();
+        assertThat(manager.call("POST",other+"/archivage","{\"version\":1}",true).statusCode()).isEqualTo(204);
+        assertThat(json.readTree(manager.get(needs).body()).get("total").asLong()).isEqualTo(1);
+        assertThat(manager.call("POST",training+"/archivage","{\"version\":1}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.get(detail).statusCode()).isEqualTo(404);assertThat(json.readTree(manager.get(needs).body()).get("total").asLong()).isEqualTo(3);
+        assertThat(manager.call("POST",training+"/reactivation","{\"version\":2}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST","/api/referentiels/competences/"+competencies.get(1).get("id").asString()+"/desactivation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        assertThat(admin.put("/api/referentiels/classifications/"+classification.get("id").asString(),classificationBody(tag,"Classification spécifique",1,false,0)).statusCode()).isEqualTo(204);
+        var historical=json.readTree(manager.get(detail+"?size=1&page=1").body()).get("items").get(0);
+        assertThat(historical.get("competencyActive").asBoolean()).isFalse();assertThat(historical.get("classificationActive").asBoolean()).isFalse();
+        assertThat(json.readTree(manager.get(needs).body()).get("total").asLong()).isEqualTo(1);
+    }
+
+    @Test void explanation_endpoints_enforce_permissions_validate_pages_and_scope_the_profile() throws Exception {
+        var manager=as("gestionnaire");var formation=newFormation(manager);
+        var profile=json.readTree(manager.call("POST",PROFILES,"{\"code\":\"EMPTY-"+java.util.UUID.randomUUID()+"\",\"label\":\"Profil sans exigence\"}",true).body());
+        String root=PROFILES+"/"+profile.get("id").asString();
+        String needs=root+"/besoins-non-couverts",detail=root+"/formations/"+formation.get("id").asString()+"/correspondance";
+        assertThat(manager.get(needs).statusCode()).isEqualTo(200);assertThat(json.readTree(manager.get(needs).body()).get("total").asLong()).isZero();
+        assertThat(manager.get(detail).statusCode()).isEqualTo(404);
+        for(String path:List.of(needs,detail)){
+            assertThat(new Browser().get(path).statusCode()).isEqualTo(401);assertThat(as("intervenant").get(path).statusCode()).isEqualTo(403);
+            assertThat(manager.get(path+"?page=-1").statusCode()).isEqualTo(400);assertThat(manager.get(path+"?size=101").statusCode()).isEqualTo(400);assertThat(manager.get(path+"?size=0").statusCode()).isEqualTo(400);
+            assertThat(manager.get(path.replace(profile.get("id").asString(),java.util.UUID.randomUUID().toString())).statusCode()).isEqualTo(404);
+        }
+        assertThat(as("admin").get(needs).statusCode()).isEqualTo(200);
+        db.sql("UPDATE app_account SET role='INTERVENANT' WHERE username='gestionnaire'").update();
+        assertThat(manager.get(needs).statusCode()).isEqualTo(403);assertThat(manager.get(detail).statusCode()).isEqualTo(403);
+    }
+
     @Test void active_formations_can_cover_competencies_without_a_level_and_reject_duplicates() throws Exception {
         var manager=as("gestionnaire");var formation=newFormation(manager);var parent=competencyParent(manager);
         var competency=json.readTree(manager.call("POST","/api/referentiels/competences",competencyBody(parent.get("id").asString(),"COVER-"+java.util.UUID.randomUUID(),"Compétence couverte"),true).body());

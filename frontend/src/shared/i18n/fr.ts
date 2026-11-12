@@ -89,3 +89,31 @@ export const coverageMessages={
   loading:'Chargement des compétences…',saving:'Association en cours…',status:'État des compétences associées',refresh:'Actualiser les compétences',retry:'Réessayer le chargement',close:'Fermer',
   choicesPages:'Pages des compétences disponibles',coveragePages:'Pages des compétences associées',previous:'Page précédente',next:'Page suivante',inactive:'Inactive',
 };
+
+export const matchingMessages={
+  title:'Formations pertinentes',
+  forProfile:(label:string)=>`Formations pertinentes pour ${label}`,
+  help:'Formations actives partageant au moins une compétence avec ce profil. Tri par code.',
+  loading:'Recherche des formations pertinentes',
+  empty:'Aucune formation active ne correspond aux compétences de ce profil.',
+  count:(total:number)=>`${total} formation(s) pertinente(s).`,
+  refresh:'Actualiser les correspondances',
+  retry:'Réessayer la recherche des correspondances',
+  previous:'Correspondances précédentes',
+  next:'Correspondances suivantes',
+  pagination:'Pages des formations pertinentes',
+  planned:'Session planifiée',
+  noPlanned:'Aucune session planifiée',
+};
+
+export const explanationMessages={
+  common:'Compétences communes',uncovered:'Besoins non couverts',
+  forFormation:(title:string)=>`Compétences communes avec ${title}`,
+  help:'Classifications définies dans le profil sélectionné. Aucun niveau de maîtrise individuelle n’est évalué.',
+  uncoveredHelp:'Compétences du profil sans aucune formation active associée, sur l’ensemble du catalogue.',
+  empty:'Toutes les compétences de ce profil sont couvertes par au moins une formation active, ou le profil ne comporte aucune exigence.',
+  count:(total:number)=>`${total} compétence(s).`,classification:'Classification dans le profil',
+  inactive:'Inactive',inactiveCompetency:'Compétence inactive',
+  loading:'Chargement des compétences du profil',refresh:'Actualiser les compétences affichées',retry:'Réessayer le chargement des compétences',
+  previous:'Compétences précédentes',next:'Compétences suivantes',pages:'Pages des compétences du profil',
+};

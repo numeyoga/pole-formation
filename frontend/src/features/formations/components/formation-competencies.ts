@@ -19,7 +19,7 @@ export class FormationCompetencies extends LitElement {
     form,fieldset,label{display:grid;gap:var(--space-small);}fieldset{border:0;padding:0;margin:0;min-inline-size:0;}form,nav{margin-block:var(--space-normal);}
     input:not([type=radio]),button{font:inherit;min-block-size:var(--control-height);padding:var(--space-control);border:var(--border-width) solid var(--color-border);border-radius:var(--control-radius);max-inline-size:100%;}
     input:not([type=radio]){min-inline-size:0;inline-size:100%;color:var(--color-text);background:var(--color-surface);}
-    button{inline-size:fit-content;color:var(--color-primary);background:var(--color-surface);cursor:pointer;}button:hover{color:var(--color-hover);text-decoration:underline;}button:disabled{opacity:var(--disabled-opacity);cursor:default;}
+    button{inline-size:fit-content;color:var(--color-primary);background:var(--color-surface);cursor:pointer;}button:where(:enabled):hover{color:var(--color-hover);text-decoration:underline;}button:disabled{opacity:var(--disabled-opacity);cursor:default;}
     nav,.actions{display:flex;flex-wrap:wrap;gap:var(--space-small);align-items:center;}li{overflow-wrap:anywhere;margin-block:var(--space-small);}
     [role=alert]{color:var(--color-danger);}[role=status]{color:var(--color-success);}
     :focus-visible{outline:var(--focus-width) solid var(--color-focus);outline-offset:var(--focus-width);}

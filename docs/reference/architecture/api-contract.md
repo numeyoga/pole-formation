@@ -2,7 +2,7 @@
 title: "Contrat API et sécurité HTTP"
 description: "Frontière REST, DTO, erreurs et sécurité de session."
 created: 2026-11-07
-updated: 2026-11-10
+updated: 2026-11-13
 status: accepted
 type: reference
 tags:
@@ -32,6 +32,10 @@ Le [contrat des profils d’emploi](../../../api/profiles.openapi.yaml) couvre U
 Le [contrat des classifications](../../../api/classifications.openapi.yaml) couvre US-02.02 : consultation paginée triée par ordre puis code, filtre des valeurs actives, création et modification du code, libellé, ordre et activation. Écriture réservée à l’administrateur fonctionnel ; lecture accessible aussi au gestionnaire.
 
 Le [contrat des formations](../../../api/formations.openapi.yaml) couvre US-03.01 : catalogue paginé, création Brouillon, modification versionnée, activation, archivage et réactivation audités, ainsi que consultation et raccordement minimal des sessions. Le journal expose aussi le type `FORMATION`. US-03.02 ajoute les compétences associées et les choix de compétences actives paginés, avec création du couple unique sans niveau, refus des références inactives et conservation de l’historique. US-03.03 ajoute la recherche paginée par sous-chaîne littérale de code ou intitulé, sans casse, avec les archives et les formations sans session. La transition des anciennes sessions sans rattachement connu est explicitée dans [ADR 0017](../../decisions/ADR-0017-formations.md).
+
+US-04.01 complète ce contrat avec `GET /api/referentiels/profils-emploi/{id}/formations` : formations actives partageant au moins une compétence avec le profil, dédoublonnées avant pagination et triées par code, avec indication de session planifiée. Voir le [rapport de validation](../quality/us-04-01-validation.md).
+
+US-04.02 ajoute les compétences communes à un profil et une formation active, avec leur classification dans le profil, ainsi que les exigences sans formation active dans tout le catalogue. Ces deux collections sont paginées côté serveur, sans score ni acquisition individuelle. Voir le [rapport de validation](../quality/us-04-02-validation.md).
 
 ## Erreurs
 

@@ -281,5 +281,49 @@
     "commits": [
       "109508832577c3a80ec433c3f045201cf22592bb"
     ]
+  },
+  "US-04.01": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/src/main/java/fr/intformation/formations/",
+      "backend/src/test/java/fr/intformation/AccessHttpTest.java",
+      "frontend/src/features/formations/",
+      "frontend/src/features/profiles/components/profiles-panel.ts",
+      "frontend/src/shared/i18n/fr.ts",
+      "frontend/src/shared/http/formations-generated.ts",
+      "frontend/tests/profile-formations.spec.ts",
+      "api/formations.openapi.yaml"
+    ],
+    "report": "docs/reference/quality/us-04-01-validation.md",
+    "remaining": [
+      "Versionner les modifications locales dans un commit US-04.01 et enregistrer le hash effectivement validé.",
+      "Recette métier humaine conjointe de US-04.01 et US-04.02, à la demande de l’utilisateur.",
+      "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
+    ],
+    "acceptance": {
+      "required": true
+    }
+  },
+  "US-04.02": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/src/main/java/fr/intformation/formations/",
+      "backend/src/test/java/fr/intformation/AccessHttpTest.java",
+      "frontend/src/features/formations/",
+      "frontend/src/features/profiles/components/profiles-panel.ts",
+      "frontend/src/shared/i18n/fr.ts",
+      "frontend/src/shared/http/formations-generated.ts",
+      "frontend/tests/profile-formations.spec.ts",
+      "api/formations.openapi.yaml"
+    ],
+    "report": "docs/reference/quality/us-04-02-validation.md",
+    "remaining": [
+      "Versionner les modifications locales dans un commit US-04.02 et enregistrer le hash effectivement validé.",
+      "Recette métier humaine conjointe de US-04.01 et US-04.02, à la demande de l’utilisateur.",
+      "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
+    ],
+    "acceptance": {
+      "required": true
+    }
   }
 }

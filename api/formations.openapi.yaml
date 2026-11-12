@@ -3,6 +3,59 @@ info: {title: Pôle formation — catalogue de formations, version: 0.1.0}
 servers: [{url: /}]
 security: [{session: []}]
 paths:
+  /api/referentiels/profils-emploi/{id}/formations/{formationId}/correspondance:
+    parameters:
+      - {$ref: '#/components/parameters/Id'}
+      - {name: formationId, in: path, required: true, schema: {type: string, format: uuid}}
+    get:
+      description: Compétences communes avec cette formation active et classification actuelle dans ce profil. Tri par code de compétence sans casse puis identifiant. Associations historiques conservées même si compétence ou classification inactive. 404 si profil absent ou formation absente, inactive ou sans compétence commune. Aucun score ni niveau de maîtrise.
+      parameters:
+        - {name: page, in: query, schema: {type: integer, minimum: 0, default: 0}}
+        - {name: size, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+      responses:
+        '200':
+          description: Compétences et classifications du profil, pour gestionnaire et administrateur fonctionnel
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ExplanationPage'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+  /api/referentiels/profils-emploi/{id}/besoins-non-couverts:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      description: Compétences exigées par le profil sans aucune formation active associée, indépendamment de la pagination des formations ou des sessions. Profil existant actif ou inactif. Classifications actuelles du profil, références inactives conservées. Tri par code de compétence sans casse puis identifiant. Aucun score ni acquisition individuelle.
+      parameters:
+        - {name: page, in: query, schema: {type: integer, minimum: 0, default: 0}}
+        - {name: size, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+      responses:
+        '200':
+          description: Compétences et classifications du profil, pour gestionnaire et administrateur fonctionnel
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ExplanationPage'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+  /api/referentiels/profils-emploi/{id}/formations:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      description: Formations actives partageant au moins une compétence avec le profil, une seule fois par formation, triées par code sans casse puis identifiant. Associations existantes conservées même si une référence a été désactivée. Profil existant actif ou inactif ; aucun score. hasPlannedSession indique une session à l’état PLANIFIEE, sans imposer de session pour apparaître.
+      parameters:
+        - {name: page, in: query, schema: {type: integer, minimum: 0, default: 0}}
+        - {name: size, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+      responses:
+        '200':
+          description: Page de formations pertinentes pour gestionnaire et administrateur fonctionnel
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ProfileFormations'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
   /api/formations:
     get:
       description: Catalogue paginé pour gestionnaire et administrateur, tous états y compris archivés et formations sans session. Recherche littérale par sous-chaîne de code ou intitulé sans casse, espaces externes retirés, vide pour tout le catalogue. Tri par code sans casse puis identifiant.
@@ -236,6 +289,42 @@ components:
               detail: {type: string}
               fieldErrors: {type: object, additionalProperties: {type: string}}
   schemas:
+    ExplainedRequirement:
+      type: object
+      required: [competencyId, competencyCode, competencyLabel, competencyActive, classificationId, classificationCode, classificationLabel, classificationActive]
+      properties:
+        competencyId: {type: string, format: uuid}
+        competencyCode: {type: string}
+        competencyLabel: {type: string}
+        competencyActive: {type: boolean}
+        classificationId: {type: string, format: uuid}
+        classificationCode: {type: string}
+        classificationLabel: {type: string}
+        classificationActive: {type: boolean}
+    ExplanationPage:
+      type: object
+      required: [items, total, page, size]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/ExplainedRequirement'}}
+        total: {type: integer, minimum: 0}
+        page: {type: integer, minimum: 0}
+        size: {type: integer, minimum: 1, maximum: 100}
+    ProfileFormation:
+      type: object
+      required: [id, code, title, hasPlannedSession]
+      properties:
+        id: {type: string, format: uuid}
+        code: {type: string}
+        title: {type: string}
+        hasPlannedSession: {type: boolean}
+    ProfileFormations:
+      type: object
+      required: [items, total, page, size]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/ProfileFormation'}}
+        total: {type: integer, minimum: 0}
+        page: {type: integer, minimum: 0}
+        size: {type: integer, minimum: 1, maximum: 100}
     Fields:
       type: object
       required: [code, title]

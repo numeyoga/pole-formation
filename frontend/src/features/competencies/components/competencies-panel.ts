@@ -18,7 +18,7 @@ export class CompetenciesPanel extends LitElement {
     form,fieldset,label{display:grid;gap:var(--space-small);}fieldset{border:0;padding:0;margin:0;}
     input,select,button{font:inherit;min-block-size:var(--control-height);padding:var(--space-control);border:var(--border-width) solid var(--color-border);border-radius:var(--control-radius);max-inline-size:100%;color:var(--color-text);background:var(--color-surface);}
     select{inline-size:100%;}button{inline-size:fit-content;color:var(--color-primary);cursor:pointer;}
-    button:hover{color:var(--color-hover);text-decoration:underline;}button:disabled{opacity:var(--disabled-opacity);cursor:default;}
+    button:where(:enabled):hover{color:var(--color-hover);text-decoration:underline;}button:disabled{opacity:var(--disabled-opacity);cursor:default;}
     [role=alert],.field-error{color:var(--color-danger);}[aria-invalid=true]{border-color:var(--color-danger);}
     :focus-visible{outline:var(--focus-width) solid var(--color-focus);outline-offset:var(--focus-width);}
     .table-container{overflow:auto;margin-block:var(--space-normal);}table{inline-size:100%;min-inline-size:var(--table-min-width);border-collapse:collapse;}

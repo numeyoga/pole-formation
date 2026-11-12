@@ -27,7 +27,7 @@ export class AuditLog extends LitElement {
     input,select,button{font:inherit;min-block-size:var(--control-height);padding:var(--space-control);border:var(--border-width) solid var(--color-border);border-radius:var(--control-radius);}
     input,select{max-inline-size:var(--control-width);inline-size:100%;background:var(--color-surface);color:var(--color-text);}
     button{inline-size:fit-content;max-inline-size:100%;background:var(--color-surface);color:var(--color-primary);cursor:pointer;}
-    button:hover{color:var(--color-hover);text-decoration:underline;}
+    button:where(:enabled):hover{color:var(--color-hover);text-decoration:underline;}
     button:disabled{opacity:var(--disabled-opacity);cursor:wait;}
     :focus-visible{outline:var(--focus-width) solid var(--color-focus);outline-offset:var(--focus-width);}
     ol{padding-inline-start:var(--space-section);}

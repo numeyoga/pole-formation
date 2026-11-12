@@ -53,9 +53,9 @@ export class AccessApp extends LitElement {
     input,select,button { font:inherit; min-block-size:var(--control-height); padding:var(--space-control); border:var(--border-width) solid var(--color-border); border-radius:var(--control-radius); }
     input,select { inline-size:100%; max-inline-size:var(--control-width); color:var(--color-text); background:var(--color-surface); }
     button { color:var(--color-primary); background:var(--color-surface); cursor:pointer; inline-size:fit-content; max-inline-size:100%; }
-    button:hover { color:var(--color-hover); text-decoration:underline; }
+    button:where(:enabled):hover { color:var(--color-hover); text-decoration:underline; }
     button[data-primary] { color:var(--color-surface); background:var(--color-primary); }
-    button[data-primary]:hover { background:var(--color-hover); }
+    button[data-primary]:where(:enabled):hover { background:var(--color-hover); }
     :focus-visible { outline:var(--focus-width) solid var(--color-focus); outline-offset:var(--focus-width); }
     button:disabled { opacity:var(--disabled-opacity); cursor:wait; }
     [role=alert] { color:var(--color-danger); padding-block:var(--space-normal); }

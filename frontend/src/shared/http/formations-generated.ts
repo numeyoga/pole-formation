@@ -4,6 +4,149 @@
  */
 
 export interface paths {
+    "/api/referentiels/profils-emploi/{id}/formations/{formationId}/correspondance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: components["parameters"]["Id"];
+                formationId: string;
+            };
+            cookie?: never;
+        };
+        /** @description Compétences communes avec cette formation active et classification actuelle dans ce profil. Tri par code de compétence sans casse puis identifiant. Associations historiques conservées même si compétence ou classification inactive. 404 si profil absent ou formation absente, inactive ou sans compétence commune. Aucun score ni niveau de maîtrise. */
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    size?: number;
+                };
+                header?: never;
+                path: {
+                    id: components["parameters"]["Id"];
+                    formationId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Compétences et classifications du profil, pour gestionnaire et administrateur fonctionnel */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ExplanationPage"];
+                    };
+                };
+                400: components["responses"]["Error"];
+                401: components["responses"]["Error"];
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/referentiels/profils-emploi/{id}/besoins-non-couverts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: components["parameters"]["Id"];
+            };
+            cookie?: never;
+        };
+        /** @description Compétences exigées par le profil sans aucune formation active associée, indépendamment de la pagination des formations ou des sessions. Profil existant actif ou inactif. Classifications actuelles du profil, références inactives conservées. Tri par code de compétence sans casse puis identifiant. Aucun score ni acquisition individuelle. */
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    size?: number;
+                };
+                header?: never;
+                path: {
+                    id: components["parameters"]["Id"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Compétences et classifications du profil, pour gestionnaire et administrateur fonctionnel */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ExplanationPage"];
+                    };
+                };
+                400: components["responses"]["Error"];
+                401: components["responses"]["Error"];
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/referentiels/profils-emploi/{id}/formations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: components["parameters"]["Id"];
+            };
+            cookie?: never;
+        };
+        /** @description Formations actives partageant au moins une compétence avec le profil, une seule fois par formation, triées par code sans casse puis identifiant. Associations existantes conservées même si une référence a été désactivée. Profil existant actif ou inactif ; aucun score. hasPlannedSession indique une session à l’état PLANIFIEE, sans imposer de session pour apparaître. */
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    size?: number;
+                };
+                header?: never;
+                path: {
+                    id: components["parameters"]["Id"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Page de formations pertinentes pour gestionnaire et administrateur fonctionnel */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProfileFormations"];
+                    };
+                };
+                400: components["responses"]["Error"];
+                401: components["responses"]["Error"];
+                403: components["responses"]["Error"];
+                404: components["responses"]["Error"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/formations": {
         parameters: {
             query?: never;
@@ -510,6 +653,37 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        ExplainedRequirement: {
+            /** Format: uuid */
+            competencyId: string;
+            competencyCode: string;
+            competencyLabel: string;
+            competencyActive: boolean;
+            /** Format: uuid */
+            classificationId: string;
+            classificationCode: string;
+            classificationLabel: string;
+            classificationActive: boolean;
+        };
+        ExplanationPage: {
+            items: components["schemas"]["ExplainedRequirement"][];
+            total: number;
+            page: number;
+            size: number;
+        };
+        ProfileFormation: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            title: string;
+            hasPlannedSession: boolean;
+        };
+        ProfileFormations: {
+            items: components["schemas"]["ProfileFormation"][];
+            total: number;
+            page: number;
+            size: number;
+        };
         Fields: {
             code: string;
             title: string;

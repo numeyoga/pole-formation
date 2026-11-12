@@ -21,7 +21,7 @@ export class DomainsPanel extends LitElement {
     input,button{font:inherit;min-block-size:var(--control-height);padding:var(--space-control);border:var(--border-width) solid var(--color-border);border-radius:var(--control-radius);}
     input{max-inline-size:100%;color:var(--color-text);background:var(--color-surface);}
     button{inline-size:fit-content;max-inline-size:100%;color:var(--color-primary);background:var(--color-surface);cursor:pointer;}
-    button:hover{color:var(--color-hover);text-decoration:underline;}button:disabled{opacity:var(--disabled-opacity);cursor:default;}
+    button:where(:enabled):hover{color:var(--color-hover);text-decoration:underline;}button:disabled{opacity:var(--disabled-opacity);cursor:default;}
     [aria-invalid=true]{border-color:var(--color-danger);}[role=alert],.field-error{color:var(--color-danger);}
     [role=status]{color:var(--color-success);}
     :focus-visible{outline:var(--focus-width) solid var(--color-focus);outline-offset:var(--focus-width);}

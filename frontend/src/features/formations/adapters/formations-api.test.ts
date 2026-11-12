@@ -39,3 +39,17 @@ test('catalogue search sends the literal submitted query and requested page',asy
  const {formationsApi}=await import('./formations-api');expect(await formationsApi.list(2,'Atelier %_ & Démo')).toEqual({items:[],page:2,size:10,total:0});
  const url=new URL((fetch.mock.calls[0][0] as Request).url);expect(url.pathname).toBe('/api/formations');expect(url.searchParams.get('q')).toBe('Atelier %_ & Démo');expect(url.searchParams.get('page')).toBe('2');
 });
+
+test('profile matches map server session flags and preserve pagination without client coverage logic',async()=>{
+ const fetch=vi.fn().mockResolvedValue(Response.json({items:[{id:'a',code:'A',title:'Sans session',hasPlannedSession:false},{id:'b',code:'B',title:'Planifiée',hasPlannedSession:true}],page:1,size:10,total:12}));vi.stubGlobal('fetch',fetch);
+ const {formationsApi}=await import('./formations-api');expect(await formationsApi.forProfile('profile',1)).toEqual({items:[{id:'a',code:'A',title:'Sans session',sessionStatus:'Aucune session planifiée'},{id:'b',code:'B',title:'Planifiée',sessionStatus:'Session planifiée'}],page:1,size:10,total:12});
+ const url=new URL((fetch.mock.calls[0][0] as Request).url);expect(url.pathname).toBe('/api/referentiels/profils-emploi/profile/formations');expect(url.searchParams.get('page')).toBe('1');expect(url.searchParams.get('size')).toBe('10');
+});
+
+test('explanations map profile classifications and inactive references and send distinct paginated endpoints',async()=>{
+ const dto={competencyId:'c',competencyCode:'COMP',competencyLabel:'Compétence',competencyActive:false,classificationId:'class',classificationCode:'CLASS',classificationLabel:'Exigence',classificationActive:false};
+ const fetch=vi.fn().mockImplementation(()=>Promise.resolve(Response.json({items:[dto],total:11,page:1,size:10})));vi.stubGlobal('fetch',fetch);
+ const {formationsApi}=await import('./formations-api');const expected={items:[{id:'c',code:'COMP',label:'Compétence',competencyStatus:'Compétence inactive',classification:'CLASS — Exigence — Inactive'}],total:11,page:1,size:10};
+ expect(await formationsApi.commonRequirements('p','f',1)).toEqual(expected);expect(await formationsApi.uncoveredRequirements('p',1)).toEqual(expected);
+ const urls=fetch.mock.calls.map(([request])=>new URL((request as Request).url));expect(urls.map(url=>url.pathname)).toEqual(['/api/referentiels/profils-emploi/p/formations/f/correspondance','/api/referentiels/profils-emploi/p/besoins-non-couverts']);expect(urls.every(url=>url.searchParams.get('page')==='1'&&url.searchParams.get('size')==='10')).toBe(true);
+});

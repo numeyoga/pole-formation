@@ -1,8 +1,8 @@
 import createClient from 'openapi-fetch';
 import type { paths,components } from '../../../shared/http/formations-generated';
-import type { FormationView,FormationPage,FormationFields,FormationAction,FormationSession,CoverageView,CoveragePage,CompetencyChoices } from '../presentation/models';
+import type { FormationView,FormationPage,FormationFields,FormationAction,FormationSession,CoverageView,CoveragePage,CompetencyChoices,ProfileFormationsPage,ExplanationPage } from '../presentation/models';
 import { ApiError,csrfHeaders } from '../../../shared/http/session';
-import { messages,states,coverageMessages } from '../../../shared/i18n/fr';
+import { messages,states,coverageMessages,matchingMessages,explanationMessages } from '../../../shared/i18n/fr';
 const client=createClient<paths>({credentials:'same-origin'});
 export class FormationError extends ApiError {constructor(status:number,message:string,public fields:Record<string,string>={}){super(status,message);}}
 export function formationView(dto:components['schemas']['Formation']):FormationView {
@@ -17,7 +17,22 @@ async function unwrap<T>(result:{data?:T;error?:unknown;response:Response}):Prom
   return result.data as T;
 }
 const transitions={activation:'/api/formations/{id}/activation',archivage:'/api/formations/{id}/archivage',reactivation:'/api/formations/{id}/reactivation'} as const;
+export function explanationPage(dto:components['schemas']['ExplanationPage']):ExplanationPage{
+  return {...dto,items:dto.items.map(item=>({id:item.competencyId,code:item.competencyCode,label:item.competencyLabel,
+    competencyStatus:item.competencyActive?'':explanationMessages.inactiveCompetency,
+    classification:`${item.classificationCode} — ${item.classificationLabel}${item.classificationActive?'':` — ${explanationMessages.inactive}`}`}))};
+}
 export const formationsApi={
+  async commonRequirements(id:string,formationId:string,page=0):Promise<ExplanationPage>{
+    return explanationPage(await unwrap(await client.GET('/api/referentiels/profils-emploi/{id}/formations/{formationId}/correspondance',{params:{path:{id,formationId},query:{page,size:10}}})));
+  },
+  async uncoveredRequirements(id:string,page=0):Promise<ExplanationPage>{
+    return explanationPage(await unwrap(await client.GET('/api/referentiels/profils-emploi/{id}/besoins-non-couverts',{params:{path:{id},query:{page,size:10}}})));
+  },
+  async forProfile(id:string,page=0):Promise<ProfileFormationsPage>{
+    const result=await unwrap(await client.GET('/api/referentiels/profils-emploi/{id}/formations',{params:{path:{id},query:{page,size:10}}}));
+    return {...result,items:result.items.map(item=>({id:item.id,code:item.code,title:item.title,sessionStatus:item.hasPlannedSession?matchingMessages.planned:matchingMessages.noPlanned}))};
+  },
   async coverage(id:string,page=0):Promise<CoveragePage>{const result=await unwrap(await client.GET('/api/formations/{id}/competences',{params:{path:{id},query:{page,size:10}}}));return {...result,items:result.items.map(coverageView)};},
   async competencyChoices(q='',page=0):Promise<CompetencyChoices>{return unwrap(await client.GET('/api/formations/competences-disponibles',{params:{query:{q,page,size:10}}}));},
   async associate(id:string,competencyId:string){return coverageView(await unwrap(await client.POST('/api/formations/{id}/competences',{params:{path:{id},header:await csrfHeaders()},body:{competencyId}})));},
