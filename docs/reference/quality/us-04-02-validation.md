@@ -53,7 +53,7 @@ Les tests Vitest vérifient le mapping des références inactives et les chemins
 
 ## Recette conjointe et limites
 
-La recette humaine de **US-04.01 et US-04.02 est prévue ensemble à la demande de l’utilisateur**. Aucune preuve d’acceptation n’est enregistrée à sa place. Les deux implémentations locales restent non commitées ; les entrées du manifeste restent `partial` tant que le commit applicatif et son hash de validation ne sont pas enregistrés.
+La recette humaine de **US-04.01 et US-04.02 est prévue ensemble à la demande de l’utilisateur**. Aucune preuve d’acceptation n’est enregistrée à sa place. Le commit applicatif validé est `7986380c3132154464a3385cf7c03803e1a540d8`. Les validations techniques exécutées avant le commit portent sur ces mêmes sources. Les deux implémentations sont enregistrées comme complètes ; leur recette humaine et leurs examens d’accessibilité restent ouverts.
 
 Point d’entrée : `http://localhost:8080/`, compte fictif gestionnaire, rubrique « Profils d’emploi », puis « Formations pertinentes pour … ». Les données utilisées par les tests sont fictives. JAR commun disponible : SHA-256 `5b085321566a825b7ae600723453b7aadd40503bb0acadfd6f7605f10bc2e929`. Le service Playwright existant en version 1.64.1 est réutilisé sans être arrêté.
 

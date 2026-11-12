@@ -283,7 +283,7 @@
     ]
   },
   "US-04.01": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/src/main/java/fr/intformation/formations/",
       "backend/src/test/java/fr/intformation/AccessHttpTest.java",
@@ -296,16 +296,19 @@
     ],
     "report": "docs/reference/quality/us-04-01-validation.md",
     "remaining": [
-      "Versionner les modifications locales dans un commit US-04.01 et enregistrer le hash effectivement validé.",
       "Recette métier humaine conjointe de US-04.01 et US-04.02, à la demande de l’utilisateur.",
       "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
     ],
     "acceptance": {
       "required": true
-    }
+    },
+    "validated_commit": "7986380c3132154464a3385cf7c03803e1a540d8",
+    "commits": [
+      "7986380c3132154464a3385cf7c03803e1a540d8"
+    ]
   },
   "US-04.02": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/src/main/java/fr/intformation/formations/",
       "backend/src/test/java/fr/intformation/AccessHttpTest.java",
@@ -318,12 +321,15 @@
     ],
     "report": "docs/reference/quality/us-04-02-validation.md",
     "remaining": [
-      "Versionner les modifications locales dans un commit US-04.02 et enregistrer le hash effectivement validé.",
       "Recette métier humaine conjointe de US-04.01 et US-04.02, à la demande de l’utilisateur.",
       "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
     ],
     "acceptance": {
       "required": true
-    }
+    },
+    "validated_commit": "7986380c3132154464a3385cf7c03803e1a540d8",
+    "commits": [
+      "7986380c3132154464a3385cf7c03803e1a540d8"
+    ]
   }
 }
