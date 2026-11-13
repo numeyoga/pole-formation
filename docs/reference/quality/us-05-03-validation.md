@@ -68,6 +68,6 @@ Validations exécutées le 2026-11-13 sur l’hôte avec Mise :
 
 ## Limites et recette
 
-Livraison locale non commitée à ce stade ; le manifeste reste en `partial` jusqu’à l’enregistrement du commit applicatif et de son hash validé. Recette métier humaine, lecteur d’écran et zoom navigateur réel à 200 % restent à réaliser. Axe et les scénarios clavier automatisés ne constituent pas une certification WCAG AA.
+Le commit de livraison `205f79bfe75129ed7c2839544d5a86f6b04def49` contient le code validé ci-dessus. Le manifeste le référence comme implémentation complète ; la recette humaine reste ouverte. Recette métier humaine, lecteur d’écran et zoom navigateur réel à 200 % restent à réaliser. Axe et les scénarios clavier automatisés ne constituent pas une certification WCAG AA.
 
 L’affectation interactive des intervenants relève de US-05.04 ; son endpoint existant sert ici à vérifier les invariants. La création et le provisionnement des comptes de production, leur liaison à une fiche et la politique de conservation des données restent ouverts. Aucune donnée réelle n’a été ajoutée pour ces validations.

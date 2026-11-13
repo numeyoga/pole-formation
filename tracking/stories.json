@@ -373,7 +373,7 @@
     ]
   },
   "US-05.03": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -381,12 +381,15 @@
     ],
     "report": "docs/reference/quality/us-05-03-validation.md",
     "remaining": [
-      "Livraison locale implémentée et testée ; commit applicatif puis rattachement des preuves au commit testé à enregistrer.",
       "Recette métier humaine des fiches intervenants et de leurs conventions de saisie.",
       "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
     ],
     "acceptance": {
       "required": true
-    }
+    },
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "commits": [
+      "205f79bfe75129ed7c2839544d5a86f6b04def49"
+    ]
   }
 }
