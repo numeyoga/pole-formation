@@ -4,7 +4,8 @@ import fr.intformation.habilitations.domain.AccessPolicy.Conflict;
 import java.time.Instant;
 import java.util.*;
 
-public record TrainingSession(UUID id,UUID formationId,String title,String state,Integer capacity,String modalities,long version,List<Slot> slots) {
+public record TrainingSession(UUID id,UUID formationId,String title,String state,Integer capacity,String modalities,long version,List<Slot> slots,List<AssignedInstructor> instructors) {
+    public record AssignedInstructor(UUID id,String label,boolean active) {}
     public record Slot(UUID id,Instant startsAt,Instant endsAt) {}
     public static final class InvalidField extends IllegalArgumentException {
         private final String field;

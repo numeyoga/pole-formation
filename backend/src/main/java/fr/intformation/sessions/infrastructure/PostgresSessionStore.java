@@ -26,9 +26,10 @@ public class PostgresSessionStore implements SessionStore {
     }
     private TrainingSession find(UUID id,boolean lock){
         var session=db.sql("SELECT * FROM training_session WHERE id=:id"+(lock?" FOR UPDATE":"")).param("id",id)
-            .query((rs,i)->new TrainingSession(rs.getObject("id",UUID.class),rs.getObject("formation_id",UUID.class),rs.getString("title"),rs.getString("state"),rs.getObject("capacity",Integer.class),rs.getString("modalities"),rs.getLong("version"),List.of()))
+            .query((rs,i)->new TrainingSession(rs.getObject("id",UUID.class),rs.getObject("formation_id",UUID.class),rs.getString("title"),rs.getString("state"),rs.getObject("capacity",Integer.class),rs.getString("modalities"),rs.getLong("version"),List.of(),List.of()))
             .optional().orElseThrow(NotFound::new);
-        return new TrainingSession(session.id(),session.formationId(),session.title(),session.state(),session.capacity(),session.modalities(),session.version(),slots(id));
+        return new TrainingSession(session.id(),session.formationId(),session.title(),session.state(),session.capacity(),session.modalities(),session.version(),slots(id),db.sql("SELECT i.id,i.label,i.active FROM instructor i JOIN session_instructor si ON si.instructor_id=i.id WHERE si.session_id=:id ORDER BY lower(i.label),i.id")
+            .param("id",id).query((rs,n)->new TrainingSession.AssignedInstructor(rs.getObject(1,UUID.class),rs.getString(2),rs.getBoolean(3))).list());
     }
     @Transactional(readOnly=true,isolation=org.springframework.transaction.annotation.Isolation.REPEATABLE_READ)
     public TrainingSession get(UUID id){return find(id,false);}

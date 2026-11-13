@@ -216,6 +216,64 @@ class AccessHttpTest {
         }
     }
 
+    @Test void instructor_administration_preserves_assignments_without_requiring_an_account() throws Exception {
+        var manager=as("gestionnaire");String root="/api/intervenants";
+        var created=manager.call("POST",root,"{\"firstName\":\"Ada\",\"lastName\":\"Exemple\",\"professionalContact\":\"Coordonnées fictives\"}",true);
+        assertThat(created.statusCode()).isEqualTo(201);
+        var id=java.util.UUID.fromString(json.readTree(created.body()).get("id").asString());String path=root+"/"+id;
+        try {
+            var initial=json.readTree(manager.get(path).body());assertThat(initial.get("hasAccount").asBoolean()).isFalse();assertThat(initial.get("active").asBoolean()).isTrue();
+            assertThat(manager.put("/api/sessions/"+S1+"/intervenants","{\"instructorIds\":[\""+id+"\"],\"confirmConflicts\":true}").statusCode()).isEqualTo(204);
+            String update="{\"firstName\":\"Ada\",\"lastName\":\"Exemple\",\"professionalContact\":\"Nouvelles coordonnées fictives\",\"version\":0}";
+            assertThat(manager.put(path,update).statusCode()).isEqualTo(204);
+            assertThat(manager.put(path,update).statusCode()).isEqualTo(409);
+            assertThat(manager.get(path).body()).contains("Nouvelles coordonnées fictives");
+            assertThat(manager.call("POST",path+"/desactivation","{\"version\":1}",true).statusCode()).isEqualTo(204);
+            var history=json.readTree(manager.get(path+"/sessions").body());assertThat(history.get("total").asLong()).isEqualTo(1);assertThat(history.get("items").get(0).get("id").asString()).isEqualTo(S1);
+            var assigned=json.readTree(manager.get("/api/sessions/"+S1).body()).get("instructors");assertThat(assigned.size()).isEqualTo(1);assertThat(assigned.get(0).get("label").asString()).isEqualTo("Ada Exemple");assertThat(assigned.get(0).get("active").asBoolean()).isFalse();
+            assertThat(manager.put("/api/sessions/"+S2+"/intervenants","{\"instructorIds\":[\""+id+"\"],\"confirmConflicts\":true}").statusCode()).isEqualTo(400);
+            assertThat(as("intervenant").get(root).statusCode()).isEqualTo(403);
+            assertThat(as("intervenant").put(path,update).statusCode()).isEqualTo(403);
+            assertThat(new Browser().get(root).statusCode()).isEqualTo(401);
+            assertThat(manager.call("POST",root,"{\"firstName\":\"X\",\"lastName\":\"Exemple\"}",false).statusCode()).isEqualTo(403);
+        } finally {
+            db.sql("DELETE FROM session_instructor WHERE instructor_id=:id").param("id",id).update();
+            db.sql("DELETE FROM instructor WHERE id=:id").param("id",id).update();
+        }
+    }
+
+    @Test void instructor_search_pagination_and_field_validation_preserve_literal_queries_and_exact_versions() throws Exception {
+        var manager=as("gestionnaire");String root="/api/intervenants";String unique="Test_%"+java.util.UUID.randomUUID();var ids=new java.util.ArrayList<java.util.UUID>();
+        try {
+            for(int i=0;i<12;i++){
+                var result=manager.call("POST",root,"{\"firstName\":\"Prénom\",\"lastName\":\""+unique+String.format("%02d",i)+"\"}",true);assertThat(result.statusCode()).isEqualTo(201);ids.add(java.util.UUID.fromString(json.readTree(result.body()).get("id").asString()));
+            }
+            String query=java.net.URLEncoder.encode(unique.toUpperCase(),java.nio.charset.StandardCharsets.UTF_8);
+            var page=json.readTree(manager.get(root+"?q="+query+"&page=1&size=3").body());assertThat(page.get("total").asLong()).isEqualTo(12);assertThat(page.get("items").size()).isEqualTo(3);assertThat(page.get("items").get(0).get("lastName").asString()).isEqualTo(unique+"03");
+            String path=root+"/"+ids.get(0);
+            assertThat(manager.call("POST",path+"/desactivation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+            assertThat(json.readTree(manager.get(root+"?q="+query+"&activeOnly=true").body()).get("total").asLong()).isEqualTo(11);
+            assertThat(manager.call("POST",root,"{\"firstName\":\" \",\"lastName\":\"Exemple\"}",true).body()).contains("fieldErrors","firstName");
+            String details="{\"firstName\":\"Prénom\",\"lastName\":\"Exemple\",\"version\":1.2}";
+            assertThat(manager.put(path,details).statusCode()).isEqualTo(400);assertThat(manager.call("PUT",path,details.replace("1.2","1"),false).statusCode()).isEqualTo(403);
+            assertThat(manager.get(root+"?page=-1").statusCode()).isEqualTo(400);assertThat(manager.get(root+"?size=101").statusCode()).isEqualTo(400);
+            assertThat(manager.get(root+"/"+java.util.UUID.randomUUID()+"/sessions").statusCode()).isEqualTo(404);
+            var legacy=json.readTree(manager.get(root+"/10000000-0000-0000-0000-000000000001").body());assertThat(legacy.get("firstName").isNull()).isTrue();assertThat(legacy.get("hasAccount").asBoolean()).isTrue();
+        } finally {for(var id:ids)db.sql("DELETE FROM instructor WHERE id=:id").param("id",id).update();}
+    }
+
+    @Test void concurrent_instructor_edits_cannot_overwrite_the_same_version() throws Exception {
+        var manager=as("gestionnaire");var admin=as("admin");
+        var created=manager.call("POST","/api/intervenants","{\"firstName\":\"Nom\",\"lastName\":\"Concurrent\"}",true);
+        var id=java.util.UUID.fromString(json.readTree(created.body()).get("id").asString());String path="/api/intervenants/"+id;var start=new java.util.concurrent.CountDownLatch(1);
+        try(var pool=java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()) {
+            var first=pool.submit(()->{start.await();return manager.put(path,"{\"firstName\":\"Nom\",\"lastName\":\"Concurrent\",\"professionalContact\":\"Premier\",\"version\":0}").statusCode();});
+            var second=pool.submit(()->{start.await();return admin.put(path,"{\"firstName\":\"Nom\",\"lastName\":\"Concurrent\",\"professionalContact\":\"Second\",\"version\":0}").statusCode();});
+            start.countDown();assertThat(List.of(first.get(10,java.util.concurrent.TimeUnit.SECONDS),second.get(10,java.util.concurrent.TimeUnit.SECONDS))).containsExactlyInAnyOrder(204,409);
+            assertThat(json.readTree(manager.get(path).body()).get("version").asLong()).isEqualTo(1);
+        } finally {db.sql("DELETE FROM instructor WHERE id=:id").param("id",id).update();}
+    }
+
     @Test void classifications_are_available_only_to_managers_for_reading_and_administrators_for_writing() throws Exception {
         String path="/api/referentiels/classifications";
         assertThat(as("gestionnaire").get(path).statusCode()).isEqualTo(200);

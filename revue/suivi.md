@@ -39,3 +39,5 @@
 | DEF-025 | 🟠 | Profils de test repoussés hors de la première page | [fiche](defauts/2026-11-13-DEF-025-pagination-profils-fixtures.md) | `profiles.spec.ts`, `requirements.spec.ts` | corrigé localement | Helper de pagination publique et cellule de code exacte ; huit scénarios réussis | 2026-11-13 |
 
 | DEF-026 | 🟠 | Conflits préexistants masquant la barrière testée | [fiche](defauts/2026-11-13-DEF-026-conflits-preexistants-tests.md) | `AccessHttpTest.java`, `sessions.spec.ts` | corrigé localement | Confirmation des préconditions de fixture ; avertissement testé séparément | 2026-11-13 |
+
+| DEF-027 | 🟠 | Mutation temporaire non restaurée après interruption | [fiche](defauts/2026-11-13-DEF-027-interruption-mutation.md) | exécuteur temporaire de mutation | corrigé localement | Restauration immédiate, signaux gérés et revalidation des sources restaurées | 2026-11-13 |

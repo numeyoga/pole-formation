@@ -3,7 +3,7 @@ import type {paths,components} from '../../../shared/http/sessions-generated';
 import type {paths as AuditPaths} from '../../../shared/http/audit-generated';
 import type {paths as FormationPaths} from '../../../shared/http/formations-generated';
 import {ApiError,csrfHeaders} from '../../../shared/http/session';
-import {messages,states,sessionMessages as m} from '../../../shared/i18n/fr';
+import {messages,states,sessionMessages as m,instructorMessages as instructorText} from '../../../shared/i18n/fr';
 import type {SessionView,SessionFields,SessionSummary} from '../presentation/models';
 const client=createClient<paths>({credentials:'same-origin'});
 const audit=createClient<AuditPaths>({credentials:'same-origin'});
@@ -15,7 +15,7 @@ async function unwrap<T>(result:{data?:T;error?:unknown;response:Response}):Prom
 }
 const dateFormat=new Intl.DateTimeFormat('fr-FR',{dateStyle:'short',timeStyle:'short',timeZone:'UTC'});
 export function sessionView(dto:components['schemas']['Session']):SessionView{
- return {id:dto.id,title:dto.title,state:dto.state,status:states[dto.state],version:dto.version,modalities:dto.modalities,
+ return {id:dto.id,title:dto.title,state:dto.state,status:states[dto.state],version:dto.version,modalities:dto.modalities,instructors:dto.instructors.map(item=>({id:item.id,label:item.label,status:item.active?instructorText.active:instructorText.inactive})),
  capacityLabel:dto.capacity===null?m.unlimited:`${dto.capacity} ${m.places}`,slots:dto.slots.map(slot=>({id:slot.id,start:dateFormat.format(new Date(slot.startsAt))+' UTC',end:dateFormat.format(new Date(slot.endsAt))+' UTC',startInput:new Date(slot.startsAt).toISOString().replace(/Z$/,''),endInput:new Date(slot.endsAt).toISOString().replace(/Z$/,'')}))};
 }
 export const sessionsApi={

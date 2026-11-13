@@ -39,3 +39,5 @@
 - Sur une liste sans recherche, parcourir la pagination publique pour retrouver les fixtures ; refaire cette navigation après une sauvegarde réinitialisant la page (DEF-025).
 
 - Pour un test de planning visant l’audit ou la concurrence, traiter les conflits préexistants de la session entière et vérifier le motif d’un refus ; tester l’avertissement séparément (DEF-026).
+
+- Après une mutation, contrôler les sources restaurées avant toute reconstruction ; un script de mutation temporaire doit nettoyer aussi sur SIGTERM/SIGINT et ne jamais compter une interruption comme mutation détectée (DEF-027).

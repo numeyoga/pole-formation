@@ -39,6 +39,8 @@ US-04.02 ajoute les compétences communes à un profil et une formation active, 
 
 Le [contrat des sessions](../../../api/sessions.openapi.yaml) couvre US-05.01 : fiche de gestion, ajout versionné de créneaux dans un brouillon et passage à Planifiée. La création depuis une formation active conserve le contrat des formations et accepte une capacité facultative et des modalités. Les instants de saisie ont un décalage explicite ; les créneaux sont restitués en UTC. Voir le [rapport de validation](../quality/us-05-01-validation.md). US-05.02 étend l’ajout aux sessions planifiées et permet la modification versionnée en brouillon comme en planifiée via le contrat d’audit. Les conflits de toute la session sont recalculés ; une confirmation explicite est nécessaire, sans aucun droit de confirmer un chevauchement interne. Ajout et modification en Planifiée sont audités dans la même transaction. Voir le [rapport US-05.02](../quality/us-05-02-validation.md).
 
+Le [contrat des intervenants](../../../api/instructors.openapi.yaml) couvre US-05.03 : fiches manuelles sans compte obligatoire, coordonnées professionnelles, recherche et pagination, modification et désactivation versionnées, et consultation des sessions affectées. Le contrat des sessions restitue les intervenants affectés avec leur activation, sans exposer leurs coordonnées. La migration conserve les anciens libellés et liens sans inventer de noms structurés. Voir le [rapport US-05.03](../quality/us-05-03-validation.md).
+
 ## Erreurs
 
 - Privilégier `application/problem+json` (RFC 9457) ; distinguer erreur de format, violation métier, introuvable, conflit, non authentifié, interdit.

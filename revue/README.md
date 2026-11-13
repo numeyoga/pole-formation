@@ -47,3 +47,5 @@ Le [suivi](suivi.md) contient les statuts courants et la [checklist](checklist-p
 | [DEF-025](defauts/2026-11-13-DEF-025-pagination-profils-fixtures.md) | 2026-11-13 | Profils de test repoussés hors de la première page | Répétition avec plus d’une page de profils de correspondance | corrigé localement, US-02.01 / US-02.04 |
 
 | [DEF-026](defauts/2026-11-13-DEF-026-conflits-preexistants-tests.md) | 2026-11-13 | Conflits préexistants masquant les tests d’audit et concurrence | Réponse ProblemDetail et scénarios HTTP | corrigé localement, US-05.02 |
+
+| [DEF-027](defauts/2026-11-13-DEF-027-interruption-mutation.md) | 2026-11-13 | Mutation temporaire non restaurée après interruption | Contrôle des sources après code d’arrêt 143 | corrigé localement, US-05.03 |

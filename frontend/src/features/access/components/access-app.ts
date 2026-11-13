@@ -1,3 +1,6 @@
+import '../../instructors/components/instructors-panel';
+import type {InstructorsPanel} from '../../instructors/components/instructors-panel';
+import {instructorMessages} from '../../../shared/i18n/fr';
 import '../../formations/components/formations-panel';
 import type { FormationsPanel } from '../../formations/components/formations-panel';
 import '../../classifications/components/classifications-panel';
@@ -126,7 +129,7 @@ export class AccessApp extends LitElement {
           ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<CompetenciesPanel>('competencies-panel')?.focusHeading()}>Compétences</button>`:nothing}
           ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<ReferenceExplorer>('reference-explorer')?.focusHeading()}>Explorer le référentiel</button>`:nothing}
           ${this.identity.permissions.includes('WRITE_CLASSIFICATION')?html`<button @click=${()=>this.renderRoot.querySelector<ClassificationsPanel>('classifications-panel')?.focusHeading()}>Classifications</button>`:nothing}
-          <button @click=${()=>this.focusElement('#sessions-title')}>Sessions</button>
+          <button @click=${()=>this.focusElement('#sessions-title')}>Sessions</button>${this.identity.permissions.includes('MANAGE_SESSION')?html`<button @click=${()=>this.renderRoot.querySelector<InstructorsPanel>('instructors-panel')?.focusHeading()}>${instructorMessages.title}</button>`:nothing}
           ${this.identity.permissions.includes('READ_AUDIT')?html`<button @click=${()=>this.renderRoot.querySelector<AuditLog>('audit-log')?.focusHeading()}>Journal</button>`:nothing}
         </nav>`:nothing}</header>
       ${this.error?html`<div role="alert" tabindex="-1">${this.error}</div><button ?disabled=${this.busy} @click=${this.restore}>${m.retry}</button>`:nothing}
@@ -141,6 +144,7 @@ export class AccessApp extends LitElement {
         </section>`:html`
         ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<domains-panel></domains-panel><subdomains-panel></subdomains-panel><competencies-panel></competencies-panel><reference-explorer></reference-explorer><profiles-panel></profiles-panel><formations-panel @sessions-changed=${()=>this.run(async()=>{this.sessions=await api.sessions();this.auditRevision++;})} @formations-changed=${()=>{this.auditRevision++;}}></formations-panel>`:nothing}
         ${this.identity.permissions.includes('WRITE_CLASSIFICATION')?html`<classifications-panel></classifications-panel>`:nothing}
+        ${this.identity.permissions.includes('MANAGE_SESSION')?html`<instructors-panel></instructors-panel>`:nothing}
         <section aria-labelledby="sessions-title"><h2 id="sessions-title" tabindex="-1">${m.sessions}</h2>
           ${this.sessions.length?html`<ul>${this.sessions.map(session=>html`<li><button ?disabled=${this.busy} @click=${()=>this.select(session)}>${session.title}</button> <span class="muted">${states[session.state]}</span></li>`)}</ul>`:html`<p>${m.empty}</p>`}
         </section>

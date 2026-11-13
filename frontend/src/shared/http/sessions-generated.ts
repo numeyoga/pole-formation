@@ -85,6 +85,13 @@ export interface components {
             modalities: string;
             version: number;
             slots: components["schemas"]["Slot"][];
+            /** @description Intervenants affectés conservés même après désactivation ; seules identité et activation sont exposées. */
+            instructors: {
+                /** Format: uuid */
+                id: string;
+                label: string;
+                active: boolean;
+            }[];
         };
     };
     responses: never;

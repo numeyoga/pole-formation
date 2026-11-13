@@ -119,7 +119,7 @@ export const explanationMessages={
 };
 
 export const sessionMessages={
- manage:'Gérer les sessions',title:'Sessions de la formation',create:'Créer un brouillon de session',label:'Intitulé de session (obligatoire)',
+ assignedInstructors:'Intervenants de la session',noAssignedInstructor:'Aucun intervenant affecté.',slotsTitle:'Créneaux de la session',manage:'Gérer les sessions',title:'Sessions de la formation',create:'Créer un brouillon de session',label:'Intitulé de session (obligatoire)',
  capacity:'Capacité (facultative)',capacityHelp:'Laisser vide pour une session sans limite de places.',modalities:'Modalités',
  saved:'Session enregistrée.',planned:'Session planifiée.',slotSaved:'Créneau ajouté.',empty:'Aucune session pour cette formation.',
  createHelp:'La création nécessite une formation active.',loading:'Chargement des sessions…',saving:'Enregistrement…',
@@ -128,4 +128,17 @@ export const sessionMessages={
  timeHelp:'Dates et heures dans le décalage indiqué : Z pour UTC, +01:00 ou +02:00 par exemple. Aucun fuseau du navigateur n’est appliqué. Les créneaux enregistrés sont affichés en UTC.',
  noSlots:'Aucun créneau. Ajoutez un créneau avant de planifier.',unlimited:'Sans limite de places',places:'places',
  noInstructor:'La planification est possible sans intervenant et sans capacité renseignée.',refresh:'Recharger la fiche',status:'État de la gestion des sessions',
+};
+
+export const instructorMessages={
+ title:'Intervenants',create:'Créer un intervenant',edit:'Modifier un intervenant',modify:'Modifier',disable:'Désactiver',refresh:'Actualiser les intervenants',
+ firstName:'Prénom (obligatoire)',lastName:'Nom (obligatoire)',contact:'Coordonnées professionnelles (facultatives)',contactHelp:'Coordonnées professionnelles uniquement, 2000 caractères maximum. Aucun compte utilisateur n’est créé.',
+ legacyHelp:'Cette ancienne fiche possède uniquement un nom affiché. Renseignez le prénom et le nom pour la compléter ; ses affectations et son compte lié seront conservés.',
+ search:'Rechercher par nom ou prénom',searchTitle:'Recherche des intervenants',searchButton:'Rechercher les intervenants',clear:'Effacer les filtres',activeOnly:'Intervenants actifs uniquement',
+ empty:'Aucun intervenant pour ces filtres.',loading:'Chargement des intervenants…',saving:'Enregistrement…',saved:'Fiche intervenant enregistrée.',disabled:'Intervenant désactivé. Affectations et compte lié conservés.',
+ active:'Actif',inactive:'Désactivé',state:'Statut',account:'Compte utilisateur',linked:'Compte lié',unlinked:'Sans compte lié',label:'Nom affiché',actions:'Actions',table:'Tableau des intervenants',caption:'Intervenants actifs et désactivés',
+ status:'État des intervenants',formStatus:'État du formulaire intervenant',save:'Enregistrer l’intervenant',cancel:'Annuler',reload:'Recharger la fiche',
+ disableTitle:'Désactiver un intervenant',disableHelp:'Les affectations historiques et le compte éventuellement lié restent conservés. Les nouvelles affectations seront refusées.',confirmDisable:'Confirmer la désactivation',
+ pages:'Pagination des intervenants',previous:'Intervenants précédents',next:'Intervenants suivants',
+ sessions:'Sessions affectées',historyTitle:'Sessions de l’intervenant',historyEmpty:'Aucune session affectée à cet intervenant.',historyLoading:'Chargement des affectations…',historyRetry:'Réessayer les affectations',historyPrevious:'Sessions affectées précédentes',historyNext:'Sessions affectées suivantes',historyPages:'Pagination des affectations',close:'Fermer',
 };

@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Planification des sessions — US-05.01
-  version: 1.1.0
+  version: 1.2.0
 paths:
   /api/sessions/{id}:
     parameters:
@@ -105,7 +105,7 @@ components:
         endsAt: {type: string, format: date-time}
     Session:
       type: object
-      required: [id, formationId, title, state, capacity, modalities, version, slots]
+      required: [id, formationId, title, state, capacity, modalities, version, slots, instructors]
       properties:
         id: {type: string, format: uuid}
         formationId: {type: [string, 'null'], format: uuid}
@@ -117,3 +117,13 @@ components:
         slots:
           type: array
           items: {$ref: '#/components/schemas/Slot'}
+        instructors:
+          type: array
+          description: Intervenants affectés conservés même après désactivation ; seules identité et activation sont exposées.
+          items:
+            type: object
+            required: [id, label, active]
+            properties:
+              id: {type: string, format: uuid}
+              label: {type: string}
+              active: {type: boolean}

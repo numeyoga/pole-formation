@@ -15,10 +15,11 @@ import java.util.UUID;
 public class SessionController {
     private final SessionService service;
     public SessionController(SessionService service){this.service=service;}
+    public record AssignedInstructorResponse(UUID id,String label,boolean active) {}
     public record SlotResponse(UUID id,java.time.Instant startsAt,java.time.Instant endsAt) {}
-    public record SessionResponse(UUID id,UUID formationId,String title,String state,Integer capacity,String modalities,long version,java.util.List<SlotResponse> slots) {}
+    public record SessionResponse(UUID id,UUID formationId,String title,String state,Integer capacity,String modalities,long version,java.util.List<SlotResponse> slots,java.util.List<AssignedInstructorResponse> instructors) {}
     private SlotResponse dto(TrainingSession.Slot slot){return new SlotResponse(slot.id(),slot.startsAt(),slot.endsAt());}
-    private SessionResponse dto(TrainingSession session){return new SessionResponse(session.id(),session.formationId(),session.title(),session.state(),session.capacity(),session.modalities(),session.version(),session.slots().stream().map(this::dto).toList());}
+    private SessionResponse dto(TrainingSession session){return new SessionResponse(session.id(),session.formationId(),session.title(),session.state(),session.capacity(),session.modalities(),session.version(),session.slots().stream().map(this::dto).toList(),session.instructors().stream().map(i->new AssignedInstructorResponse(i.id(),i.label(),i.active())).toList());}
     public record Version(BigDecimal version) {}
     public record SlotChange(OffsetDateTime startsAt,OffsetDateTime endsAt,BigDecimal version,Boolean confirmConflicts) {}
     static Long version(BigDecimal value){try{return value==null?null:value.longValueExact();}catch(ArithmeticException error){throw new TrainingSession.InvalidField("version","Version entière invalide.");}}

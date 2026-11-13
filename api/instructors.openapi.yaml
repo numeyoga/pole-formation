@@ -1,0 +1,174 @@
+openapi: 3.1.0
+info:
+  title: Administration des intervenants — US-05.03
+  version: 1.0.0
+security: [{session: []}]
+paths:
+  /api/intervenants:
+    get:
+      description: Gestionnaire et administrateur. Recherche littérale sans casse dans le nom affiché ; inactifs inclus par défaut ; tri nom affiché sans casse puis identifiant.
+      parameters:
+        - {name: q, in: query, schema: {type: string, maxLength: 200, default: ''}}
+        - {name: activeOnly, in: query, schema: {type: boolean, default: false}}
+        - {$ref: '#/components/parameters/Page'}
+        - {$ref: '#/components/parameters/Size'}
+      responses:
+        '200':
+          description: Page d’intervenants
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, page, size]
+                properties:
+                  items: {type: array, items: {$ref: '#/components/schemas/Instructor'}}
+                  total: {type: integer}
+                  page: {type: integer}
+                  size: {type: integer}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+    post:
+      description: Création active, sans compte utilisateur obligatoire et sans création de compte. Aucune unicité des noms n’est imposée.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Details'}
+      responses:
+        '201':
+          description: Intervenant créé
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Instructor'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/intervenants/{id}:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      responses:
+        '200':
+          description: Fiche, y compris inactive et historique sans noms structurés
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Instructor'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+    put:
+      description: Modification versionnée, sans altérer les comptes ou affectations. Les noms structurés sont requis aussi pour compléter une ancienne fiche.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - {$ref: '#/components/schemas/Details'}
+                - type: object
+                  required: [version]
+                  properties:
+                    version: {type: integer, minimum: 0}
+      responses:
+        '204': {description: Fiche modifiée}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/intervenants/{id}/desactivation:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    post:
+      description: Désactivation versionnée sans suppression des affectations ou du compte. Sérialisée avec les contrôles de nouvelles affectations.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [version]
+              properties:
+                version: {type: integer, minimum: 0}
+      responses:
+        '204': {description: Fiche désactivée ou déjà inactive à cette version}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/intervenants/{id}/sessions:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      description: Affectations conservées, quel que soit l’état de l’intervenant ou des sessions ; tri par intitulé sans casse puis identifiant.
+      parameters:
+        - {$ref: '#/components/parameters/Page'}
+        - {$ref: '#/components/parameters/Size'}
+      responses:
+        '200':
+          description: Sessions affectées
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, page, size]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, title, state]
+                      properties:
+                        id: {type: string, format: uuid}
+                        title: {type: string}
+                        state: {type: string, enum: [BROUILLON, PLANIFIEE, TERMINEE, ANNULEE]}
+                  total: {type: integer}
+                  page: {type: integer}
+                  size: {type: integer}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+components:
+  securitySchemes:
+    session: {type: apiKey, in: cookie, name: JSESSIONID}
+  parameters:
+    Id: {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+    Csrf: {name: X-CSRF-TOKEN, in: header, required: true, schema: {type: string}}
+    Page: {name: page, in: query, schema: {type: integer, minimum: 0, default: 0}}
+    Size: {name: size, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+  responses:
+    Error:
+      description: Requête invalide, accès interdit, ressource introuvable ou version périmée selon le statut HTTP
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [status]
+            properties:
+              status: {type: integer}
+              detail: {type: string}
+              fieldErrors: {type: object, additionalProperties: {type: string}}
+  schemas:
+    Details:
+      type: object
+      required: [firstName, lastName]
+      properties:
+        firstName: {type: string, minLength: 1, maxLength: 100}
+        lastName: {type: string, minLength: 1, maxLength: 100}
+        professionalContact: {type: string, maxLength: 2000, default: ''}
+    Instructor:
+      type: object
+      required: [id, label, firstName, lastName, professionalContact, active, version, hasAccount, sessionCount]
+      properties:
+        id: {type: string, format: uuid}
+        label: {type: string}
+        firstName: {type: [string, 'null']}
+        lastName: {type: [string, 'null']}
+        professionalContact: {type: string}
+        active: {type: boolean}
+        version: {type: integer, minimum: 0}
+        hasAccount: {type: boolean}
+        sessionCount: {type: integer, minimum: 0}
