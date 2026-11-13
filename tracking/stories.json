@@ -333,7 +333,7 @@
     ]
   },
   "US-05.01": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -341,12 +341,15 @@
     ],
     "report": "docs/reference/quality/us-05-01-validation.md",
     "remaining": [
-      "Livraison locale implémentée et testée ; commit applicatif puis rattachement de la preuve au commit testé à enregistrer.",
       "Recette métier humaine de la création et planification des sessions.",
       "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
     ],
     "acceptance": {
       "required": true
-    }
+    },
+    "validated_commit": "8ae69185513dfa7313ab3bddb3c3da05b473f0af",
+    "commits": [
+      "8ae69185513dfa7313ab3bddb3c3da05b473f0af"
+    ]
   }
 }

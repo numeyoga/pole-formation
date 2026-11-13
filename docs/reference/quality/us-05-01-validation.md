@@ -63,6 +63,6 @@ Le défaut de réactivité introduit pendant le développement a été arrêté 
 
 ## Limites et recette
 
-Les modifications restent locales tant qu’aucun commit de livraison n’est enregistré. Le manifeste conserve donc cette livraison en `partial`, sans rattacher les résultats au hash d’un code antérieur.
+Le commit de livraison `8ae69185513dfa7313ab3bddb3c3da05b473f0af` contient le code validé ci-dessus. Le manifeste le référence comme implémentation complète ; la story reste à recetter tant que la validation humaine manque.
 
 Recette métier humaine, lecteur d’écran et zoom navigateur réel à 200 % restent à réaliser. Axe et les scénarios clavier automatisés ne démontrent pas seuls WCAG AA. Les conflits entre sessions, l’édition et la suppression de créneaux, les affectations, l’annulation et la clôture relèvent des stories suivantes ; aucune interface correspondante n’est annoncée comme livrée ici.
