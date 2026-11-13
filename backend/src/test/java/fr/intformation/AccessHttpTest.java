@@ -145,6 +145,77 @@ class AccessHttpTest {
         }
     }
 
+    @Test void slot_management_edits_drafts_and_confirms_audited_planned_additions_without_stale_overwrites() throws Exception {
+        var manager=as("gestionnaire");
+        var offer=manager.call("POST","/api/formations","{\"code\":\"SLOTS-"+java.util.UUID.randomUUID()+"\",\"title\":\"Créneaux\"}",true);
+        String root="/api/formations/"+json.readTree(offer.body()).get("id").asString();
+        manager.call("POST",root+"/activation","{\"version\":0}",true);
+        var created=manager.call("POST",root+"/sessions","{\"title\":\"Session gestion créneaux\"}",true);
+        var id=java.util.UUID.fromString(json.readTree(created.body()).get("id").asString());String path="/api/sessions/"+id;
+        try {
+            var slot=manager.call("POST",path+"/creneaux","{\"startsAt\":\"2027-01-10T09:00Z\",\"endsAt\":\"2027-01-10T10:00Z\",\"version\":0}",true);
+            String slotPath=path+"/creneaux/"+json.readTree(slot.body()).get("id").asString();
+            assertThat(manager.put(slotPath,"{\"startsAt\":\"2028-01-10T09:00Z\",\"endsAt\":\"2028-01-10T10:00Z\",\"version\":1}").statusCode()).isEqualTo(204);
+            assertThat(manager.call("POST",path+"/planification","{\"version\":2}",true).statusCode()).isEqualTo(204);
+            db.sql("INSERT INTO session_instructor VALUES (:id,'10000000-0000-0000-0000-000000000001')").param("id",id).update();
+            String body="{\"startsAt\":\"2020-01-01T09:00Z\",\"endsAt\":\"2020-01-01T10:00Z\",\"version\":3}";
+            var warning=manager.call("POST",path+"/creneaux",body,true);
+            assertThat(warning.statusCode()).isEqualTo(409);assertThat(warning.body()).contains("confirmationRequired",S1);
+            var before=json.readTree(manager.get(path).body());assertThat(before.get("version").asLong()).isEqualTo(3);assertThat(before.get("slots").size()).isEqualTo(1);
+            assertThat(json.readTree(manager.get("/api/audit?sessionId="+id).body()).get("items").size()).isZero();
+            var confirmed=manager.call("POST",path+"/creneaux",body.replace("}",",\"confirmConflicts\":true}"),true);
+            assertThat(confirmed.statusCode()).isEqualTo(201);
+            String addedPath=path+"/creneaux/"+json.readTree(confirmed.body()).get("id").asString();
+            var events=json.readTree(manager.get("/api/audit?sessionId="+id).body()).get("items");
+            assertThat(events.size()).isEqualTo(1);assertThat(events.get(0).get("action").asString()).isEqualTo("AJOUT_CRENEAU");
+            assertThat(events.get(0).get("before").isEmpty()).isTrue();assertThat(events.get(0).get("after").get("startsAt").asString()).isEqualTo("2020-01-01T09:00:00Z");
+            String edit="{\"startsAt\":\"2020-01-01T09:30Z\",\"endsAt\":\"2020-01-01T10:30Z\",\"version\":3,\"confirmConflicts\":true}";
+            assertThat(manager.put(addedPath,edit).statusCode()).isEqualTo(409);
+            assertThat(manager.put(addedPath,edit.replace("\"version\":3","\"version\":4")).statusCode()).isEqualTo(204);
+            var details=json.readTree(manager.get(path).body());assertThat(details.get("version").asLong()).isEqualTo(5);
+            assertThat(details.get("slots").get(0).get("startsAt").asString()).isEqualTo("2020-01-01T09:30:00Z");
+            assertThat(json.readTree(manager.get("/api/audit?sessionId="+id).body()).get("items").size()).isEqualTo(2);
+            db.sql("UPDATE training_session SET state='TERMINEE' WHERE id=:id").param("id",id).update();
+            assertThat(manager.put(addedPath,edit.replace("\"version\":3","\"version\":5")).statusCode()).isEqualTo(409);
+            assertThat(manager.call("POST",path+"/creneaux",body.replace("\"version\":3","\"version\":5"),true).statusCode()).isEqualTo(409);
+        } finally {
+            db.sql("DELETE FROM session_instructor WHERE session_id=:id").param("id",id).update();
+            db.sql("DELETE FROM session_slot WHERE session_id=:id").param("id",id).update();
+            db.sql("DELETE FROM training_session WHERE id=:id").param("id",id).update();
+        }
+    }
+
+    @Test void failed_audit_rolls_back_a_planned_slot_addition_and_its_version() throws Exception {
+        var manager=as("gestionnaire");String path="/api/sessions/"+S1;
+        String before=manager.get(path).body();long version=json.readTree(before).get("version").asLong();
+        db.sql("CREATE FUNCTION fail_added_slot_audit() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'audit unavailable'; END $$").update();
+        db.sql("CREATE TRIGGER fail_added_slot_audit BEFORE INSERT ON access_audit FOR EACH ROW EXECUTE FUNCTION fail_added_slot_audit()").update();
+        try {
+            String body="{\"startsAt\":\"2029-01-10T09:00Z\",\"endsAt\":\"2029-01-10T10:00Z\",\"version\":"+version+",\"confirmConflicts\":true}";
+            var failed=manager.call("POST",path+"/creneaux",body,true);assertThat(failed.statusCode()).withFailMessage(failed.body()).isEqualTo(500);
+            assertThat(manager.get(path).body()).isEqualTo(before);
+            assertThat(json.readTree(manager.get("/api/audit?sessionId="+S1).body()).get("items").size()).isZero();
+        } finally {
+            db.sql("DROP TRIGGER fail_added_slot_audit ON access_audit").update();db.sql("DROP FUNCTION fail_added_slot_audit()").update();
+        }
+    }
+
+    @Test void concurrent_planned_additions_check_the_version_after_taking_the_shared_lock() throws Exception {
+        var manager=as("gestionnaire");var admin=as("admin");String path="/api/sessions/"+S1;
+        long version=json.readTree(manager.get(path).body()).get("version").asLong();
+        String body="{\"startsAt\":\"2029-01-10T09:00Z\",\"endsAt\":\"2029-01-10T10:00Z\",\"version\":"+version+",\"confirmConflicts\":true}";
+        var start=new java.util.concurrent.CountDownLatch(1);
+        try(var pool=java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()) {
+            var first=pool.submit(()->{start.await();return manager.call("POST",path+"/creneaux",body,true).statusCode();});
+            var second=pool.submit(()->{start.await();return admin.call("POST",path+"/creneaux",body,true).statusCode();});
+            start.countDown();assertThat(List.of(first.get(10,java.util.concurrent.TimeUnit.SECONDS),second.get(10,java.util.concurrent.TimeUnit.SECONDS))).containsExactlyInAnyOrder(201,409);
+            assertThat(json.readTree(manager.get(path).body()).get("version").asLong()).isEqualTo(version+1);
+            assertThat(json.readTree(manager.get("/api/audit?sessionId="+S1).body()).get("items").size()).isEqualTo(1);
+        } finally {
+            db.sql("DELETE FROM session_slot WHERE session_id='"+S1+"' AND starts_at='2029-01-10T09:00Z'").update();
+        }
+    }
+
     @Test void classifications_are_available_only_to_managers_for_reading_and_administrators_for_writing() throws Exception {
         String path="/api/referentiels/classifications";
         assertThat(as("gestionnaire").get(path).statusCode()).isEqualTo(200);

@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Planification des sessions — US-05.01
-  version: 1.0.0
+  version: 1.1.0
 paths:
   /api/sessions/{id}:
     parameters:
@@ -23,8 +23,8 @@ paths:
     parameters:
       - $ref: '#/components/parameters/id'
     post:
-      operationId: addDraftSlot
-      description: Ajout dans un brouillon uniquement. Pas de chevauchement interne ; créneaux contigus autorisés. Incrémente la version de session.
+      operationId: addSessionSlot
+      description: Ajout en Brouillon ou Planifiée. Pas de chevauchement interne ; créneaux contigus autorisés. Incrémente la version de session. En Planifiée, conflits à confirmer et audit atomique.
       parameters:
         - $ref: '#/components/parameters/csrf'
       requestBody:
@@ -38,6 +38,7 @@ paths:
                 startsAt: {type: string, format: date-time, description: Décalage explicite obligatoire}
                 endsAt: {type: string, format: date-time, description: Décalage explicite obligatoire}
                 version: {type: integer, minimum: 0}
+                confirmConflicts: {type: boolean, default: false}
       responses:
         '201':
           description: Créneau créé
@@ -48,7 +49,16 @@ paths:
         '401': {description: Session HTTP absente}
         '403': {description: Gestion ou CSRF interdit}
         '404': {description: Session inconnue}
-        '409': {description: Version périmée, session hors brouillon ou chevauchement interne}
+        '409':
+          description: Version périmée, état non modifiable, chevauchement interne ou conflits à confirmer
+          content:
+            application/problem+json:
+              schema:
+                type: object
+                properties:
+                  detail: {type: string}
+                  confirmationRequired: {type: boolean}
+                  conflictingSessionIds: {type: array, items: {type: string, format: uuid}}
   /api/sessions/{id}/planification:
     parameters:
       - $ref: '#/components/parameters/id'

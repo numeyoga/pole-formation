@@ -63,6 +63,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
+        /** @description Modification de créneau en Brouillon ou Planifiée, avec contrôle de version et audit atomique en Planifiée. Les anciens appels sans version restent compatibles uniquement en Planifiée. */
         put: {
             parameters: {
                 query?: never;
@@ -82,13 +83,15 @@ export interface paths {
                         startsAt: string;
                         /** Format: date-time */
                         endsAt: string;
+                        /** @description Version de session ; obligatoire en Brouillon et utilisée par les nouveaux formulaires */
+                        version?: number;
                         /** @default false */
                         confirmConflicts?: boolean;
                     };
                 };
             };
             responses: {
-                /** @description Créneau modifié et audité atomiquement */
+                /** @description Créneau modifié ; audit atomique si session Planifiée */
                 204: {
                     headers: {
                         [name: string]: unknown;

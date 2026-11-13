@@ -6,5 +6,5 @@ import org.springframework.context.annotation.*;
 
 @Configuration
 public class SessionConfiguration {
-    @Bean SessionService sessionService(SessionStore store,AccessStore accounts){return new SessionService(store,accounts);}
+    @Bean SessionService sessionService(SessionStore store,AccessStore accounts,java.time.Clock clock){return new SessionService(store,accounts,clock);}
 }

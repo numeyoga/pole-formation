@@ -20,12 +20,12 @@ public class SessionController {
     private SlotResponse dto(TrainingSession.Slot slot){return new SlotResponse(slot.id(),slot.startsAt(),slot.endsAt());}
     private SessionResponse dto(TrainingSession session){return new SessionResponse(session.id(),session.formationId(),session.title(),session.state(),session.capacity(),session.modalities(),session.version(),session.slots().stream().map(this::dto).toList());}
     public record Version(BigDecimal version) {}
-    public record SlotChange(OffsetDateTime startsAt,OffsetDateTime endsAt,BigDecimal version) {}
+    public record SlotChange(OffsetDateTime startsAt,OffsetDateTime endsAt,BigDecimal version,Boolean confirmConflicts) {}
     static Long version(BigDecimal value){try{return value==null?null:value.longValueExact();}catch(ArithmeticException error){throw new TrainingSession.InvalidField("version","Version entière invalide.");}}
     @GetMapping("/{id}") SessionResponse get(Principal user,@PathVariable UUID id){return dto(service.get(user.getName(),id));}
     @PostMapping("/{id}/creneaux")
     ResponseEntity<SlotResponse> addSlot(Principal user,@PathVariable UUID id,@RequestBody SlotChange body){
-        var slot=service.addSlot(user.getName(),id,body.startsAt()==null?null:body.startsAt().toInstant(),body.endsAt()==null?null:body.endsAt().toInstant(),version(body.version()));
+        var slot=service.addSlot(user.getName(),id,body.startsAt()==null?null:body.startsAt().toInstant(),body.endsAt()==null?null:body.endsAt().toInstant(),version(body.version()),Boolean.TRUE.equals(body.confirmConflicts()));
         return ResponseEntity.created(URI.create("/api/sessions/"+id+"/creneaux/"+slot.id())).body(dto(slot));
     }
     @PostMapping("/{id}/planification") @ResponseStatus(HttpStatus.NO_CONTENT)

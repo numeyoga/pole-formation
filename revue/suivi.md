@@ -37,3 +37,5 @@
 | DEF-024 | 🟠 | Formation de test supposée sur la première page | [fiche](defauts/2026-11-13-DEF-024-fixture-premiere-page.md) | `sessions.spec.ts` | corrigé localement | Recherche explicite du code créé, sans effacer les données ni augmenter les délais | 2026-11-13 |
 
 | DEF-025 | 🟠 | Profils de test repoussés hors de la première page | [fiche](defauts/2026-11-13-DEF-025-pagination-profils-fixtures.md) | `profiles.spec.ts`, `requirements.spec.ts` | corrigé localement | Helper de pagination publique et cellule de code exacte ; huit scénarios réussis | 2026-11-13 |
+
+| DEF-026 | 🟠 | Conflits préexistants masquant la barrière testée | [fiche](defauts/2026-11-13-DEF-026-conflits-preexistants-tests.md) | `AccessHttpTest.java`, `sessions.spec.ts` | corrigé localement | Confirmation des préconditions de fixture ; avertissement testé séparément | 2026-11-13 |

@@ -45,3 +45,5 @@ Le [suivi](suivi.md) contient les statuts courants et la [checklist](checklist-p
 | [DEF-024](defauts/2026-11-13-DEF-024-fixture-premiere-page.md) | 2026-11-13 | Formation de test supposée sur la première page | Répétition sur un catalogue enrichi | corrigé localement, US-05.01 |
 
 | [DEF-025](defauts/2026-11-13-DEF-025-pagination-profils-fixtures.md) | 2026-11-13 | Profils de test repoussés hors de la première page | Répétition avec plus d’une page de profils de correspondance | corrigé localement, US-02.01 / US-02.04 |
+
+| [DEF-026](defauts/2026-11-13-DEF-026-conflits-preexistants-tests.md) | 2026-11-13 | Conflits préexistants masquant les tests d’audit et concurrence | Réponse ProblemDetail et scénarios HTTP | corrigé localement, US-05.02 |

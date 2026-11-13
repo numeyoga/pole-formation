@@ -19,6 +19,15 @@ public final class ChangeRules {
     public void planned(String state) {
         if(!state.equals("PLANIFIEE")) throw new Conflict("Cette opération nécessite une session planifiée.");
     }
+    public void editable(String state,long currentVersion,Long expectedVersion,boolean versionRequired) {
+        if(!state.equals("BROUILLON")&&!state.equals("PLANIFIEE"))throw new Conflict("Les créneaux d’une session terminée ou annulée ne sont pas modifiables.");
+        if(expectedVersion==null){
+            if(versionRequired||state.equals("BROUILLON"))throw new IllegalArgumentException("Version de session requise.");
+        }else{
+            if(expectedVersion<0)throw new IllegalArgumentException("Version invalide.");
+            if(expectedVersion!=currentVersion)throw new Conflict("La session a changé. Rechargez sa fiche.");
+        }
+    }
     public void noOverlap(Interval proposed,List<Interval> others) {
         if(others.stream().anyMatch(proposed::overlaps)) throw new Conflict("Deux créneaux d’une même session ne peuvent pas se chevaucher.");
     }

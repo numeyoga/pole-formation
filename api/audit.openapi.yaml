@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Pôle formation — journal et changements sensibles
-  version: 0.3.0
+  version: 0.4.0
 servers: [{url: /}]
 security: [{session: []}]
 paths:
@@ -33,6 +33,7 @@ paths:
       - {$ref: '#/components/parameters/Session'}
       - {name: slot, in: path, required: true, schema: {type: string, format: uuid}}
     put:
+      description: Modification de créneau en Brouillon ou Planifiée, avec contrôle de version et audit atomique en Planifiée. Les anciens appels sans version restent compatibles uniquement en Planifiée.
       parameters: [{$ref: '#/components/parameters/Csrf'}]
       requestBody:
         required: true
@@ -44,9 +45,10 @@ paths:
               properties:
                 startsAt: {type: string, format: date-time}
                 endsAt: {type: string, format: date-time}
+                version: {type: integer, minimum: 0, description: Version de session ; obligatoire en Brouillon et utilisée par les nouveaux formulaires}
                 confirmConflicts: {type: boolean, default: false}
       responses:
-        '204': {description: Créneau modifié et audité atomiquement}
+        '204': {description: Créneau modifié ; audit atomique si session Planifiée}
         '400': {$ref: '#/components/responses/Error'}
         '401': {$ref: '#/components/responses/Error'}
         '403': {$ref: '#/components/responses/Error'}

@@ -124,7 +124,7 @@ export const sessionMessages={
  saved:'Session enregistrée.',planned:'Session planifiée.',slotSaved:'Créneau ajouté.',empty:'Aucune session pour cette formation.',
  createHelp:'La création nécessite une formation active.',loading:'Chargement des sessions…',saving:'Enregistrement…',
  close:'Fermer',reload:'Actualiser les sessions',details:'Ouvrir la session',back:'Retour aux sessions',
- plan:'Planifier la session',slot:'Ajouter un créneau au brouillon',start:'Début (obligatoire)',end:'Fin (obligatoire)',offset:'Décalage UTC (obligatoire)',
+ plan:'Planifier la session',slot:'Ajouter un créneau',editSlot:'Modifier ce créneau',editTitle:'Modifier un créneau',saveSlot:'Enregistrer le créneau',cancelSlot:'Annuler la modification',slotUpdated:'Créneau modifié.',conflictTitle:'Conflits de planning',conflictHelp:'Des intervenants ou collaborateurs sont déjà engagés sur ces créneaux. Vous pouvez confirmer ce changement malgré les conflits.',confirmSlot:'Confirmer malgré les conflits',cancelConflict:'Abandonner ce changement',conflictCount:(count:number)=>`Conflit avec ${count} autre(s) session(s).`,start:'Début (obligatoire)',end:'Fin (obligatoire)',offset:'Décalage UTC (obligatoire)',
  timeHelp:'Dates et heures dans le décalage indiqué : Z pour UTC, +01:00 ou +02:00 par exemple. Aucun fuseau du navigateur n’est appliqué. Les créneaux enregistrés sont affichés en UTC.',
  noSlots:'Aucun créneau. Ajoutez un créneau avant de planifier.',unlimited:'Sans limite de places',places:'places',
  noInstructor:'La planification est possible sans intervenant et sans capacité renseignée.',refresh:'Recharger la fiche',status:'État de la gestion des sessions',

@@ -22,9 +22,9 @@ public final class AuditService {
         if(query.subjectId()!=null && (query.subjectId().isBlank() || query.subjectId().length()>100)) throw new IllegalArgumentException("Identifiant invalide.");
         return audit.read(query);
     }
-    public void slot(String user,UUID session,UUID slot,Instant start,Instant end,boolean confirm) {
+    public void slot(String user,UUID session,UUID slot,Instant start,Instant end,boolean confirm,Long version) {
         var actor=accounts.actor(user);policy.require(actor,MANAGE_SESSION);
-        changes.changeSlot(actor,session,slot,start,end,confirm,clock.instant());
+        changes.changeSlot(actor,session,slot,start,end,confirm,version,clock.instant());
     }
     public void instructors(String user,UUID session,List<UUID> instructors,boolean confirm) {
         var actor=accounts.actor(user);policy.require(actor,MANAGE_SESSION);

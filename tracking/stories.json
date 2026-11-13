@@ -351,5 +351,22 @@
     "commits": [
       "8ae69185513dfa7313ab3bddb3c3da05b473f0af"
     ]
+  },
+  "US-05.02": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
+    "report": "docs/reference/quality/us-05-02-validation.md",
+    "remaining": [
+      "Livraison locale implémentée et testée ; commit applicatif puis rattachement des preuves au commit testé à enregistrer.",
+      "Recette métier humaine de la gestion des créneaux et conflits.",
+      "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
+    ],
+    "acceptance": {
+      "required": true
+    }
   }
 }

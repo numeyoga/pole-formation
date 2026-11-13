@@ -17,7 +17,8 @@ public class AuditController {
     public record EventResponse(String sequence,UUID id,Instant occurredAt,String actor,String action,String subjectType,
                                 String subjectId,UUID sessionId,Map<String,Object> before,Map<String,Object> after) {}
     public record Page(List<EventResponse> items,String nextCursor) {}
-    public record SlotChange(Instant startsAt,Instant endsAt,Boolean confirmConflicts) {}
+    public record SlotChange(OffsetDateTime startsAt,OffsetDateTime endsAt,Boolean confirmConflicts,java.math.BigDecimal version) {}
+    private Long version(java.math.BigDecimal value){try{return value==null?null:value.longValueExact();}catch(ArithmeticException error){throw new fr.intformation.sessions.domain.TrainingSession.InvalidField("version","Version entière invalide.");}}
     public record InstructorChange(List<UUID> instructorIds,Boolean confirmConflicts) {}
     public record Transition(String state,Boolean confirmConflicts) {}
     @GetMapping("/audit") Page read(Principal user,@RequestParam(required=false) String subjectType,@RequestParam(required=false) String subjectId,
@@ -28,7 +29,7 @@ public class AuditController {
     }
     @PutMapping("/sessions/{session}/creneaux/{slot}") @ResponseStatus(HttpStatus.NO_CONTENT)
     void slot(Principal user,@PathVariable UUID session,@PathVariable UUID slot,@RequestBody SlotChange body) {
-        service.slot(user.getName(),session,slot,body.startsAt(),body.endsAt(),Boolean.TRUE.equals(body.confirmConflicts()));
+        service.slot(user.getName(),session,slot,body.startsAt()==null?null:body.startsAt().toInstant(),body.endsAt()==null?null:body.endsAt().toInstant(),Boolean.TRUE.equals(body.confirmConflicts()),version(body.version()));
     }
     @PutMapping("/sessions/{session}/intervenants") @ResponseStatus(HttpStatus.NO_CONTENT)
     void instructors(Principal user,@PathVariable UUID session,@RequestBody InstructorChange body) {

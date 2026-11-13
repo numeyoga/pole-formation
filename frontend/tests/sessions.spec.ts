@@ -16,7 +16,7 @@ test('manager creates a draft and plans it without capacity or instructor, using
  await dialog.getByRole('button',{name:'Planifier la session',exact:true}).click();await expect(dialog.getByRole('alert')).toContainText('Un créneau est requis');await expect(dialog.getByRole('alert')).toBeFocused();
  await dialog.getByLabel('Début (obligatoire)',{exact:true}).fill('2027-01-10T09:00');await dialog.getByLabel('Fin (obligatoire)',{exact:true}).fill('2027-01-10T10:00');await dialog.getByLabel('Décalage UTC (obligatoire)',{exact:true}).fill('+01:00');
  await page.setViewportSize({width:375,height:812});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
- await dialog.getByRole('button',{name:'Ajouter un créneau au brouillon',exact:true}).click();await expect(dialog.getByText('10/01/2027 08:00 UTC — 10/01/2027 09:00 UTC',{exact:true})).toBeVisible();
+ await dialog.getByRole('button',{name:'Ajouter un créneau',exact:true}).click();await expect(dialog.getByRole('listitem').filter({hasText:'10/01/2027 08:00 UTC — 10/01/2027 09:00 UTC'})).toBeVisible();
  await dialog.getByRole('button',{name:'Planifier la session',exact:true}).click();await expect(dialog.getByRole('heading',{name:`Session ${code} — Planifiée`,exact:true})).toBeFocused();await expect(dialog.getByText('Sans limite de places',{exact:true})).toBeVisible();
  expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);await dialog.screenshot({path:'test-results/session-planned-mobile.png'});
  await page.keyboard.press('Escape');await expect(dialog).not.toBeVisible();await expect(page.getByRole('button',{name:`Gérer les sessions : ${code}`,exact:true})).toBeFocused();
@@ -31,4 +31,29 @@ test('session errors preserve input and stale versions require a reload',async({
  expect((await page.request.post(`/api/sessions/${id}/creneaux`,{headers,data:{startsAt:'2027-01-10T09:00Z',endsAt:'2027-01-10T10:00Z',version:0}})).status()).toBe(201);
  await dialog.getByRole('button',{name:'Planifier la session',exact:true}).click();await expect(dialog.getByRole('alert')).toContainText('La session a changé');await dialog.getByRole('button',{name:'Recharger la fiche',exact:true}).first().click();await expect(dialog.getByRole('listitem')).toHaveCount(1);
  await dialog.getByRole('button',{name:'Planifier la session',exact:true}).click();await expect(dialog.getByRole('heading',{name:'Session saisie conservée — Planifiée',exact:true})).toBeVisible();
+});
+
+test('planned slots warn about real conflicts, allow cancellation and explicit confirmation, and audit actual changes',async({page})=>{
+ await login(page);const {dialog,headers,formation,code}=await fixture(page);
+ async function planned(title:string,start:string,end:string){
+  const created=await page.request.post(`/api/formations/${formation.id}/sessions`,{headers,data:{title}});expect(created.status()).toBe(201);const item=await created.json();
+  const slot=await page.request.post(`/api/sessions/${item.id}/creneaux`,{headers,data:{startsAt:start,endsAt:end,version:0}});expect(slot.status()).toBe(201);
+  expect((await page.request.post(`/api/sessions/${item.id}/planification`,{headers,data:{version:1}})).status()).toBe(204);
+  expect((await page.request.put(`/api/sessions/${item.id}/intervenants`,{headers,data:{instructorIds:['10000000-0000-0000-0000-000000000001'],confirmConflicts:true}})).status()).toBe(204);return item;
+ }
+ const target=await planned('Cible '+code,'2027-04-10T09:00Z','2027-04-10T10:00Z');await planned('Autre '+code,'2030-04-10T09:00Z','2030-04-10T10:00Z');
+ await dialog.getByRole('button',{name:'Actualiser les sessions',exact:true}).click();await dialog.getByRole('button',{name:'Ouvrir la session Cible '+code,exact:true}).click();
+ await dialog.getByLabel('Début (obligatoire)',{exact:true}).fill('2030-04-10T09:00');await dialog.getByLabel('Fin (obligatoire)',{exact:true}).fill('2030-04-10T10:00');
+ await dialog.getByRole('button',{name:'Ajouter un créneau',exact:true}).click();await expect(dialog.getByRole('alert')).toContainText('Conflits de planning');await expect(dialog.getByRole('alert')).toBeFocused();
+ await expect(dialog.getByLabel('Début (obligatoire)',{exact:true})).toBeDisabled();expect((await(await page.request.get(`/api/sessions/${target.id}`)).json()).slots).toHaveLength(1);
+ await page.setViewportSize({width:375,height:812});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);await dialog.screenshot({path:'test-results/slot-conflict-mobile.png'});
+ await dialog.getByRole('button',{name:'Abandonner ce changement',exact:true}).click();await expect(dialog.getByLabel('Début (obligatoire)',{exact:true})).toBeFocused();await expect(dialog.getByLabel('Début (obligatoire)',{exact:true})).toHaveValue('2030-04-10T09:00');
+ await dialog.getByRole('button',{name:'Ajouter un créneau',exact:true}).click();await dialog.getByRole('button',{name:'Confirmer malgré les conflits',exact:true}).click();await expect(dialog.getByRole('status')).toHaveText('Créneau ajouté.');await expect(dialog.getByRole('listitem')).toHaveCount(2);
+ await dialog.getByRole('button',{name:'Modifier ce créneau : 10/04/2030 09:00 UTC',exact:true}).click();await expect(dialog.getByLabel('Début (obligatoire)',{exact:true})).toBeFocused();await dialog.getByLabel('Fin (obligatoire)',{exact:true}).fill('2030-04-10T11:00');
+ await dialog.getByRole('button',{name:'Enregistrer le créneau',exact:true}).click();await expect(dialog.getByRole('alert')).toContainText('Conflits de planning');await dialog.getByRole('button',{name:'Confirmer malgré les conflits',exact:true}).click();await expect(dialog.getByRole('status')).toHaveText('Créneau modifié.');
+ await dialog.getByLabel('Début (obligatoire)',{exact:true}).fill('2030-04-10T10:00');await dialog.getByLabel('Fin (obligatoire)',{exact:true}).fill('2030-04-10T10:30');await dialog.getByRole('button',{name:'Ajouter un créneau',exact:true}).click();await expect(dialog.getByRole('alert')).toContainText('ne peuvent pas se chevaucher');await expect(dialog.getByRole('button',{name:'Confirmer malgré les conflits',exact:true})).toHaveCount(0);
+ await dialog.getByLabel('Début (obligatoire)',{exact:true}).fill('2030-04-10T11:00');await dialog.getByLabel('Fin (obligatoire)',{exact:true}).fill('2030-04-10T12:00');await dialog.getByRole('button',{name:'Ajouter un créneau',exact:true}).click();await dialog.getByRole('button',{name:'Confirmer malgré les conflits',exact:true}).click();await expect(dialog.getByRole('status')).toHaveText('Créneau ajouté.');await expect(dialog.getByRole('listitem')).toHaveCount(3);
+ const events=await(await page.request.get(`/api/audit?sessionId=${target.id}&subjectType=CRENEAU`)).json();expect(events.items.map((event:{action:string})=>event.action)).toEqual(['AJOUT_CRENEAU','MODIFICATION_CRENEAU','AJOUT_CRENEAU']);
+ expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);await page.keyboard.press('Escape');await page.getByRole('button',{name:'Journal',exact:true}).click();
+ const journal=page.getByRole('region',{name:'Journal des changements sensibles',exact:true});await journal.getByLabel('Type d’objet',{exact:true}).selectOption('CRENEAU');await journal.getByLabel('Session',{exact:true}).selectOption(target.id);await journal.getByRole('button',{name:'Filtrer le journal',exact:true}).click();await expect(journal.getByRole('heading',{name:'Ajout de créneau',exact:true})).toHaveCount(2);await expect(journal.getByRole('heading',{name:'Modification de créneau',exact:true})).toBeVisible();
 });

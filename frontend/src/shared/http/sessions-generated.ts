@@ -34,8 +34,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Ajout dans un brouillon uniquement. Pas de chevauchement interne ; créneaux contigus autorisés. Incrémente la version de session. */
-        post: operations["addDraftSlot"];
+        /** @description Ajout en Brouillon ou Planifiée. Pas de chevauchement interne ; créneaux contigus autorisés. Incrémente la version de session. En Planifiée, conflits à confirmer et audit atomique. */
+        post: operations["addSessionSlot"];
         delete?: never;
         options?: never;
         head?: never;
@@ -141,7 +141,7 @@ export interface operations {
             };
         };
     };
-    addDraftSlot: {
+    addSessionSlot: {
         parameters: {
             query?: never;
             header: {
@@ -166,6 +166,8 @@ export interface operations {
                      */
                     endsAt: string;
                     version: number;
+                    /** @default false */
+                    confirmConflicts?: boolean;
                 };
             };
         };
@@ -207,12 +209,18 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Version périmée */
+            /** @description Version périmée, état non modifiable, chevauchement interne ou conflits à confirmer */
             409: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/problem+json": {
+                        detail?: string;
+                        confirmationRequired?: boolean;
+                        conflictingSessionIds?: string[];
+                    };
+                };
             };
         };
     };

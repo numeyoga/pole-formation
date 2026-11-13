@@ -139,7 +139,7 @@ export class AccessApp extends LitElement {
             <button data-primary ?disabled=${this.busy}>${m.login}</button>
           </form>
         </section>`:html`
-        ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<domains-panel></domains-panel><subdomains-panel></subdomains-panel><competencies-panel></competencies-panel><reference-explorer></reference-explorer><profiles-panel></profiles-panel><formations-panel @sessions-changed=${()=>this.run(async()=>{this.sessions=await api.sessions();})} @formations-changed=${()=>{this.auditRevision++;}}></formations-panel>`:nothing}
+        ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<domains-panel></domains-panel><subdomains-panel></subdomains-panel><competencies-panel></competencies-panel><reference-explorer></reference-explorer><profiles-panel></profiles-panel><formations-panel @sessions-changed=${()=>this.run(async()=>{this.sessions=await api.sessions();this.auditRevision++;})} @formations-changed=${()=>{this.auditRevision++;}}></formations-panel>`:nothing}
         ${this.identity.permissions.includes('WRITE_CLASSIFICATION')?html`<classifications-panel></classifications-panel>`:nothing}
         <section aria-labelledby="sessions-title"><h2 id="sessions-title" tabindex="-1">${m.sessions}</h2>
           ${this.sessions.length?html`<ul>${this.sessions.map(session=>html`<li><button ?disabled=${this.busy} @click=${()=>this.select(session)}>${session.title}</button> <span class="muted">${states[session.state]}</span></li>`)}</ul>`:html`<p>${m.empty}</p>`}
