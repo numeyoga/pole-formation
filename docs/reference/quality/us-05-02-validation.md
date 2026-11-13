@@ -62,6 +62,6 @@ Les préconditions de conflits de deux tests ont été corrigées pour atteindre
 
 ## Limites et recette
 
-Livraison locale non commitée à ce stade ; le manifeste reste en `partial` jusqu’à l’enregistrement du commit applicatif et du hash validé. Recette métier humaine, lecteur d’écran et zoom réel à 200 % restent à réaliser. Les résultats axe et clavier automatisés ne constituent pas une certification WCAG AA.
+Le commit de livraison `9f93043f757a0716f2c95430d4ff80da528a9d72` contient le code validé ci-dessus. Le manifeste le référence comme implémentation complète ; la recette humaine reste ouverte. Recette métier humaine, lecteur d’écran et zoom réel à 200 % restent à réaliser. Les résultats axe et clavier automatisés ne constituent pas une certification WCAG AA.
 
 Le fuseau métier d’entrée et de restitution demeure une question ouverte ; le décalage explicite et UTC sont conservés. La compatibilité du PUT historique sans version ne fournit pas une protection optimiste à ses anciens clients. Le détail nominatif des personnes en conflit n’est pas ajouté ; l’interface signale le nombre de sessions concernées et la proposition temporelle à confirmer.
