@@ -1,7 +1,7 @@
 ---
 title: "Développement et validation de US-02.02"
 created: 2026-11-08
-updated: 2026-11-09
+updated: 2026-11-13
 status: accepted
 type: reference
 ---
@@ -14,6 +14,7 @@ type: reference
 - [Critères et décisions](#critères-et-décisions)
 - [Stratégie et résultats](#stratégie-et-résultats)
 - [Limites et suivi](#limites-et-suivi)
+- [Suivi au 13 novembre 2026](#suivi-au-13-novembre-2026)
 
 ## Périmètre
 
@@ -53,3 +54,10 @@ Les tests d’exigences vérifient le raccordement minimal existant ; l’édite
 La [recette métier est acceptée le 2026-11-09](acceptance-2026-11-09.md). Le lecteur d’écran et le zoom navigateur réel à 200 % restent à effectuer. Axe et la réduction du viewport ne démontrent pas à eux seuls WCAG AA. Les données des parcours sont fictives et locales. Aucune valeur officielle ni sens métier de classification n’est fixé.
 
 La livraison applicative validée est `de6aa484452518b17042ce90e7a365c7bb25052f`. Aucun code applicatif n’a changé entre les validations finales et ce commit. Le manifeste rattache la preuve à cette révision ; l’acceptation métier est référencée séparément dans le manifeste.
+
+
+## Suivi au 13 novembre 2026
+
+Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
+
+La [confirmation du représentant du projet](acceptance-2026-11-13.md) clôt la recette et les réserves d’accessibilité encore mentionnées dans ce rapport. Les protocoles humains individuels ne sont pas détaillés.

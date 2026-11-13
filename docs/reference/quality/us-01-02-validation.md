@@ -1,7 +1,7 @@
 ---
 title: "Développement et validation de US-01.02"
 created: 2026-11-08
-updated: 2026-11-08
+updated: 2026-11-13
 status: accepted
 type: reference
 ---
@@ -14,6 +14,7 @@ type: reference
 - [Règles validées et critères](#règles-validées-et-critères)
 - [Validation technique](#validation-technique)
 - [Travail restant](#travail-restant)
+- [Suivi au 13 novembre 2026](#suivi-au-13-novembre-2026)
 
 ## Périmètre actuel
 
@@ -61,3 +62,10 @@ Les codes techniques hérités `MIG-…` restent remplaçables par des codes mé
 L’administration complète des compétences reste US-01.03. La suppression physique, la réactivation et le changement de parent des sous-domaines ne sont pas exposés.
 
 Références : [contrat](../../../api/subdomains.openapi.yaml), [ADR 0011](../../decisions/ADR-0011-subdomain-reference.md), [backlog MVP](../../functional-baseline-v1.0/reference/backlog-mvp.md), [suivi du développement](../development-tracking.md).
+
+
+## Suivi au 13 novembre 2026
+
+Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
+
+L’acceptation humaine antérieure est conservée dans le manifeste.

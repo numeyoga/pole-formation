@@ -1,7 +1,7 @@
 ---
 title: "Développement et validation de US-02.01"
 created: 2026-11-08
-updated: 2026-11-08
+updated: 2026-11-13
 status: accepted
 type: reference
 ---
@@ -14,6 +14,7 @@ type: reference
 - [Critères et décisions](#critères-et-décisions)
 - [Stratégie et résultats](#stratégie-et-résultats)
 - [Limites et suivi](#limites-et-suivi)
+- [Suivi au 13 novembre 2026](#suivi-au-13-novembre-2026)
 
 ## Périmètre
 
@@ -59,3 +60,10 @@ La livraison est versionnée dans `0b538a48a3f35a7df065dba25e1c4b184c7ac455`. Ce
 [DEF-010](../../../revue/defauts/2026-11-08-DEF-010-import-composant.md) trace l’import de composant supprimé à la compilation, corrigé par un import à effet de bord et couvert par le parcours de navigation.
 
 [DEF-012](../../../revue/defauts/2026-11-08-DEF-012-jar-remplace-en-execution.md) trace le serveur ancien laissé sur 8080 après reconstruction du JAR. Après redémarrage, accueil et assets HTTP 200, connexion gestionnaire 204 et API des profils 200 ont été vérifiés avant l’acceptation utilisateur.
+
+
+## Suivi au 13 novembre 2026
+
+Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
+
+La [confirmation du représentant du projet](acceptance-2026-11-13.md) clôt la recette et les réserves d’accessibilité encore mentionnées dans ce rapport. Les protocoles humains individuels ne sont pas détaillés.

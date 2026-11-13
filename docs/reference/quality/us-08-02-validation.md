@@ -1,7 +1,7 @@
 ---
 title: "Livraison et validation de US-08.02"
 created: 2026-11-08
-updated: 2026-11-08
+updated: 2026-11-13
 status: accepted
 type: reference
 ---
@@ -14,6 +14,7 @@ type: reference
 - [Traçabilité des critères](#traçabilité-des-critères)
 - [Validation technique](#validation-technique)
 - [Recette et limites](#recette-et-limites)
+- [Suivi au 13 novembre 2026](#suivi-au-13-novembre-2026)
 
 ## Périmètre
 
@@ -59,3 +60,10 @@ Les mutations de créneau, d’affectations et de participation sont raccordées
 La migration de la base locale s’effectue au lancement du profil dev, avec conservation des événements antérieurs. La rétention, l’export, le scellement du journal, Docker et la production ne sont pas validés par cette livraison.
 
 Références : [ADR 0009](../../decisions/ADR-0009-transactional-audit.md), [contrat](../../../api/audit.openapi.yaml), [guide de lancement](../../how-to/run-local-app.md).
+
+
+## Suivi au 13 novembre 2026
+
+Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
+
+L’acceptation humaine antérieure est conservée dans le manifeste.

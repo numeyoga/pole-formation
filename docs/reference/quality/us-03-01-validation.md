@@ -1,7 +1,7 @@
 ---
 title: "Développement et validation de US-03.01"
 created: 2026-11-09
-updated: 2026-11-09
+updated: 2026-11-13
 status: accepted
 type: reference
 ---
@@ -14,6 +14,7 @@ type: reference
 - [Décisions et conservation](#décisions-et-conservation)
 - [Stratégie et preuves](#stratégie-et-preuves)
 - [Limites et recette](#limites-et-recette)
+- [Suivi au 13 novembre 2026](#suivi-au-13-novembre-2026)
 
 ## Périmètre et critères
 
@@ -63,3 +64,10 @@ La recette métier humaine de US-03.01 reste à effectuer. L’acceptation d’a
 Données fictives locales uniquement. Les anciennes sessions sans correspondance de formation restent explicitement à rapprocher, selon LEG-01. La livraison validée est `0a2023213655163c6618796dd64b9cc60dbbf5fa`. Le code applicatif est identique à celui des validations consignées ; aucune recette utilisateur ni preuve de test non exécuté n’est déduite du seul commit.
 
 Le JAR disponible sur `http://localhost:8080/` a pour SHA-256 `6a18f1c2aca7c12687bf4c4c47cc6d17f3b765a90791fdda1774867ca987e958`. Le serveur est conservé pour recette ; Chromium partagé est arrêté après la validation.
+
+
+## Suivi au 13 novembre 2026
+
+Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
+
+La [confirmation du représentant du projet](acceptance-2026-11-13.md) clôt la recette et les réserves d’accessibilité encore mentionnées dans ce rapport. Les protocoles humains individuels ne sont pas détaillés.

@@ -1,7 +1,7 @@
 ---
 title: "Développement et validation de US-01.04"
 created: 2026-11-08
-updated: 2026-11-08
+updated: 2026-11-13
 status: accepted
 type: reference
 ---
@@ -15,6 +15,7 @@ type: reference
 - [Critères et stratégie](#critères-et-stratégie)
 - [Validation technique](#validation-technique)
 - [Limites et recette](#limites-et-recette)
+- [Suivi au 13 novembre 2026](#suivi-au-13-novembre-2026)
 
 ## Périmètre
 
@@ -66,3 +67,10 @@ Le représentant du projet a accepté explicitement US-01.04 après présentatio
 Les liens métier réels entre compétences, profils et formations restent couverts par US-02.03 et US-03.02. L’exploration conserve le référentiel historique disponible ; elle n’invente aucune acquisition individuelle de compétence.
 
 Références : [contrat](../../../api/explorer.openapi.yaml), [backlog](../../functional-baseline-v1.0/reference/backlog-mvp.md#us-0104-explorer-le-référentiel), [guide](../../how-to/run-local-app.md), [suivi](../development-tracking.md).
+
+
+## Suivi au 13 novembre 2026
+
+Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
+
+L’acceptation humaine antérieure est conservée dans le manifeste.

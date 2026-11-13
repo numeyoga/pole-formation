@@ -1,7 +1,7 @@
 ---
 title: "Validation US-03.02 — Associations formations et compétences"
 created: 2026-11-10
-updated: 2026-11-10
+updated: 2026-11-13
 status: accepted
 type: reference
 ---
@@ -16,6 +16,7 @@ type: reference
 - [Limites et recette](#limites-et-recette)
 - [Revalidation pour recette conjointe](#revalidation-pour-recette-conjointe)
 - [Correction de la pagination des choix](#correction-de-la-pagination-des-choix)
+- [Suivi au 13 novembre 2026](#suivi-au-13-novembre-2026)
 
 ## Périmètre
 
@@ -78,3 +79,10 @@ Validation : **26 tests Vitest**, TypeScript strict, build Vite et **9 parcours 
 Version disponible pour recette sur `http://localhost:8080/`, JAR de SHA-256 `20160f61d6548ddcc71af23e3773fa73f44248c7d72599057d88d149379743fd`. Le serveur Chromium partagé est arrêté après validation. La recette métier et les examens humains d’accessibilité restent ouverts pour les deux stories.
 
 Commit du correctif validé : `ec924794f2b1c478bb155aaaa28a3fdfb263a9bf`.
+
+
+## Suivi au 13 novembre 2026
+
+Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
+
+L’acceptation humaine antérieure est conservée dans le manifeste.

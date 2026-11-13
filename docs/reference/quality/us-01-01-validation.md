@@ -1,7 +1,7 @@
 ---
 title: "Livraison et validation de US-01.01"
 created: 2026-11-08
-updated: 2026-11-08
+updated: 2026-11-13
 status: accepted
 type: reference
 ---
@@ -14,6 +14,7 @@ type: reference
 - [Traçabilité des critères](#traçabilité-des-critères)
 - [Validation technique](#validation-technique)
 - [Limites et recette](#limites-et-recette)
+- [Suivi au 13 novembre 2026](#suivi-au-13-novembre-2026)
 
 ## Périmètre
 
@@ -56,3 +57,10 @@ Les codes `MIG-…` des lignes héritées sont des codes techniques de transitio
 Ni suppression physique, ni réactivation de domaine, ni administration complète des sous-domaines ne sont annoncées livrées. L’acceptation AA des écrans précédents ne vaut pas nouveau scan de ce nouvel écran ; les méthodes humaines d’accessibilité n’ont pas été détaillées dans la validation utilisateur et leur exécution individuelle n’est pas affirmée.
 
 Références : [ADR 0010](../../decisions/ADR-0010-domain-reference.md), [contrat](../../../api/domains.openapi.yaml), [guide](../../how-to/run-local-app.md).
+
+
+## Suivi au 13 novembre 2026
+
+Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
+
+L’acceptation humaine antérieure est conservée dans le manifeste.

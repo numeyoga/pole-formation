@@ -14,6 +14,7 @@ type: reference
 - [Contrats et règles](#contrats-et-regles)
 - [Stratégie et preuves](#stratégie-et-preuves)
 - [Recette conjointe et limites](#recette-conjointe-et-limites)
+- [Suivi au 13 novembre 2026](#suivi-au-13-novembre-2026)
 
 ## Périmètre
 
@@ -58,3 +59,10 @@ La recette humaine de **US-04.01 et US-04.02 est prévue ensemble à la demande 
 Point d’entrée : `http://localhost:8080/`, compte fictif gestionnaire, rubrique « Profils d’emploi », puis « Formations pertinentes pour … ». Les données utilisées par les tests sont fictives. JAR commun disponible : SHA-256 `5b085321566a825b7ae600723453b7aadd40503bb0acadfd6f7605f10bc2e929`. Le service Playwright existant en version 1.64.1 est réutilisé sans être arrêté.
 
 Les contrôles humains au lecteur d’écran et au zoom navigateur réel à 200 % restent ouverts. Axe, tests clavier automatisés et viewport étroit ne constituent pas une preuve complète de conformité WCAG AA. Les modifications préexistantes de styles et de suivi des défauts ont été conservées.
+
+
+## Suivi au 13 novembre 2026
+
+Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
+
+La [confirmation du représentant du projet](acceptance-2026-11-13.md) clôt la recette et les réserves d’accessibilité encore mentionnées dans ce rapport. Les protocoles humains individuels ne sont pas détaillés.

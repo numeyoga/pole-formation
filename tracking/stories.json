@@ -22,7 +22,7 @@
     "commits": [
       "9f2d2d4"
     ],
-    "validated_commit": "44d06d0b10b65c6b6f754c71ec129801835f0ebf",
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -41,7 +41,7 @@
       "9f2d2d4",
       "6925193"
     ],
-    "validated_commit": "44d06d0b10b65c6b6f754c71ec129801835f0ebf",
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -59,7 +59,7 @@
     "commits": [
       "fdc6d04"
     ],
-    "validated_commit": "44d06d0b10b65c6b6f754c71ec129801835f0ebf",
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -78,7 +78,7 @@
       "fdc6d04",
       "7ee132f"
     ],
-    "validated_commit": "44d06d0b10b65c6b6f754c71ec129801835f0ebf",
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -104,7 +104,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
     },
-    "validated_commit": "44d06d0b10b65c6b6f754c71ec129801835f0ebf",
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "commits": [
       "44d06d0b10b65c6b6f754c71ec129801835f0ebf"
     ]
@@ -122,7 +122,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
     },
-    "validated_commit": "44d06d0b10b65c6b6f754c71ec129801835f0ebf",
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "commits": [
       "44d06d0b10b65c6b6f754c71ec129801835f0ebf"
     ]
@@ -157,17 +157,15 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-02-01-validation.md",
-    "remaining": [
-      "Examen humain d’accessibilité (lecteur d’écran, zoom navigateur 200 %), non détaillé dans l’acceptation métier."
-    ],
+    "remaining": [],
     "acceptance": {
       "required": true,
-      "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
+      "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
     },
     "commits": [
       "0b538a48a3f35a7df065dba25e1c4b184c7ac455"
     ],
-    "validated_commit": "0b538a48a3f35a7df065dba25e1c4b184c7ac455"
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49"
   },
   "US-02.02": {
     "implementation": "complete",
@@ -177,14 +175,12 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-02-02-validation.md",
-    "remaining": [
-      "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
-    ],
+    "remaining": [],
     "acceptance": {
       "required": true,
-      "evidence": "docs/reference/quality/acceptance-2026-11-09.md"
+      "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
     },
-    "validated_commit": "de6aa484452518b17042ce90e7a365c7bb25052f",
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "commits": [
       "de6aa484452518b17042ce90e7a365c7bb25052f"
     ]
@@ -202,7 +198,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-09.md"
     },
-    "validated_commit": "0a2023213655163c6618796dd64b9cc60dbbf5fa",
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "commits": [
       "d7cadc40596fa254af9d058a3b329abfe1022ba8"
     ]
@@ -220,7 +216,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-09.md"
     },
-    "validated_commit": "0a2023213655163c6618796dd64b9cc60dbbf5fa",
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "commits": [
       "d0f37dc5fc5779740eb775352ac6b56001499329"
     ]
@@ -233,14 +229,12 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-03-01-validation.md",
-    "remaining": [
-      "Recette métier humaine du catalogue et du cycle de vie des formations.",
-      "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
-    ],
+    "remaining": [],
     "acceptance": {
-      "required": true
+      "required": true,
+      "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
     },
-    "validated_commit": "0a2023213655163c6618796dd64b9cc60dbbf5fa",
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "commits": [
       "0a2023213655163c6618796dd64b9cc60dbbf5fa"
     ]
@@ -258,7 +252,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-10.md"
     },
-    "validated_commit": "ec924794f2b1c478bb155aaaa28a3fdfb263a9bf",
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "commits": [
       "4541bfb4e557d2e54e6b507505dc71e4f27bab1d",
       "ec924794f2b1c478bb155aaaa28a3fdfb263a9bf"
@@ -277,7 +271,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-10.md"
     },
-    "validated_commit": "ec924794f2b1c478bb155aaaa28a3fdfb263a9bf",
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "commits": [
       "109508832577c3a80ec433c3f045201cf22592bb"
     ]
@@ -295,14 +289,12 @@
       "api/formations.openapi.yaml"
     ],
     "report": "docs/reference/quality/us-04-01-validation.md",
-    "remaining": [
-      "Recette métier humaine conjointe de US-04.01 et US-04.02, à la demande de l’utilisateur.",
-      "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
-    ],
+    "remaining": [],
     "acceptance": {
-      "required": true
+      "required": true,
+      "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
     },
-    "validated_commit": "7986380c3132154464a3385cf7c03803e1a540d8",
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "commits": [
       "7986380c3132154464a3385cf7c03803e1a540d8"
     ]
@@ -320,14 +312,12 @@
       "api/formations.openapi.yaml"
     ],
     "report": "docs/reference/quality/us-04-02-validation.md",
-    "remaining": [
-      "Recette métier humaine conjointe de US-04.01 et US-04.02, à la demande de l’utilisateur.",
-      "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
-    ],
+    "remaining": [],
     "acceptance": {
-      "required": true
+      "required": true,
+      "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
     },
-    "validated_commit": "7986380c3132154464a3385cf7c03803e1a540d8",
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "commits": [
       "7986380c3132154464a3385cf7c03803e1a540d8"
     ]
@@ -340,14 +330,12 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-05-01-validation.md",
-    "remaining": [
-      "Recette métier humaine de la création et planification des sessions.",
-      "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
-    ],
+    "remaining": [],
     "acceptance": {
-      "required": true
+      "required": true,
+      "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
     },
-    "validated_commit": "8ae69185513dfa7313ab3bddb3c3da05b473f0af",
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "commits": [
       "8ae69185513dfa7313ab3bddb3c3da05b473f0af"
     ]
@@ -360,14 +348,12 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-05-02-validation.md",
-    "remaining": [
-      "Recette métier humaine de la gestion des créneaux et conflits.",
-      "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
-    ],
+    "remaining": [],
     "acceptance": {
-      "required": true
+      "required": true,
+      "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
     },
-    "validated_commit": "9f93043f757a0716f2c95430d4ff80da528a9d72",
+    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "commits": [
       "9f93043f757a0716f2c95430d4ff80da528a9d72"
     ]
@@ -380,12 +366,10 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-05-03-validation.md",
-    "remaining": [
-      "Recette métier humaine des fiches intervenants et de leurs conventions de saisie.",
-      "Examen humain d’accessibilité : lecteur d’écran et zoom navigateur réel à 200 %."
-    ],
+    "remaining": [],
     "acceptance": {
-      "required": true
+      "required": true,
+      "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
     },
     "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
     "commits": [

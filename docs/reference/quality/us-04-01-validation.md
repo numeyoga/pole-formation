@@ -14,6 +14,7 @@ type: reference
 - [Contrat](#contrat)
 - [Stratégie et preuves](#stratégie-et-preuves)
 - [Limites et recette](#limites-et-recette)
+- [Suivi au 13 novembre 2026](#suivi-au-13-novembre-2026)
 
 ## Périmètre
 
@@ -53,3 +54,10 @@ Implémentation disponible localement sur `http://localhost:8080/` : connexion g
 Le commit applicatif validé est `7986380c3132154464a3385cf7c03803e1a540d8`. Il contient les deux stories, le jeu de démonstration et la correction de survol DEF-020 déjà présente dans l’espace de travail. Les résultats ci-dessus proviennent des validations exécutées sur ces sources avant leur commit. Le manifeste enregistre l’implémentation complète et laisse la recette humaine et les examens d’accessibilité ouverts.
 
 La recette métier humaine est prévue conjointement avec [US-04.02](us-04-02-validation.md), à la demande de l’utilisateur. Restent cette recette et l’examen au lecteur d’écran et au zoom navigateur réel à 200 %. Aucune acceptation humaine n’est déduite des tests automatisés. Le serveur Chromium déjà actif (`playwright-tmp`, version 1.64.1) a été réutilisé : le service partagé `dev-playwright` ne pouvait pas prendre le port 3000 occupé. Ce conteneur préexistant n’a pas été arrêté.
+
+
+## Suivi au 13 novembre 2026
+
+Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
+
+La [confirmation du représentant du projet](acceptance-2026-11-13.md) clôt la recette et les réserves d’accessibilité encore mentionnées dans ce rapport. Les protocoles humains individuels ne sont pas détaillés.

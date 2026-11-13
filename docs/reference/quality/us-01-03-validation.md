@@ -1,7 +1,7 @@
 ---
 title: "Développement et validation de US-01.03"
 created: 2026-11-08
-updated: 2026-11-08
+updated: 2026-11-13
 status: accepted
 type: reference
 ---
@@ -14,6 +14,7 @@ type: reference
 - [Règles et critères](#règles-et-critères)
 - [Stratégie et validations](#stratégie-et-validations)
 - [Limites et suivi](#limites-et-suivi)
+- [Suivi au 13 novembre 2026](#suivi-au-13-novembre-2026)
 
 ## Périmètre livré localement
 
@@ -63,3 +64,10 @@ L’examen humain d’accessibilité (dont lecteur d’écran et zoom navigateur
 Références : [contrat](../../../api/competencies.openapi.yaml), [REF-03](../../functional-baseline-v1.0/reference/decisions-metier.md), [suivi](../development-tracking.md), [guide de lancement](../../how-to/run-local-app.md).
 
 La transition vers Mise et les services partagés Podman a rejoué les 49 tests serveur, cinq tests Vitest et onze tests Python sur l’hôte, avec Java 27 et Node 26. Aucun PostgreSQL natif ni navigateur local n’est nécessaire.
+
+
+## Suivi au 13 novembre 2026
+
+Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
+
+L’acceptation humaine antérieure est conservée dans le manifeste.

@@ -14,6 +14,7 @@ type: reference
 - [Contrats et intégrité](#contrats-et-intégrité)
 - [Stratégie et preuves](#stratégie-et-preuves)
 - [Limites et recette](#limites-et-recette)
+- [Suivi au 13 novembre 2026](#suivi-au-13-novembre-2026)
 
 ## Périmètre
 
@@ -66,3 +67,10 @@ Le défaut de réactivité introduit pendant le développement a été arrêté 
 Le commit de livraison `8ae69185513dfa7313ab3bddb3c3da05b473f0af` contient le code validé ci-dessus. Le manifeste le référence comme implémentation complète ; la story reste à recetter tant que la validation humaine manque.
 
 Recette métier humaine, lecteur d’écran et zoom navigateur réel à 200 % restent à réaliser. Axe et les scénarios clavier automatisés ne démontrent pas seuls WCAG AA. Les conflits entre sessions, l’édition et la suppression de créneaux, les affectations, l’annulation et la clôture relèvent des stories suivantes ; aucune interface correspondante n’est annoncée comme livrée ici.
+
+
+## Suivi au 13 novembre 2026
+
+Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
+
+La [confirmation du représentant du projet](acceptance-2026-11-13.md) clôt la recette et les réserves d’accessibilité encore mentionnées dans ce rapport. Les protocoles humains individuels ne sont pas détaillés.

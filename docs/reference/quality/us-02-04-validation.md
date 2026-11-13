@@ -1,7 +1,7 @@
 ---
 title: "Développement et validation de US-02.04"
 created: 2026-11-09
-updated: 2026-11-09
+updated: 2026-11-13
 status: accepted
 type: reference
 ---
@@ -14,6 +14,7 @@ type: reference
 - [Comportement de consultation](#comportement-de-consultation)
 - [Stratégie et preuves](#stratégie-et-preuves)
 - [Limites et recette](#limites-et-recette)
+- [Suivi au 13 novembre 2026](#suivi-au-13-novembre-2026)
 
 ## Périmètre et critères
 
@@ -59,3 +60,10 @@ L’utilisateur a demandé le 2026-11-09 : « commit et enchaine, je validerai l
 Le JAR final disponible sur `http://localhost:8080/` a pour SHA-256 `a7ca6a8fde0d2c7e4841a916edfa37f46dabf68f1357b6b7dd533915940c13dc`. La livraison validée est `d0f37dc5fc5779740eb775352ac6b56001499329`. Les preuves techniques de US-02.03 et US-02.04 sont rattachées à cette révision commune, avec acceptation métier conjointe enregistrée ; accessibilité également acceptée par confirmation utilisateur complémentaire.
 
 Revalidation lors de US-03.01 : la révision `0a2023213655163c6618796dd64b9cc60dbbf5fa` passe 74 tests serveur, 22 tests Vitest et 39 parcours navigateur, dont les parcours de profils, associations, reclassements et filtrage. Le manifeste rattache la preuve technique à cette révision ; les acceptations métier et d’accessibilité déjà données restent inchangées. Voir le [rapport de la livraison](us-03-01-validation.md).
+
+
+## Suivi au 13 novembre 2026
+
+Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
+
+L’acceptation humaine antérieure est conservée dans le manifeste.

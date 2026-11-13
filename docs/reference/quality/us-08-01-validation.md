@@ -1,7 +1,7 @@
 ---
 title: "Livraison et validation de US-08.01"
 created: 2026-11-08
-updated: 2026-11-08
+updated: 2026-11-13
 status: accepted
 type: reference
 ---
@@ -15,6 +15,7 @@ type: reference
 - [Stratégie de tests](#stratégie-de-tests)
 - [Résultats](#résultats)
 - [Limites](#limites)
+- [Suivi au 13 novembre 2026](#suivi-au-13-novembre-2026)
 
 ## Périmètre livré
 
@@ -73,3 +74,10 @@ Les invariants des stories à venir (capacité, concurrence d’inscription, ges
 L’analyse axe et les scénarios clavier ne démontrent pas à eux seuls WCAG 2.2 AA. Le scan complémentaire et l’acceptation sont rapportés par le représentant du projet ; le rapport brut et les méthodes manuelles détaillées ne sont pas disponibles. Aucun essai avec lecteur d’écran n’a été exécuté par l’agent. Docker et le déploiement de production ne sont pas validés par cette recette.
 
 Commandes et comptes fictifs : [guide de lancement](../../how-to/run-local-app.md). Décisions techniques : [ADR 0007](../../decisions/ADR-0007-bootstrap-habilitations.md).
+
+
+## Suivi au 13 novembre 2026
+
+Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
+
+L’acceptation humaine antérieure est conservée dans le manifeste.

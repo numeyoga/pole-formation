@@ -1,7 +1,7 @@
 ---
 title: "Développement et validation de US-02.03"
 created: 2026-11-09
-updated: 2026-11-09
+updated: 2026-11-13
 status: accepted
 type: reference
 ---
@@ -14,6 +14,7 @@ type: reference
 - [Critères et décisions](#critères-et-décisions)
 - [Stratégie et preuves](#stratégie-et-preuves)
 - [Limites et suivi](#limites-et-suivi)
+- [Suivi au 13 novembre 2026](#suivi-au-13-novembre-2026)
 
 ## Périmètre
 
@@ -59,3 +60,10 @@ La livraison validée est `d7cadc40596fa254af9d058a3b329abfe1022ba8`. Le code ap
 La revalidation technique commune se rapporte à `d0f37dc5fc5779740eb775352ac6b56001499329` : 17 tests Vitest, build TypeScript/Vite et assemblage du JAR réussis ; 8 parcours navigateur des profils et exigences réussis, dont les parcours d’association, de doublon, de reclassement et de conflit de US-02.03. Les 2 nouveaux parcours de consultation sont rejoués avec succès sur le JAR final après le dernier ajustement du libellé affiché. Backend et contrats API sont identiques à `d7cadc4` ; leurs tests serveur ne sont pas présentés comme rejoués. Le manifeste utilise cette révision de livraison commune avec acceptation métier conjointe désormais enregistrée et accessibilité acceptée par confirmation utilisateur complémentaire.
 
 Revalidation lors de US-03.01 : la révision `0a2023213655163c6618796dd64b9cc60dbbf5fa` passe 74 tests serveur, 22 tests Vitest et 39 parcours navigateur, dont les parcours de profils, associations, reclassements et filtrage. Le manifeste rattache la preuve technique à cette révision ; les acceptations métier et d’accessibilité déjà données restent inchangées. Voir le [rapport de la livraison](us-03-01-validation.md).
+
+
+## Suivi au 13 novembre 2026
+
+Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
+
+L’acceptation humaine antérieure est conservée dans le manifeste.
