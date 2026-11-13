@@ -189,7 +189,7 @@ paths:
         '403': {$ref: '#/components/responses/Error'}
         '404': {$ref: '#/components/responses/Error'}
     post:
-      description: Raccordement minimal de session Brouillon. Formation Active obligatoire, vérifiée sous le même verrou que l’archivage. Planification complète dans US-05.01.
+      description: Création de session Brouillon. Formation Active obligatoire, vérifiée sous le même verrou que l’archivage. Capacité facultative et modalités ; planification dans sessions.openapi.yaml.
       parameters: [{$ref: '#/components/parameters/Csrf'}]
       requestBody:
         required: true
@@ -200,6 +200,8 @@ paths:
               required: [title]
               properties:
                 title: {type: string, minLength: 1, maxLength: 200}
+                capacity: {type: [integer, 'null'], minimum: 1, maximum: 2147483647}
+                modalities: {type: string, maxLength: 4000}
       responses:
         '201':
           description: Session Brouillon créée et rattachée à la formation

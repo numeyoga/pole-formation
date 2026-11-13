@@ -36,3 +36,12 @@ Le [suivi](suivi.md) contient les statuts courants et la [checklist](checklist-p
 | [DEF-019](defauts/2026-11-10-DEF-019-pagination-choix-masques.md) | 2026-11-10 | Pagination des options masquées confondue avec la liste vide d’associations | Parcours avec zéro association et plusieurs pages de choix visibles | corrigé localement, US-03.02 |
 
 | [DEF-020](defauts/2026-11-10-DEF-020-survol-boutons-desactives.md) | 2026-11-10 | Effets de survol sur les boutons désactivés | Comparaison du rendu au survol dans Chromium | corrigé localement |
+
+| [DEF-021](defauts/2026-11-13-DEF-021-champs-reactifs-lit.md) | 2026-11-13 | Champs TypeScript masquant les accesseurs réactifs Lit | Parcours navigateur avec contexte et mutations | corrigé localement, US-05.01 |
+
+| [DEF-022](defauts/2026-11-13-DEF-022-selecteurs-volets-profils.md) | 2026-11-13 | Sélecteurs des volets de profil devenus ambigus | Suite navigateur historique complète | corrigé localement, US-02.04 / US-04.01 |
+| [DEF-023](defauts/2026-11-13-DEF-023-hypotheses-jeu-demo.md) | 2026-11-13 | Hypothèses temporelles et d’identité sur le jeu enrichi | Traces HTTP et suite sur les données fictives actuelles | corrigé localement, US-08.01 / US-08.02 |
+
+| [DEF-024](defauts/2026-11-13-DEF-024-fixture-premiere-page.md) | 2026-11-13 | Formation de test supposée sur la première page | Répétition sur un catalogue enrichi | corrigé localement, US-05.01 |
+
+| [DEF-025](defauts/2026-11-13-DEF-025-pagination-profils-fixtures.md) | 2026-11-13 | Profils de test repoussés hors de la première page | Répétition avec plus d’une page de profils de correspondance | corrigé localement, US-02.01 / US-02.04 |

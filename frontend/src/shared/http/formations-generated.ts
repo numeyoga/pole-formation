@@ -479,7 +479,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** @description Raccordement minimal de session Brouillon. Formation Active obligatoire, vérifiée sous le même verrou que l’archivage. Planification complète dans US-05.01. */
+        /** @description Création de session Brouillon. Formation Active obligatoire, vérifiée sous le même verrou que l’archivage. Capacité facultative et modalités ; planification dans sessions.openapi.yaml. */
         post: {
             parameters: {
                 query?: never;
@@ -495,6 +495,8 @@ export interface paths {
                 content: {
                     "application/json": {
                         title: string;
+                        capacity?: number | null;
+                        modalities?: string;
                     };
                 };
             };

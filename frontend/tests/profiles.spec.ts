@@ -1,3 +1,4 @@
+import {revealProfile} from './helpers/profiles';
 import { test,expect,type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
@@ -46,14 +47,14 @@ test('manager creates, edits and deactivates a profile with keyboard focus and r
   const competencyResponse=await page.request.post('/api/referentiels/competences',{headers:token,data:{subdomainId:parent.id,code:referenceCode,label:'Compétence historique du profil'}});expect(competencyResponse.status()).toBe(201);const competency=await competencyResponse.json();
   const requirement={competencyId:competency.id,classificationId:'60000000-0000-0000-0000-000000000001'};
   expect((await page.request.post(`/api/referentiels/profils-emploi/${created.id}/exigences`,{headers:token,data:requirement})).status()).toBe(201);
-  await panel.getByRole('button',{name:`Modifier ${label}`,exact:true}).click();
+  await revealProfile(page,initialCode);await panel.getByRole('button',{name:`Modifier ${label}`,exact:true}).click();
   const editing=page.getByRole('dialog',{name:'Modifier un profil',exact:true});
   await expect(editing.getByLabel('Code',{exact:true})).toHaveValue(initialCode);
   await expect(editing.getByLabel('Description',{exact:true})).toHaveValue('Description du profil');
   await editing.getByLabel('Code',{exact:true}).fill(initialCode+'-B');await editing.getByLabel('Libellé',{exact:true}).fill(label+' modifié');
   await editing.getByRole('button',{name:'Enregistrer le profil',exact:true}).click();
   await expect(panel.getByRole('status',{name:'État des profils'})).toHaveText('Profil enregistré.');
-  const row=panel.getByRole('row').filter({hasText:initialCode+'-B'});
+  const row=await revealProfile(page,initialCode+'-B');
   await row.getByText(`Exigences de ${label} modifié`,{exact:true}).click();
   await expect(row.getByText(/Compétence historique du profil — /)).toBeVisible();
   const disable=row.getByRole('button',{name:`Désactiver ${label} modifié`,exact:true});await disable.click();
@@ -61,7 +62,7 @@ test('manager creates, edits and deactivates a profile with keyboard focus and r
   await expect(confirmation.getByRole('button',{name:'Annuler',exact:true})).toBeFocused();await page.keyboard.press('Escape');await expect(disable).toBeFocused();
   await disable.click();await confirmation.getByRole('button',{name:'Confirmer la désactivation',exact:true}).click();
   await expect(panel.getByRole('status',{name:'État des profils'})).toContainText('Profil désactivé.');
-  await expect(row.getByRole('cell',{name:'Désactivé',exact:true})).toBeVisible();
+  await revealProfile(page,initialCode+'-B');await expect(row.getByRole('cell',{name:'Désactivé',exact:true})).toBeVisible();
   await row.getByText(`Exigences de ${label} modifié`,{exact:true}).click();
   await expect(row.getByText(/Compétence historique du profil — /)).toBeVisible();
   const refused=await page.request.post(`/api/referentiels/profils-emploi/${created.id}/exigences`,{headers:token,data:requirement});
@@ -77,7 +78,7 @@ test('stale edit is rejected and can reload the current version',async({page})=>
   await login(page);const initialCode=code();const label=`Concurrence ${initialCode}`;
   const response=await page.request.post('/api/referentiels/profils-emploi',{headers:await headers(page),data:{code:initialCode,label}});expect(response.status()).toBe(201);const created=await response.json();
   const panel=page.getByRole('region',{name:'Profils d’emploi',exact:true});await panel.getByRole('button',{name:'Actualiser les profils',exact:true}).click();
-  await panel.getByRole('button',{name:`Modifier ${label}`,exact:true}).click();const editor=page.getByRole('dialog',{name:'Modifier un profil',exact:true});
+  await revealProfile(page,initialCode);await panel.getByRole('button',{name:`Modifier ${label}`,exact:true}).click();const editor=page.getByRole('dialog',{name:'Modifier un profil',exact:true});
   expect((await page.request.put(`/api/referentiels/profils-emploi/${created.id}`,{headers:await headers(page),data:{code:initialCode,label:'Modifié par un autre gestionnaire',version:created.version}})).status()).toBe(204);
   await editor.getByLabel('Libellé',{exact:true}).fill('Modification locale');await editor.getByRole('button',{name:'Enregistrer le profil',exact:true}).click();
   await expect(editor.getByRole('alert')).toContainText('a été modifié');await expect(editor.getByRole('alert')).toBeFocused();

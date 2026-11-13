@@ -28,3 +28,12 @@
 | DEF-019 | 🟠 | Pagination des choix masqués confondue avec la liste d’associations vide | [fiche](defauts/2026-11-10-DEF-019-pagination-choix-masques.md) | `formation-competencies.ts` | corrigé localement | Sections, totaux et choix radio visibles ; neuf parcours catalogue réussis, dont la régression initialement rouge | 2026-11-10 |
 
 | DEF-020 | 🟡 | Effets de survol sur les boutons désactivés | [fiche](defauts/2026-11-10-DEF-020-survol-boutons-desactives.md) | `frontend/src/features/` | corrigé localement | Survol limité aux boutons actifs et vérifié dans Chromium | 2026-11-10 |
+
+| DEF-021 | 🟠 | Champs TypeScript masquant les accesseurs réactifs Lit | [fiche](defauts/2026-11-13-DEF-021-champs-reactifs-lit.md) | `formation-sessions.ts` | corrigé localement | `declare`, initialisation constructeur et parcours navigateur ; aucune autre variante confirmée | 2026-11-13 |
+
+| DEF-022 | 🟠 | Sélecteurs de volets de profil ambigus | [fiche](defauts/2026-11-13-DEF-022-selecteurs-volets-profils.md) | `requirements.spec.ts` | corrigé localement | Volet identifié par son texte visible, strict mode conservé | 2026-11-13 |
+| DEF-023 | 🟠 | Hypothèses sur le jeu de démonstration enrichi | [fiche](defauts/2026-11-13-DEF-023-hypotheses-jeu-demo.md) | `access.spec.ts`, `audit.spec.ts` | corrigé localement | Identité explicite et session à venir ; succès métier couvert sur base isolée | 2026-11-13 |
+
+| DEF-024 | 🟠 | Formation de test supposée sur la première page | [fiche](defauts/2026-11-13-DEF-024-fixture-premiere-page.md) | `sessions.spec.ts` | corrigé localement | Recherche explicite du code créé, sans effacer les données ni augmenter les délais | 2026-11-13 |
+
+| DEF-025 | 🟠 | Profils de test repoussés hors de la première page | [fiche](defauts/2026-11-13-DEF-025-pagination-profils-fixtures.md) | `profiles.spec.ts`, `requirements.spec.ts` | corrigé localement | Helper de pagination publique et cellule de code exacte ; huit scénarios réussis | 2026-11-13 |

@@ -1,3 +1,6 @@
+import '../../sessions/components/formation-sessions';
+import type {FormationSessions} from '../../sessions/components/formation-sessions';
+import {sessionMessages} from '../../../shared/i18n/fr';
 import { FormationCompetencies } from './formation-competencies';
 import { LitElement,html,css,nothing } from 'lit';
 import { formationsApi,FormationError } from '../adapters/formations-api';
@@ -109,6 +112,7 @@ export class FormationsPanel extends LitElement {
       ${this.error?html`<p role="alert">${this.error}</p>`:nothing}<p role="status" aria-label=${m.status}>${this.busy?m.loading:this.notice||(this.data?`${this.data.total} ${m.resultCount}`:'')}</p>
       ${this.data&&!this.data.items.length?html`<p>${this.query?m.noResults:m.empty}</p>`:nothing}
       ${this.data?.items.length?html`<div class="table-container" tabindex="0" role="region" aria-label=${m.table}><table><caption>${m.caption}</caption><thead><tr><th scope="col">${m.code}</th><th scope="col">${m.label}</th><th scope="col">${m.state}</th><th scope="col">${m.actions}</th></tr></thead><tbody>${this.data.items.map(item=>html`<tr><td>${item.code}</td><td>${item.title}<p>${item.objectives}</p><p>${item.description}</p><p>${item.durationMinutes===null?'':`${item.durationMinutes} min`}</p></td><td>${item.status}</td><td><div class="actions">
+        <button type="button" ?disabled=${this.busy} aria-label=${`${sessionMessages.manage} : ${item.title}`} @click=${()=>this.renderRoot.querySelector<FormationSessions>('formation-sessions')!.show(item)}>${sessionMessages.manage}</button>
         <button type="button" ?disabled=${this.busy} aria-label=${`${coverageMessages.title} : ${item.title}`} @click=${()=>this.renderRoot.querySelector<FormationCompetencies>('formation-competencies')!.show(item)}>${coverageMessages.title}</button>
         <button type="button" ?disabled=${this.busy} aria-label=${`${m.modify} ${item.title}`} @click=${()=>this.open(item)}>${m.modify}</button>
         ${item.state==='BROUILLON'?html`<button type="button" ?disabled=${this.busy} aria-label=${`${m.activate} ${item.title}`} @click=${()=>this.confirm(item,'activation')}>${m.activate}</button>`:nothing}
@@ -116,6 +120,7 @@ export class FormationsPanel extends LitElement {
       </div><details @toggle=${(event:Event)=>this.showSessions(event,item)}><summary>${m.sessions} ${item.title}</summary>${this.sessionViews[item.id]?.busy?html`<p role="status">${m.sessionsLoading}</p>`:this.sessionViews[item.id]?.error?html`<p role="alert">${this.sessionViews[item.id].error}</p><button type="button" @click=${()=>this.loadSessions(item)}>${m.sessionsRetry}</button>`:this.sessionViews[item.id]?.items.length?html`<ul>${this.sessionViews[item.id].items.map(session=>html`<li>${session.title} — ${session.status}</li>`)}</ul>`:html`<p>${m.sessionsEmpty}</p>`}</details></td></tr>`)}</tbody></table></div>`:nothing}
       ${this.data&&this.data.total>this.data.size?html`<nav aria-label=${m.pagination}><button type="button" ?disabled=${this.busy||this.data.page===0} @click=${()=>this.load(this.data!.page-1)}>${m.previous}</button><span aria-current="page">Page ${this.data.page+1}</span><button type="button" ?disabled=${this.busy||(this.data.page+1)*this.data.size>=this.data.total} @click=${()=>this.load(this.data!.page+1)}>${m.next}</button></nav>`:nothing}
     </section>
+    <formation-sessions></formation-sessions>
     <formation-competencies></formation-competencies>
     <dialog id="formation-editor" aria-labelledby="formation-editor-title" @cancel=${(event:Event)=>{if(this.busy)event.preventDefault();}}><h2 id="formation-editor-title">${this.editing?m.edit:m.create}</h2><p role="status" aria-label=${m.formStatus}>${this.busy?m.saving:''}</p>
       ${this.formError?html`<p id="formation-form-error" role="alert" tabindex="-1">${this.formError}</p>`:nothing}${this.stale?html`<button type="button" ?disabled=${this.busy} @click=${this.reloadEditing}>${m.reload}</button>`:nothing}

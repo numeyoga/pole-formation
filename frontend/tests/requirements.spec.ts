@@ -1,3 +1,4 @@
+import {revealProfile} from './helpers/profiles';
 import { test,expect,type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 async function login(page:Page,user:string){
@@ -17,7 +18,7 @@ async function fixture(page:Page,count=1){
   const profile=await create('profils-emploi',{code:profileCode,label:unique+' profil'});
   await page.getByRole('button',{name:'Se déconnecter',exact:true}).click();await login(page,'gestionnaire');
   await page.getByRole('button',{name:'Profils d’emploi',exact:true}).click();
-  const row=page.getByRole('row').filter({hasText:profileCode});await expect(row).toBeVisible();
+  const row=await revealProfile(page,profileCode);
   const token=await(await page.request.get('/api/auth/csrf')).json();
   return {unique,row,profile,competencies,first,second,headers:{[token.headerName]:token.token}};
 }
@@ -84,7 +85,7 @@ test('profile requirements can be filtered by historical classification with key
   const csrf=await(await page.request.get('/api/auth/csrf')).json();
   expect((await page.request.put(`/api/referentiels/classifications/${f.first.id}`,{headers:{[csrf.headerName]:csrf.token},data:{code:f.first.code,label:f.first.label,sortOrder:0,active:false,version:0}})).status()).toBe(204);
   await page.getByRole('button',{name:'Se déconnecter',exact:true}).click();await login(page,'gestionnaire');await page.getByRole('button',{name:'Profils d’emploi',exact:true}).click();
-  const details=f.row.locator('details');const summary=details.locator('summary');await summary.focus();await page.keyboard.press('Enter');
+  await revealProfile(page,f.profile.code);const details=f.row.locator('details').filter({has:page.getByText(`Exigences de ${f.profile.label}`,{exact:true})});const summary=details.locator('summary');await summary.focus();await page.keyboard.press('Enter');
   await expect(details.getByRole('listitem')).toHaveCount(3);
   const filter=details.getByLabel('Filtrer les exigences par classification',{exact:true});
   await page.keyboard.press('Tab');await expect(filter).toBeFocused();await page.keyboard.press('ArrowDown');
@@ -104,11 +105,11 @@ test('requirement filters stay local to each profile, retry errors and refresh a
   const emptyCode=`000-PROF-${9999999999999-Date.now()}`;
   const emptyResponse=await page.request.post('/api/referentiels/profils-emploi',{headers:f.headers,data:{code:emptyCode,label:f.unique+' vide'}});expect(emptyResponse.status()).toBe(201);
   const panel=page.getByRole('region',{name:'Profils d’emploi',exact:true});await panel.getByRole('button',{name:'Actualiser les profils',exact:true}).click();
-  await page.route(`**${root}`,route=>route.abort());await f.row.locator('summary').click();
-  const details=f.row.locator('details');await expect(details.getByRole('alert')).toContainText('indisponible');await expect(details.getByText('Aucune exigence.')).toHaveCount(0);
+  await revealProfile(page,f.profile.code);await page.route(`**${root}`,route=>route.abort());await f.row.getByText(`Exigences de ${f.profile.label}`,{exact:true}).click();
+  await revealProfile(page,f.profile.code);const details=f.row.locator('details').filter({has:page.getByText(`Exigences de ${f.profile.label}`,{exact:true})});await expect(details.getByRole('alert')).toContainText('indisponible');await expect(details.getByText('Aucune exigence.')).toHaveCount(0);
   await page.unroute(`**${root}`);await details.getByRole('button',{name:'Réessayer les exigences'}).click();
   const filter=details.getByLabel('Filtrer les exigences par classification',{exact:true});await filter.selectOption(f.first.id);
-  const empty=panel.getByRole('row').filter({hasText:emptyCode}).locator('details');await empty.locator('summary').click();await expect(empty.getByText('Aucune exigence.',{exact:true})).toBeVisible();
+  const empty=panel.getByRole('row').filter({hasText:emptyCode}).locator('details').filter({has:page.getByText(`Exigences de ${f.unique} vide`,{exact:true})});await empty.locator('summary').click();await expect(empty.getByText('Aucune exigence.',{exact:true})).toBeVisible();
   await expect(empty.getByLabel('Filtrer les exigences par classification',{exact:true})).toHaveCount(0);await expect(filter).toHaveValue(f.first.id);
   await details.getByRole('button',{name:`Reclasser l’exigence ${f.competencies[0].label}`,exact:true}).click();
   const editor=page.getByRole('dialog',{name:'Reclasser l’exigence',exact:true});await editor.getByLabel('Classification',{exact:true}).selectOption(f.second.id);await editor.getByRole('button',{name:'Enregistrer l’exigence',exact:true}).click();await expect(editor).not.toBeVisible();

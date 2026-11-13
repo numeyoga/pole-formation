@@ -63,6 +63,8 @@ Avec `admin` ou `gestionnaire`, consulter **Journal des changements sensibles**,
 
 Pour retrouver les deux événements d’une participation, choisir le type « Participations » et renseigner son identifiant dans le filtre d’objet. Les désistements/réactivations et modifications de planning sont actuellement accessibles par les endpoints du [contrat d’audit](../../api/audit.openapi.yaml) ; leurs formulaires complets seront ajoutés dans les stories correspondantes. Les événements antérieurs restent conservés après redémarrage.
 
+Depuis **Formations**, utiliser **Gérer les sessions** sur la formation voulue. Pour une formation active, renseigner l’intitulé du brouillon, éventuellement une capacité entière positive et les modalités, puis créer. Ajouter au moins un créneau avec début, fin et décalage UTC explicite (`Z`, `+01:00`, etc.). Les créneaux enregistrés s’affichent en UTC. Utiliser **Planifier la session** ; aucun intervenant ni capacité n’est obligatoire. En cas de version périmée, utiliser **Recharger la fiche** avant de refaire l’opération. Les modifications de créneaux après planification restent accessibles par l’API d’audit ; leur interface relève de US-05.02.
+
 ## Réinitialiser les données fictives
 
 Pour retrouver un jeu cohérent de recette après les essais et tests navigateur :

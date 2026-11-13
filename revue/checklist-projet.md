@@ -28,3 +28,12 @@
 - Chaque pagination doit être adjacente aux éléments visibles qu’elle pilote, dans une section nommée avec total et page courante ; tester aussi une collection vide à côté d’une autre collection paginée (DEF-019).
 
 - Vérifier le rendu au survol des boutons actifs et désactivés, y compris les variantes principales (DEF-020).
+
+- Avec `useDefineForClassFields`, déclarer les propriétés réactives Lit avec `declare` et les initialiser dans le constructeur ; vérifier le contexte et les mises à jour dans un parcours navigateur après build (DEF-021).
+
+- Si une ligne comporte plusieurs volets, sélectionner le volet par son nom visible et conserver les scénarios historiques des fonctionnalités voisines (DEF-022).
+- Pour les données enrichies, cibler les participants par identité plutôt que position ; utiliser des préconditions temporelles explicites dans les tests de présence (DEF-023).
+
+- Retrouver les données créées par un test via recherche ou pagination publique ; ne pas supposer leur présence en première page d’un catalogue partagé enrichi par les scénarios précédents (DEF-024).
+
+- Sur une liste sans recherche, parcourir la pagination publique pour retrouver les fixtures ; refaire cette navigation après une sauvegarde réinitialisant la page (DEF-025).

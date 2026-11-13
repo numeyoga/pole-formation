@@ -76,6 +76,75 @@ class AccessHttpTest {
     String people(String session) { return "/api/sessions/"+session+"/participants"; }
     String presence(String session,String participation) { return people(session)+"/"+participation+"/presence"; }
 
+    @Test void session_planning_requires_a_slot_but_neither_capacity_nor_instructor() throws Exception {
+        var manager=as("gestionnaire");
+        var offer=manager.call("POST","/api/formations","{\"code\":\"SESSION-"+java.util.UUID.randomUUID()+"\",\"title\":\"Offre sessions\"}",true);
+        String formation="/api/formations/"+json.readTree(offer.body()).get("id").asString();
+        manager.call("POST",formation+"/activation","{\"version\":0}",true);
+        var created=manager.call("POST",formation+"/sessions","{\"title\":\"Session à planifier\"}",true);
+        assertThat(created.statusCode()).isEqualTo(201);
+        String path="/api/sessions/"+json.readTree(created.body()).get("id").asString();
+        try {
+        var details=manager.get(path);
+        assertThat(details.statusCode()).isEqualTo(200);
+        assertThat(json.readTree(details.body()).get("state").asString()).isEqualTo("BROUILLON");
+        assertThat(manager.call("POST",path+"/planification","{\"version\":0}",true).statusCode()).isEqualTo(409);
+        assertThat(manager.call("POST",path+"/creneaux","{\"startsAt\":\"2027-01-10T09:00:00+01:00\",\"endsAt\":\"2027-01-10T10:00:00+01:00\",\"version\":0}",true).statusCode()).isEqualTo(201);
+        assertThat(manager.call("POST",path+"/planification","{\"version\":0}",true).statusCode()).isEqualTo(409);
+        assertThat(manager.call("POST",path+"/planification","{\"version\":1}",true).statusCode()).isEqualTo(204);
+        var planned=json.readTree(manager.get(path).body());
+        assertThat(planned.get("state").asString()).isEqualTo("PLANIFIEE");
+        assertThat(planned.get("capacity").isNull()).isTrue();
+        assertThat(planned.get("slots").get(0).get("startsAt").asString()).isEqualTo("2027-01-10T08:00:00Z");
+        assertThat(as("intervenant").get(path).statusCode()).isEqualTo(403);
+        assertThat(manager.call("POST",path+"/planification","{\"version\":2}",false).statusCode()).isEqualTo(403);
+        } finally {
+            var id=java.util.UUID.fromString(path.substring(path.lastIndexOf('/')+1));
+            db.sql("DELETE FROM session_slot WHERE session_id=:id").param("id",id).update();
+            db.sql("DELETE FROM training_session WHERE id=:id").param("id",id).update();
+        }
+    }
+
+    @Test void session_capacity_intervals_and_authorizations_are_checked_at_the_http_boundary() throws Exception {
+        var manager=as("gestionnaire");
+        var offer=manager.call("POST","/api/formations","{\"code\":\"PLAN-"+java.util.UUID.randomUUID()+"\",\"title\":\"Offre planning\"}",true);
+        String root="/api/formations/"+json.readTree(offer.body()).get("id").asString();
+        assertThat(manager.call("POST",root+"/sessions","{\"title\":\"Refus brouillon\"}",true).statusCode()).isEqualTo(409);
+        manager.call("POST",root+"/activation","{\"version\":0}",true);
+        for(String capacity:List.of("0","-1","1.5","2147483648")) {
+            var refused=manager.call("POST",root+"/sessions","{\"title\":\"Capacité invalide\",\"capacity\":"+capacity+"}",true);
+            assertThat(refused.statusCode()).isEqualTo(400);
+            assertThat(refused.body()).contains("capacity");
+        }
+        assertThat(as("intervenant").call("POST",root+"/sessions","{\"title\":\"Interdit\"}",true).statusCode()).isEqualTo(403);
+        var created=manager.call("POST",root+"/sessions","{\"title\":\"Créneaux\",\"capacity\":12,\"modalities\":\"Sur site\"}",true);
+        assertThat(created.statusCode()).isEqualTo(201);
+        var id=java.util.UUID.fromString(json.readTree(created.body()).get("id").asString());
+        String path="/api/sessions/"+id;
+        try {
+            var details=json.readTree(manager.get(path).body());
+            assertThat(details.get("capacity").asInt()).isEqualTo(12);
+            assertThat(details.get("modalities").asString()).isEqualTo("Sur site");
+            assertThat(new Browser().get(path).statusCode()).isEqualTo(401);
+            String slot="{\"startsAt\":\"2027-01-10T09:00:00Z\",\"endsAt\":\"2027-01-10T10:00:00Z\",\"version\":0}";
+            assertThat(as("intervenant").call("POST",path+"/creneaux",slot,true).statusCode()).isEqualTo(403);
+            assertThat(manager.call("POST",path+"/creneaux",slot,false).statusCode()).isEqualTo(403);
+            assertThat(manager.call("POST",path+"/creneaux",slot.replace("T10:00:00Z","T09:00:00Z"),true).statusCode()).isEqualTo(400);
+            assertThat(manager.call("POST",path+"/creneaux",slot.replace("T09:00:00Z","T09:00:00"),true).statusCode()).isEqualTo(400);
+            assertThat(manager.call("POST",path+"/creneaux",slot,true).statusCode()).isEqualTo(201);
+            assertThat(manager.call("POST",path+"/creneaux",slot.replace("\"version\":0","\"version\":1"),true).statusCode()).isEqualTo(409);
+            String adjacent="{\"startsAt\":\"2027-01-10T10:00:00Z\",\"endsAt\":\"2027-01-10T11:00:00Z\",\"version\":1}";
+            assertThat(manager.call("POST",path+"/creneaux",adjacent,true).statusCode()).isEqualTo(201);
+            assertThat(manager.call("POST",path+"/planification","{\"version\":2}",true).statusCode()).isEqualTo(204);
+            assertThat(manager.call("POST",path+"/creneaux",adjacent.replace("\"version\":1","\"version\":3"),true).statusCode()).isEqualTo(409);
+            assertThat(manager.call("POST",path+"/planification","{\"version\":3}",true).statusCode()).isEqualTo(409);
+            assertThat(json.readTree(manager.get(path).body()).get("slots").size()).isEqualTo(2);
+        } finally {
+            db.sql("DELETE FROM session_slot WHERE session_id=:id").param("id",id).update();
+            db.sql("DELETE FROM training_session WHERE id=:id").param("id",id).update();
+        }
+    }
+
     @Test void classifications_are_available_only_to_managers_for_reading_and_administrators_for_writing() throws Exception {
         String path="/api/referentiels/classifications";
         assertThat(as("gestionnaire").get(path).statusCode()).isEqualTo(200);

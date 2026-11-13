@@ -8,7 +8,7 @@ async function login(page:Page,username:string) {
   await page.getByRole('button',{name:'Se connecter',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Sessions accessibles',exact:true})).toBeFocused();
 }
-test('keyboard login, scoped sessions, participants, axe and logout',async({page})=>{
+test('keyboard login, scoped sessions, participants, future presence refusal, axe and logout',async({page})=>{
   await page.goto('/');
   const username=page.getByLabel('Identifiant',{exact:true});
   await expect(username).toBeVisible();
@@ -27,8 +27,10 @@ test('keyboard login, scoped sessions, participants, axe and logout',async({page
   await page.keyboard.press('Enter');
   await expect(page.getByRole('heading',{name:'Participants — Exemple — Accueil',exact:true})).toBeFocused();
   await expect(page.getByText(/Camille Exemple · EXEMPLE-001/)).toBeVisible();
+  await page.getByRole('button',{name:'Exemple — Session à venir',exact:true}).click();
   await page.getByRole('button',{name:'Marquer Camille Exemple présente',exact:true}).click();
-  await expect(page.getByRole('status',{name:'État de l’opération'})).toHaveText('Modification enregistrée.');
+  await expect(page.getByRole('alert')).toHaveText('La saisie est possible après le dernier créneau.');
+  await expect(page.getByRole('alert')).toBeFocused();
   expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
   const cookies=await page.context().cookies();
   expect(cookies.find(cookie=>cookie.name==='JSESSIONID')?.httpOnly).toBe(true);

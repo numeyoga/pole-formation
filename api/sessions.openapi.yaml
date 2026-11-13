@@ -1,0 +1,109 @@
+openapi: 3.1.0
+info:
+  title: Planification des sessions — US-05.01
+  version: 1.0.0
+paths:
+  /api/sessions/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      operationId: getSessionPlanning
+      description: Fiche de gestion, réservée aux gestionnaires et administrateurs. Les sessions historiques sans formation restent consultables.
+      responses:
+        '200':
+          description: Session et créneaux dans l’ordre chronologique, instants restitués en UTC.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '401': {description: Session HTTP absente}
+        '403': {description: Gestion interdite}
+        '404': {description: Session inconnue}
+  /api/sessions/{id}/creneaux:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    post:
+      operationId: addDraftSlot
+      description: Ajout dans un brouillon uniquement. Pas de chevauchement interne ; créneaux contigus autorisés. Incrémente la version de session.
+      parameters:
+        - $ref: '#/components/parameters/csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [startsAt, endsAt, version]
+              properties:
+                startsAt: {type: string, format: date-time, description: Décalage explicite obligatoire}
+                endsAt: {type: string, format: date-time, description: Décalage explicite obligatoire}
+                version: {type: integer, minimum: 0}
+      responses:
+        '201':
+          description: Créneau créé
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Slot'}
+        '400': {description: Intervalle ou version invalide}
+        '401': {description: Session HTTP absente}
+        '403': {description: Gestion ou CSRF interdit}
+        '404': {description: Session inconnue}
+        '409': {description: Version périmée, session hors brouillon ou chevauchement interne}
+  /api/sessions/{id}/planification:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    post:
+      operationId: planSession
+      description: Brouillon vers Planifiée, avec une formation et au moins un créneau. Sans intervenant ni capacité autorisé. Incrémente la version.
+      parameters:
+        - $ref: '#/components/parameters/csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [version]
+              properties:
+                version: {type: integer, minimum: 0}
+      responses:
+        '204': {description: Session planifiée}
+        '400': {description: Version invalide}
+        '401': {description: Session HTTP absente}
+        '403': {description: Gestion ou CSRF interdit}
+        '404': {description: Session inconnue}
+        '409': {description: Version périmée ou conditions de planification non réunies}
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    csrf:
+      name: X-CSRF-TOKEN
+      in: header
+      required: true
+      schema: {type: string}
+  schemas:
+    Slot:
+      type: object
+      required: [id, startsAt, endsAt]
+      properties:
+        id: {type: string, format: uuid}
+        startsAt: {type: string, format: date-time}
+        endsAt: {type: string, format: date-time}
+    Session:
+      type: object
+      required: [id, formationId, title, state, capacity, modalities, version, slots]
+      properties:
+        id: {type: string, format: uuid}
+        formationId: {type: [string, 'null'], format: uuid}
+        title: {type: string}
+        state: {type: string, enum: [BROUILLON, PLANIFIEE, TERMINEE, ANNULEE]}
+        capacity: {type: [integer, 'null'], minimum: 1}
+        modalities: {type: string}
+        version: {type: integer, minimum: 0}
+        slots:
+          type: array
+          items: {$ref: '#/components/schemas/Slot'}

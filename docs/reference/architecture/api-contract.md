@@ -37,6 +37,8 @@ US-04.01 complète ce contrat avec `GET /api/referentiels/profils-emploi/{id}/fo
 
 US-04.02 ajoute les compétences communes à un profil et une formation active, avec leur classification dans le profil, ainsi que les exigences sans formation active dans tout le catalogue. Ces deux collections sont paginées côté serveur, sans score ni acquisition individuelle. Voir le [rapport de validation](../quality/us-04-02-validation.md).
 
+Le [contrat des sessions](../../../api/sessions.openapi.yaml) couvre US-05.01 : fiche de gestion, ajout versionné de créneaux dans un brouillon et passage à Planifiée. La création depuis une formation active conserve le contrat des formations et accepte une capacité facultative et des modalités. Les instants de saisie ont un décalage explicite ; les créneaux sont restitués en UTC. Voir le [rapport de validation](../quality/us-05-01-validation.md).
+
 ## Erreurs
 
 - Privilégier `application/problem+json` (RFC 9457) ; distinguer erreur de format, violation métier, introuvable, conflit, non authentifié, interdit.

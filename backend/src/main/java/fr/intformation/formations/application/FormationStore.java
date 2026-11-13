@@ -28,5 +28,4 @@ public interface FormationStore {
     void update(String actor,UUID id,String code,String title,String objectives,String description,Integer duration,Long version,Instant now);
     void transition(String actor,UUID id,String action,Long version,Instant now);
     List<Session> sessions(UUID id);
-    Session createSession(UUID id,String title);
 }

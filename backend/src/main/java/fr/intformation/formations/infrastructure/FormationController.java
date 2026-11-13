@@ -13,14 +13,16 @@ import java.util.*;
 @RequestMapping("/api/formations")
 public class FormationController {
     private final FormationService service;
-    public FormationController(FormationService service){this.service=service;}
+    private final fr.intformation.sessions.application.SessionService sessions;
+    public FormationController(FormationService service,fr.intformation.sessions.application.SessionService sessions){this.service=service;this.sessions=sessions;}
     public record FormationResponse(UUID id,String code,String title,String objectives,String description,Integer durationMinutes,String state,long version){}
     public record FormationPage(List<FormationResponse> items,long total,int page,int size){}
     private FormationResponse dto(Formation f){return new FormationResponse(f.id(),f.code(),f.title(),f.objectives(),f.description(),f.durationMinutes(),f.state().name(),f.version());}
     public record Change(String code,String title,String objectives,String description,BigDecimal durationMinutes,BigDecimal version){}
     public record Version(BigDecimal version){}
     public record AssociationChange(UUID competencyId){}
-    public record SessionChange(String title){}
+    public record SessionChange(String title,BigDecimal capacity,String modalities){}
+    private Integer capacity(BigDecimal value){try{return value==null?null:value.intValueExact();}catch(ArithmeticException error){throw new fr.intformation.sessions.domain.TrainingSession.InvalidField("capacity","Capacité entière invalide.");}}
     private Integer duration(BigDecimal value){try{return value==null?null:value.intValueExact();}catch(ArithmeticException error){throw new Formation.InvalidField("durationMinutes","Durée entière invalide.");}}
     private Long version(BigDecimal value){try{return value==null?null:value.longValueExact();}catch(ArithmeticException error){throw new Formation.InvalidField("version","Version entière invalide.");}}
     @GetMapping FormationPage list(Principal user,@RequestParam(defaultValue="") String q,@RequestParam(defaultValue="0") int page,@RequestParam(defaultValue="20") int size){var result=service.list(user.getName(),q,page,size);return new FormationPage(result.items().stream().map(this::dto).toList(),result.total(),page,size);}
@@ -41,5 +43,5 @@ public class FormationController {
     }
     @GetMapping("/{id}/sessions") List<FormationStore.Session> sessions(Principal user,@PathVariable UUID id){return service.sessions(user.getName(),id);}
     @PostMapping("/{id}/sessions") @ResponseStatus(HttpStatus.CREATED)
-    FormationStore.Session createSession(Principal user,@PathVariable UUID id,@RequestBody SessionChange body){return service.createSession(user.getName(),id,body.title());}
+    FormationStore.Session createSession(Principal user,@PathVariable UUID id,@RequestBody SessionChange body){var session=sessions.create(user.getName(),id,body.title(),capacity(body.capacity()),body.modalities());return new FormationStore.Session(session.id(),session.title(),session.state());}
 }

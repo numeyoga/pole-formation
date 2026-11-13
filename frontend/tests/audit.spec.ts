@@ -8,7 +8,7 @@ test('administrator can inspect a real correction, filter the journal and naviga
   await page.getByRole('heading',{name:'Sessions accessibles',exact:true}).waitFor();
   const session='20000000-0000-0000-0000-000000000003';
   const participant='40000000-0000-0000-0000-000000000003';
-  const previous=(await (await page.request.get(`/api/sessions/${session}/participants`)).json())[0].state;
+  const previous=(await (await page.request.get(`/api/sessions/${session}/participants`)).json()).find((item:{id:string;state:string})=>item.id===participant).state;
   await page.getByRole('button',{name:'Exemple — Session clôturée',exact:true}).click();
   await page.getByRole('button',{name:previous==='PRESENTE'?'Marquer Camille Exemple absente':'Marquer Camille Exemple présente',exact:true}).click();
   await expect(page.getByRole('status',{name:'État de l’opération'})).toHaveText('Modification enregistrée.');

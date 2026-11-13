@@ -42,5 +42,4 @@ public final class FormationService {
     public void update(String user,UUID id,String code,String title,String objectives,String description,Integer duration,Long version){authorize(user);store.update(user,id,code,title,objectives,description,duration,version,clock.instant());}
     public void transition(String user,UUID id,String action,Long version){authorize(user);store.transition(user,id,action,version,clock.instant());}
     public List<FormationStore.Session> sessions(String user,UUID id){authorize(user);return store.sessions(id);}
-    public FormationStore.Session createSession(String user,UUID id,String title){authorize(user);return store.createSession(id,Formation.required(title,"title","Intitulé de session",200));}
 }

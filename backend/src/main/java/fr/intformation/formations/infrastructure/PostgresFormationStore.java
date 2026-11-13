@@ -136,9 +136,4 @@ public class PostgresFormationStore implements FormationStore {
         return db.sql(COVERAGE+" WHERE fc.id=:id").param("id",linkId).query(COVERAGE_ROW).single();
     }
     public List<Session> sessions(UUID id){get(id);return db.sql("SELECT id,title,state FROM training_session WHERE formation_id=:id ORDER BY lower(title),id").param("id",id).query((rs,i)->new Session(rs.getObject("id",UUID.class),rs.getString("title"),rs.getString("state"))).list();}
-    @Transactional
-    public Session createSession(UUID id,String title){
-        find(id,true).requireActive();var session=new Session(UUID.randomUUID(),title,"BROUILLON");
-        db.sql("INSERT INTO training_session(id,title,state,formation_id) VALUES (:id,:title,'BROUILLON',:formation)").param("id",session.id()).param("title",title).param("formation",id).update();return session;
-    }
 }

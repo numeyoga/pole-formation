@@ -117,3 +117,15 @@ export const explanationMessages={
   loading:'Chargement des compétences du profil',refresh:'Actualiser les compétences affichées',retry:'Réessayer le chargement des compétences',
   previous:'Compétences précédentes',next:'Compétences suivantes',pages:'Pages des compétences du profil',
 };
+
+export const sessionMessages={
+ manage:'Gérer les sessions',title:'Sessions de la formation',create:'Créer un brouillon de session',label:'Intitulé de session (obligatoire)',
+ capacity:'Capacité (facultative)',capacityHelp:'Laisser vide pour une session sans limite de places.',modalities:'Modalités',
+ saved:'Session enregistrée.',planned:'Session planifiée.',slotSaved:'Créneau ajouté.',empty:'Aucune session pour cette formation.',
+ createHelp:'La création nécessite une formation active.',loading:'Chargement des sessions…',saving:'Enregistrement…',
+ close:'Fermer',reload:'Actualiser les sessions',details:'Ouvrir la session',back:'Retour aux sessions',
+ plan:'Planifier la session',slot:'Ajouter un créneau au brouillon',start:'Début (obligatoire)',end:'Fin (obligatoire)',offset:'Décalage UTC (obligatoire)',
+ timeHelp:'Dates et heures dans le décalage indiqué : Z pour UTC, +01:00 ou +02:00 par exemple. Aucun fuseau du navigateur n’est appliqué. Les créneaux enregistrés sont affichés en UTC.',
+ noSlots:'Aucun créneau. Ajoutez un créneau avant de planifier.',unlimited:'Sans limite de places',places:'places',
+ noInstructor:'La planification est possible sans intervenant et sans capacité renseignée.',refresh:'Recharger la fiche',status:'État de la gestion des sessions',
+};
