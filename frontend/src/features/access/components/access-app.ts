@@ -1,3 +1,8 @@
+import '../../reporting/components/reporting-panel';
+import type {ReportingPanel} from '../../reporting/components/reporting-panel';
+import '../../participations/components/session-enrollment';
+import '../../collaborators/components/collaborators-panel';
+import type {CollaboratorsPanel} from '../../collaborators/components/collaborators-panel';
 import '../../instructors/components/instructors-panel';
 import type {InstructorsPanel} from '../../instructors/components/instructors-panel';
 import {instructorMessages} from '../../../shared/i18n/fr';
@@ -129,7 +134,7 @@ export class AccessApp extends LitElement {
           ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<CompetenciesPanel>('competencies-panel')?.focusHeading()}>Compétences</button>`:nothing}
           ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<button @click=${()=>this.renderRoot.querySelector<ReferenceExplorer>('reference-explorer')?.focusHeading()}>Explorer le référentiel</button>`:nothing}
           ${this.identity.permissions.includes('WRITE_CLASSIFICATION')?html`<button @click=${()=>this.renderRoot.querySelector<ClassificationsPanel>('classifications-panel')?.focusHeading()}>Classifications</button>`:nothing}
-          <button @click=${()=>this.focusElement('#sessions-title')}>Sessions</button>${this.identity.permissions.includes('MANAGE_SESSION')?html`<button @click=${()=>this.renderRoot.querySelector<InstructorsPanel>('instructors-panel')?.focusHeading()}>${instructorMessages.title}</button>`:nothing}
+          ${this.identity.permissions.includes('READ_REPORTING')?html`<button @click=${()=>this.renderRoot.querySelector<ReportingPanel>('reporting-panel')?.focusHeading()}>Pilotage</button>`:nothing}<button @click=${()=>this.focusElement('#sessions-title')}>Sessions</button>${this.identity.permissions.includes('MANAGE_SESSION')?html`<button @click=${()=>this.renderRoot.querySelector<CollaboratorsPanel>('collaborators-panel')?.focusHeading()}>Collaborateurs</button><button @click=${()=>this.renderRoot.querySelector<InstructorsPanel>('instructors-panel')?.focusHeading()}>${instructorMessages.title}</button>`:nothing}
           ${this.identity.permissions.includes('READ_AUDIT')?html`<button @click=${()=>this.renderRoot.querySelector<AuditLog>('audit-log')?.focusHeading()}>Journal</button>`:nothing}
         </nav>`:nothing}</header>
       ${this.error?html`<div role="alert" tabindex="-1">${this.error}</div><button ?disabled=${this.busy} @click=${this.restore}>${m.retry}</button>`:nothing}
@@ -144,15 +149,17 @@ export class AccessApp extends LitElement {
         </section>`:html`
         ${this.identity.permissions.includes('WRITE_REFERENTIAL')?html`<domains-panel></domains-panel><subdomains-panel></subdomains-panel><competencies-panel></competencies-panel><reference-explorer></reference-explorer><profiles-panel></profiles-panel><formations-panel @sessions-changed=${()=>this.run(async()=>{this.sessions=await api.sessions();this.auditRevision++;})} @formations-changed=${()=>{this.auditRevision++;}}></formations-panel>`:nothing}
         ${this.identity.permissions.includes('WRITE_CLASSIFICATION')?html`<classifications-panel></classifications-panel>`:nothing}
-        ${this.identity.permissions.includes('MANAGE_SESSION')?html`<instructors-panel></instructors-panel>`:nothing}
+        ${this.identity.permissions.includes('MANAGE_SESSION')?html`<instructors-panel></instructors-panel><collaborators-panel></collaborators-panel>`:nothing}
         <section aria-labelledby="sessions-title"><h2 id="sessions-title" tabindex="-1">${m.sessions}</h2>
           ${this.sessions.length?html`<ul>${this.sessions.map(session=>html`<li><button ?disabled=${this.busy} @click=${()=>this.select(session)}>${session.title}</button> <span class="muted">${states[session.state]}</span></li>`)}</ul>`:html`<p>${m.empty}</p>`}
         </section>
         ${this.selected?html`<section aria-labelledby="participants-title"><h2 id="participants-title" tabindex="-1">${m.participants} — ${this.selected.title}</h2>
+          ${this.identity.permissions.includes('MANAGE_PARTICIPATION')&&this.selected.state==='PLANIFIEE'?html`<session-enrollment .sessionId=${this.selected.id} .participants=${this.participants} @participations-changed=${()=>this.run(async()=>{this.participants=await api.participants(this.selected!.id);this.auditRevision++;})}></session-enrollment>`:nothing}
           ${this.participants.length?html`<ul>${this.participants.map(person=>html`<li><p>${person.name} · ${person.professionalId} · ${states[person.state]}</p>
             <div class="actions"><button ?disabled=${this.busy} aria-label=${`Marquer ${person.name} présente`} @click=${()=>this.presence(person,'PRESENTE')}>Présente</button><button ?disabled=${this.busy} aria-label=${`Marquer ${person.name} absente`} @click=${()=>this.presence(person,'ABSENTE')}>Absente</button></div>
           </li>`)}</ul>`:html`<p>${m.noParticipants}</p>`}
         </section>`:nothing}
+        ${this.identity.permissions.includes('READ_REPORTING')?html`<reporting-panel></reporting-panel>`:nothing}
         ${this.accounts.length?html`<section aria-labelledby="accounts-title"><h2 id="accounts-title" tabindex="-1">${m.accounts}</h2><ul>${this.accounts.map(account=>html`<li><form @submit=${(event:SubmitEvent)=>this.changeRole(event,account)}>
           <label for=${`role-${account.username}`}>Rôle de ${account.username}</label><select id=${`role-${account.username}`} name="role" .value=${account.role}>${(Object.keys(roles) as Role[]).map(role=>html`<option value=${role} ?selected=${account.role===role}>${roles[role]}</option>`)}</select>
           <button ?disabled=${this.busy}>Enregistrer le rôle de ${account.username}</button>

@@ -61,6 +61,168 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/sessions/{id}/cloture": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: components["parameters"]["id"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Planifiée vers Terminée après le dernier créneau, sans participation Inscrite ; zéro participant autorisé. Version obligatoire, incrémentée ; audit atomique. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    "X-CSRF-TOKEN": components["parameters"]["csrf"];
+                };
+                path: {
+                    id: components["parameters"]["id"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        version: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Transition effectuée */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Version invalide */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Non authentifié */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Gestion ou CSRF interdit */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Session inconnue */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Version périmée ou conditions métier non réunies */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sessions/{id}/annulation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: components["parameters"]["id"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Brouillon ou Planifiée vers Annulée ; créneaux, intervenants et états de participations conservés. Version obligatoire, incrémentée ; audit atomique. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    "X-CSRF-TOKEN": components["parameters"]["csrf"];
+                };
+                path: {
+                    id: components["parameters"]["id"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        version: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Transition effectuée */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Version invalide */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Non authentifié */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Gestion ou CSRF interdit */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Session inconnue */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Version périmée ou conditions métier non réunies */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {

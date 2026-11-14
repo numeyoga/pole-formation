@@ -45,27 +45,31 @@ public class PostgresSensitiveStore implements SensitiveStore {
         if(sessionState.state().equals("PLANIFIEE"))audit.record(actor.username(),"MODIFICATION_CRENEAU","CRENEAU",slot.toString(),session,times(before),times(proposed),now);
     }
     @Transactional
-    public void replaceInstructors(Actor actor,UUID session,List<UUID> instructors,boolean confirm,Instant now) {
-        lock(session,true);
+    public void replaceInstructors(Actor actor,UUID session,List<UUID> instructors,boolean confirm,Long version,Instant now) {
+        var current=lock(session,false);
+        rules.editable(current.state(),current.version(),version,false);
         var before=db.sql("SELECT instructor_id FROM session_instructor WHERE session_id=:session ORDER BY instructor_id")
-            .param("session",session).query(UUID.class).list();
+            .param("session",session).query(UUID.class).list().stream().sorted().toList();
         var after=instructors.stream().sorted().toList();
         if(!after.isEmpty()) {
-            int active=db.sql("SELECT count(*) FROM instructor WHERE id IN (:ids) AND active=true").param("ids",after).query(Integer.class).single();
-            if(active!=after.size())throw new IllegalArgumentException("Un intervenant est absent ou inactif.");
+            var available=db.sql("SELECT id,active FROM instructor WHERE id IN (:ids) ORDER BY id FOR UPDATE").param("ids",after)
+                .query((rs,i)->Map.entry(rs.getObject(1,UUID.class),rs.getBoolean(2))).list();
+            if(available.size()!=after.size() || available.stream().anyMatch(i->!i.getValue()&&!before.contains(i.getKey())))
+                throw new IllegalArgumentException("Un intervenant est absent ou inactif.");
         }
         if(before.equals(after))return;
         db.sql("DELETE FROM session_instructor WHERE session_id=:session").param("session",session).update();
         for(UUID id:after)db.sql("INSERT INTO session_instructor VALUES (:session,:instructor)").param("session",session).param("instructor",id).update();
         rules.confirm(conflicts.forSession(session),confirm);
-        audit.record(actor.username(),"REMPLACEMENT_INTERVENANTS","AFFECTATIONS",session.toString(),session,
+        db.sql("UPDATE training_session SET version=version+1 WHERE id=:id").param("id",session).update();
+        if(current.state().equals("PLANIFIEE"))audit.record(actor.username(),"REMPLACEMENT_INTERVENANTS","AFFECTATIONS",session.toString(),session,
             Map.of("instructorIds",before.stream().map(UUID::toString).toList()),Map.of("instructorIds",after.stream().map(UUID::toString).toList()),now);
     }
     @Transactional
     public void transition(Actor actor,UUID session,UUID participation,String after,boolean confirm,Instant now) {
         var sessionState=lock(session,true);
         record Current(String state,boolean active) {}
-        var before=db.sql("SELECT p.state,c.active FROM participation p JOIN collaborator c ON c.id=p.collaborator_id WHERE p.id=:id AND p.session_id=:session FOR UPDATE OF p")
+        var before=db.sql("SELECT p.state,c.active FROM participation p JOIN collaborator c ON c.id=p.collaborator_id WHERE p.id=:id AND p.session_id=:session FOR UPDATE OF p,c")
             .param("id",participation).param("session",session).query((rs,i)->new Current(rs.getString(1),rs.getBoolean(2))).optional().orElseThrow(NotFound::new);
         int occupied=db.sql("SELECT count(*) FROM participation WHERE session_id=:session AND state IN ('INSCRITE','PRESENTE','ABSENTE')").param("session",session).query(Integer.class).single();
         rules.transition(before.state(),after,before.active(),sessionState.capacity(),occupied);

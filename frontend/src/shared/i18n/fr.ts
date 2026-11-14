@@ -119,7 +119,8 @@ export const explanationMessages={
 };
 
 export const sessionMessages={
- assignedInstructors:'Intervenants de la session',noAssignedInstructor:'Aucun intervenant affecté.',slotsTitle:'Créneaux de la session',manage:'Gérer les sessions',title:'Sessions de la formation',create:'Créer un brouillon de session',label:'Intitulé de session (obligatoire)',
+ finish:'Clôturer la session',completed:'Session terminée.',cancelSession:'Annuler la session',confirmCancel:'Confirmer l’annulation',cancelHelp:'Les créneaux, intervenants et participations seront conservés. La session sera exclue des réalisations.',keepSession:'Conserver la session',cancelled:'Session annulée.',
+ instructorsSaved:'Affectations enregistrées.',assignedInstructors:'Intervenants de la session',noAssignedInstructor:'Aucun intervenant affecté.',slotsTitle:'Créneaux de la session',manage:'Gérer les sessions',title:'Sessions de la formation',create:'Créer un brouillon de session',label:'Intitulé de session (obligatoire)',
  capacity:'Capacité (facultative)',capacityHelp:'Laisser vide pour une session sans limite de places.',modalities:'Modalités',
  saved:'Session enregistrée.',planned:'Session planifiée.',slotSaved:'Créneau ajouté.',empty:'Aucune session pour cette formation.',
  createHelp:'La création nécessite une formation active.',loading:'Chargement des sessions…',saving:'Enregistrement…',
@@ -141,4 +142,43 @@ export const instructorMessages={
  disableTitle:'Désactiver un intervenant',disableHelp:'Les affectations historiques et le compte éventuellement lié restent conservés. Les nouvelles affectations seront refusées.',confirmDisable:'Confirmer la désactivation',
  pages:'Pagination des intervenants',previous:'Intervenants précédents',next:'Intervenants suivants',
  sessions:'Sessions affectées',historyTitle:'Sessions de l’intervenant',historyEmpty:'Aucune session affectée à cet intervenant.',historyLoading:'Chargement des affectations…',historyRetry:'Réessayer les affectations',historyPrevious:'Sessions affectées précédentes',historyNext:'Sessions affectées suivantes',historyPages:'Pagination des affectations',close:'Fermer',
+};
+
+export const assignmentMessages={
+ title:'Gérer la coanimation',remove:'Retirer',help:'Les affectations couvrent tous les créneaux de la session. Décochez un intervenant sélectionné pour le retirer.',
+ searchTitle:'Recherche des intervenants à affecter',search:'Rechercher un intervenant actif',searchButton:'Rechercher les intervenants actifs',
+ selected:'Intervenants sélectionnés',available:'Intervenants disponibles',emptySelection:'Aucun intervenant sélectionné.',empty:'Aucun intervenant actif pour cette recherche.',
+ loading:'Chargement ou enregistrement des affectations…',retry:'Réessayer les intervenants',pages:'Pages des intervenants disponibles',previous:'Intervenants disponibles précédents',next:'Intervenants disponibles suivants',
+ save:'Enregistrer les affectations',conflict:(count:number)=>`Conflits avec ${count} autre(s) session(s). Les affectations ne sont pas encore enregistrées.`,confirm:'Confirmer les affectations malgré les conflits',cancel:'Abandonner les affectations',
+};
+
+export const collaboratorMessages={
+ title:'Collaborateurs',create:'Créer un collaborateur',edit:'Modifier un collaborateur',modify:'Modifier',disable:'Désactiver',refresh:'Actualiser les collaborateurs',
+ firstName:'Prénom (obligatoire)',lastName:'Nom (obligatoire)',professionalId:'Identifiant professionnel (obligatoire)',contactHelp:'Identifiant professionnel, nom et prénom requis, 100 caractères maximum chacun. L’identifiant reste réservé après désactivation. Aucun profil d’emploi associé.',
+ search:'Rechercher par identifiant, nom ou prénom',searchTitle:'Recherche des collaborateurs',searchButton:'Rechercher les collaborateurs',clear:'Effacer les filtres',activeOnly:'Collaborateurs actifs uniquement',
+ empty:'Aucun collaborateur pour ces filtres.',loading:'Chargement des collaborateurs…',saving:'Enregistrement…',saved:'Fiche collaborateur enregistrée.',disabled:'Collaborateur désactivé. Participations conservées.',
+ active:'Actif',inactive:'Désactivé',state:'Statut',label:'Nom affiché',actions:'Actions',table:'Tableau des collaborateurs',caption:'Collaborateurs actifs et désactivés',
+ status:'État des collaborateurs',formStatus:'État du formulaire collaborateur',save:'Enregistrer le collaborateur',cancel:'Annuler',reload:'Recharger la fiche',
+ disableTitle:'Désactiver un collaborateur',disableHelp:'Les participations historiques restent conservées. Les nouvelles inscriptions seront refusées.',confirmDisable:'Confirmer la désactivation',
+ pages:'Pagination des collaborateurs',previous:'Collaborateurs précédents',next:'Collaborateurs suivants',
+ sessions:'Participations',historyTitle:'Participations du collaborateur',historyEmpty:'Aucune participation pour ce collaborateur.',historyLoading:'Chargement des participations…',historyRetry:'Réessayer les participations',historyPrevious:'Participations précédentes',historyNext:'Participations suivantes',historyPages:'Pagination des participations',close:'Fermer',
+};
+
+export const participationMessages={
+ title:'Gérer les inscriptions',help:'Une participation par collaborateur et session. Un désistement libère une place ; la réinscription conserve la participation initiale.',
+ searchTitle:'Recherche des collaborateurs à inscrire',search:'Rechercher un collaborateur actif',searchButton:'Rechercher les collaborateurs actifs',
+ enroll:'Inscrire un collaborateur',choice:'Collaborateur à inscrire (obligatoire)',placeholder:'Choisir un collaborateur',empty:'Aucun collaborateur actif pour cette recherche.',
+ pages:'Pages des collaborateurs disponibles',previous:'Collaborateurs disponibles précédents',next:'Collaborateurs disponibles suivants',
+ withdraw:'Enregistrer le désistement de',reenroll:'Réinscrire',saved:'Participation enregistrée.',status:'État des inscriptions',loading:'Chargement ou enregistrement des inscriptions…',retry:'Actualiser les choix',
+ conflict:(count:number)=>`Conflit avec ${count} autre(s) session(s). La participation n’est pas encore enregistrée.`,confirm:'Confirmer l’inscription malgré les conflits',cancel:'Abandonner l’inscription',
+};
+
+export const reportingMessages={
+ title:'Pilotage de la formation',help:'Période en UTC : début inclus, fin exclue, selon le premier créneau de chaque session. Les brouillons sans créneau sont exclus si une borne est renseignée. Les formations actives représentent le stock courant global.',
+ stock:'Formations actives à ce jour',sessions:'Sessions par état',realized:'Sessions réalisées (Terminées)',participations:'Participations hors sessions annulées',cancelled:'Participations des sessions annulées (hors réalisations)',
+ registered:'Inscrites',present:'Présentes',absent:'Absentes',withdrawn:'Désistées',activity:'Activité détaillée',filters:'Filtres du pilotage',from:'Début de période inclus (UTC)',until:'Fin de période exclue (UTC)',state:'État de session',allStates:'Tous les états',
+ formation:'Formation',allFormations:'Toutes les formations',formationSearchTitle:'Recherche des formations du pilotage',formationSearch:'Rechercher une formation par code ou intitulé',search:'Rechercher les formations du pilotage',apply:'Appliquer les filtres du pilotage',
+ formationPages:'Pages des formations du pilotage',formationPrevious:'Formations du pilotage précédentes',formationNext:'Formations du pilotage suivantes',retryChoices:'Réessayer les formations du pilotage',
+ loading:'Chargement du pilotage…',status:'État du pilotage',total:(count:number)=>`${count} session(s) dans les filtres.`,empty:'Aucune session pour ces filtres.',noSlot:'Sans créneau',retry:'Actualiser le pilotage',pages:'Pages de l’activité',previous:'Sessions précédentes',next:'Sessions suivantes',
+ close:'Fermer',slots:'Créneaux',instructors:'Intervenants',headcounts:'Effectifs par état',noInstructor:'Aucun intervenant affecté.',
 };

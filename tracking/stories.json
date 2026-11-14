@@ -375,5 +375,133 @@
     "commits": [
       "205f79bfe75129ed7c2839544d5a86f6b04def49"
     ]
+  },
+  "US-05.04": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
+    "report": "docs/reference/quality/us-05-04-validation.md",
+    "remaining": [
+      "Recette métier humaine des critères d’acceptation.",
+      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %."
+    ],
+    "acceptance": {
+      "required": true
+    }
+  },
+  "US-05.05": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
+    "report": "docs/reference/quality/us-05-05-validation.md",
+    "remaining": [
+      "Recette métier humaine des critères d’acceptation.",
+      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %."
+    ],
+    "acceptance": {
+      "required": true
+    }
+  },
+  "US-06.01": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
+    "report": "docs/reference/quality/us-06-01-validation.md",
+    "remaining": [
+      "Recette métier humaine des critères d’acceptation.",
+      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %."
+    ],
+    "acceptance": {
+      "required": true
+    }
+  },
+  "US-06.02": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
+    "report": "docs/reference/quality/us-06-02-validation.md",
+    "remaining": [
+      "Recette métier humaine des critères d’acceptation.",
+      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %."
+    ],
+    "acceptance": {
+      "required": true
+    }
+  },
+  "US-06.03": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
+    "report": "docs/reference/quality/us-06-03-validation.md",
+    "remaining": [
+      "Recette métier humaine des critères d’acceptation.",
+      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %."
+    ],
+    "acceptance": {
+      "required": true
+    }
+  },
+  "US-06.04": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
+    "report": "docs/reference/quality/us-06-04-validation.md",
+    "remaining": [
+      "Recette métier humaine des critères d’acceptation.",
+      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %."
+    ],
+    "acceptance": {
+      "required": true
+    }
+  },
+  "US-07.01": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
+    "report": "docs/reference/quality/us-07-01-validation.md",
+    "remaining": [
+      "Recette métier humaine des critères d’acceptation.",
+      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %."
+    ],
+    "acceptance": {
+      "required": true
+    }
+  },
+  "US-07.02": {
+    "implementation": "partial",
+    "code_paths": [
+      "backend/",
+      "frontend/",
+      "api/"
+    ],
+    "report": "docs/reference/quality/us-07-02-validation.md",
+    "remaining": [
+      "Recette métier humaine des critères d’acceptation.",
+      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %."
+    ],
+    "acceptance": {
+      "required": true
+    }
   }
 }

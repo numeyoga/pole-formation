@@ -2,7 +2,7 @@
 title: "Contrat API et sécurité HTTP"
 description: "Frontière REST, DTO, erreurs et sécurité de session."
 created: 2026-11-07
-updated: 2026-11-13
+updated: 2026-11-14
 status: accepted
 type: reference
 tags:
@@ -40,6 +40,10 @@ US-04.02 ajoute les compétences communes à un profil et une formation active, 
 Le [contrat des sessions](../../../api/sessions.openapi.yaml) couvre US-05.01 : fiche de gestion, ajout versionné de créneaux dans un brouillon et passage à Planifiée. La création depuis une formation active conserve le contrat des formations et accepte une capacité facultative et des modalités. Les instants de saisie ont un décalage explicite ; les créneaux sont restitués en UTC. Voir le [rapport de validation](../quality/us-05-01-validation.md). US-05.02 étend l’ajout aux sessions planifiées et permet la modification versionnée en brouillon comme en planifiée via le contrat d’audit. Les conflits de toute la session sont recalculés ; une confirmation explicite est nécessaire, sans aucun droit de confirmer un chevauchement interne. Ajout et modification en Planifiée sont audités dans la même transaction. Voir le [rapport US-05.02](../quality/us-05-02-validation.md).
 
 Le [contrat des intervenants](../../../api/instructors.openapi.yaml) couvre US-05.03 : fiches manuelles sans compte obligatoire, coordonnées professionnelles, recherche et pagination, modification et désactivation versionnées, et consultation des sessions affectées. Le contrat des sessions restitue les intervenants affectés avec leur activation, sans exposer leurs coordonnées. La migration conserve les anciens libellés et liens sans inventer de noms structurés. Voir le [rapport US-05.03](../quality/us-05-03-validation.md).
+
+Les [contrats collaborateurs](../../../api/collaborators.openapi.yaml) et [participations/pilotage](../../../api/activity.openapi.yaml) couvrent US-06.01 à US-07.02. L’identifiant professionnel reste unique selon la comparaison exacte de la contrainte existante. Inscription et réinscription contrôlent la capacité sous verrou ; l’historique conserve l’identité de participation. Le pilotage rattache les sessions au premier créneau dans `[from, until)`, sépare les annulations et n’expose aucun score individuel.
+
+US-05.04 complète le remplacement global des intervenants en Brouillon et Planifiée, avec version transmise par les nouveaux formulaires. Les affectations inactives existantes peuvent être conservées ; les nouvelles sont refusées. US-05.05 ajoute les transitions versionnées `/cloture` et `/annulation`, avec audit de type `SESSION`. Voir le [rapport commun des huit stories](../quality/validation-stories-2026-11-14.md).
 
 ## Erreurs
 

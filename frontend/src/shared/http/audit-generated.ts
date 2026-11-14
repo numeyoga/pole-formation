@@ -15,7 +15,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    subjectType?: "COMPTE" | "PARTICIPATION" | "CRENEAU" | "AFFECTATIONS" | "FORMATION";
+                    subjectType?: "COMPTE" | "PARTICIPATION" | "CRENEAU" | "AFFECTATIONS" | "FORMATION" | "SESSION";
                     subjectId?: string;
                     sessionId?: string;
                     beforeSequence?: string;
@@ -136,6 +136,7 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
+                        version?: number;
                         instructorIds: string[];
                         /** @default false */
                         confirmConflicts?: boolean;
@@ -143,7 +144,7 @@ export interface paths {
                 };
             };
             responses: {
-                /** @description Affectations remplacées et auditées atomiquement */
+                /** @description Affectations enregistrées */
                 204: {
                     headers: {
                         [name: string]: unknown;
@@ -232,7 +233,7 @@ export interface components {
             actor: string;
             action: string;
             /** @enum {string} */
-            subjectType: "COMPTE" | "PARTICIPATION" | "CRENEAU" | "AFFECTATIONS" | "FORMATION";
+            subjectType: "COMPTE" | "PARTICIPATION" | "CRENEAU" | "AFFECTATIONS" | "FORMATION" | "SESSION";
             subjectId: string;
             /** Format: uuid */
             sessionId: string | null;

@@ -1,0 +1,174 @@
+openapi: 3.1.0
+info:
+  title: Administration des collaborateurs — US-06.01
+  version: 1.0.0
+security: [{session: []}]
+paths:
+  /api/collaborateurs:
+    get:
+      description: Gestionnaire et administrateur. Recherche littérale sans casse dans identifiant, prénom et nom ; inactifs inclus ; tri nom et prénom sans casse puis UUID.
+      parameters:
+        - {name: q, in: query, schema: {type: string, maxLength: 200, default: ''}}
+        - {name: activeOnly, in: query, schema: {type: boolean, default: false}}
+        - {$ref: '#/components/parameters/Page'}
+        - {$ref: '#/components/parameters/Size'}
+      responses:
+        '200':
+          description: Page d’collaborateurs
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, page, size]
+                properties:
+                  items: {type: array, items: {$ref: '#/components/schemas/Collaborator'}}
+                  total: {type: integer}
+                  page: {type: integer}
+                  size: {type: integer}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+    post:
+      description: Création active ; identifiant professionnel unique exact après retrait des espaces externes, réservé après désactivation. Aucun profil associé.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Details'}
+      responses:
+        '409': {$ref: '#/components/responses/Error'}
+        '201':
+          description: Collaborateur créé
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Collaborator'}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/collaborateurs/{id}:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      responses:
+        '200':
+          description: Fiche, y compris inactive
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Collaborator'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+    put:
+      description: Modification versionnée sans altérer les participations historiques.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - {$ref: '#/components/schemas/Details'}
+                - type: object
+                  required: [version]
+                  properties:
+                    version: {type: integer, minimum: 0}
+      responses:
+        '204': {description: Fiche modifiée}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/collaborateurs/{id}/desactivation:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    post:
+      description: Désactivation versionnée sans suppression des participations historiques.
+      parameters: [{$ref: '#/components/parameters/Csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [version]
+              properties:
+                version: {type: integer, minimum: 0}
+      responses:
+        '204': {description: Fiche désactivée ou déjà inactive à cette version}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/collaborateurs/{id}/participations:
+    parameters: [{$ref: '#/components/parameters/Id'}]
+    get:
+      description: Affectations conservées, quel que soit l’état de l’collaborateur ou des sessions ; tri par intitulé sans casse puis identifiant.
+      parameters:
+        - {$ref: '#/components/parameters/Page'}
+        - {$ref: '#/components/parameters/Size'}
+      responses:
+        '200':
+          description: Sessions affectées
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, page, size]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, sessionId, title, sessionState, state]
+                      properties:
+                        id: {type: string, format: uuid}
+                        sessionId: {type: string, format: uuid}
+                        title: {type: string}
+                        sessionState: {type: string, enum: [BROUILLON, PLANIFIEE, TERMINEE, ANNULEE]}
+                        state: {type: string, enum: [INSCRITE, PRESENTE, ABSENTE, DESISTEE]}
+                  total: {type: integer}
+                  page: {type: integer}
+                  size: {type: integer}
+        '400': {$ref: '#/components/responses/Error'}
+        '401': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+components:
+  securitySchemes:
+    session: {type: apiKey, in: cookie, name: JSESSIONID}
+  parameters:
+    Id: {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+    Csrf: {name: X-CSRF-TOKEN, in: header, required: true, schema: {type: string}}
+    Page: {name: page, in: query, schema: {type: integer, minimum: 0, default: 0}}
+    Size: {name: size, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+  responses:
+    Error:
+      description: Requête invalide, accès interdit, ressource introuvable ou version périmée selon le statut HTTP
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [status]
+            properties:
+              status: {type: integer}
+              detail: {type: string}
+              fieldErrors: {type: object, additionalProperties: {type: string}}
+  schemas:
+    Details:
+      type: object
+      required: [professionalId, firstName, lastName]
+      properties:
+        firstName: {type: string, minLength: 1, maxLength: 100}
+        lastName: {type: string, minLength: 1, maxLength: 100}
+        professionalId: {type: string, minLength: 1, maxLength: 100}
+    Collaborator:
+      type: object
+      required: [id, professionalId, firstName, lastName, active, version]
+      properties:
+        id: {type: string, format: uuid}
+        firstName: {type: string}
+        lastName: {type: string}
+        professionalId: {type: string}
+        active: {type: boolean}
+        version: {type: integer, minimum: 0}

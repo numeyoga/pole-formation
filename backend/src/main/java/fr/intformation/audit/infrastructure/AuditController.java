@@ -19,7 +19,7 @@ public class AuditController {
     public record Page(List<EventResponse> items,String nextCursor) {}
     public record SlotChange(OffsetDateTime startsAt,OffsetDateTime endsAt,Boolean confirmConflicts,java.math.BigDecimal version) {}
     private Long version(java.math.BigDecimal value){try{return value==null?null:value.longValueExact();}catch(ArithmeticException error){throw new fr.intformation.sessions.domain.TrainingSession.InvalidField("version","Version entière invalide.");}}
-    public record InstructorChange(List<UUID> instructorIds,Boolean confirmConflicts) {}
+    public record InstructorChange(List<UUID> instructorIds,Boolean confirmConflicts,java.math.BigDecimal version) {}
     public record Transition(String state,Boolean confirmConflicts) {}
     @GetMapping("/audit") Page read(Principal user,@RequestParam(required=false) String subjectType,@RequestParam(required=false) String subjectId,
         @RequestParam(required=false) UUID sessionId,@RequestParam(required=false) Long beforeSequence,@RequestParam(defaultValue="20") int limit) {
@@ -33,7 +33,7 @@ public class AuditController {
     }
     @PutMapping("/sessions/{session}/intervenants") @ResponseStatus(HttpStatus.NO_CONTENT)
     void instructors(Principal user,@PathVariable UUID session,@RequestBody InstructorChange body) {
-        service.instructors(user.getName(),session,body.instructorIds(),Boolean.TRUE.equals(body.confirmConflicts()));
+        service.instructors(user.getName(),session,body.instructorIds(),Boolean.TRUE.equals(body.confirmConflicts()),version(body.version()));
     }
     @PutMapping("/sessions/{session}/participants/{participation}/etat") @ResponseStatus(HttpStatus.NO_CONTENT)
     void transition(Principal user,@PathVariable UUID session,@PathVariable UUID participation,@RequestBody Transition body) {

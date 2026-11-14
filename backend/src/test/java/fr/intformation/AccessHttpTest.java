@@ -47,6 +47,15 @@ class AccessHttpTest {
         db.sql("UPDATE participation SET state=CASE WHEN session_id='"+S3+"' THEN 'PRESENTE' ELSE 'INSCRITE' END").update();
         db.sql("DELETE FROM access_audit").update();
     }
+    final java.util.List<java.util.UUID> createdSessions=new java.util.ArrayList<>();
+    @AfterEach void removeCreatedSessions(){
+        for(var id:createdSessions){
+            db.sql("DELETE FROM participation WHERE session_id=:id").param("id",id).update();
+            db.sql("DELETE FROM session_instructor WHERE session_id=:id").param("id",id).update();
+            db.sql("DELETE FROM session_slot WHERE session_id=:id").param("id",id).update();
+            db.sql("DELETE FROM training_session WHERE id=:id").param("id",id).update();
+        }
+    }
     class Browser {
         final HttpClient http=HttpClient.newBuilder().cookieHandler(new CookieManager(null,CookiePolicy.ACCEPT_ALL)).build();
         String csrf,header;
@@ -54,7 +63,9 @@ class AccessHttpTest {
             var request=HttpRequest.newBuilder(URI.create("http://localhost:"+port+path));
             if(token) request.header(header,csrf);
             if(body!=null) request.header("Content-Type","application/json");
-            return http.send(request.method(method,body==null?HttpRequest.BodyPublishers.noBody():HttpRequest.BodyPublishers.ofString(body)).build(),HttpResponse.BodyHandlers.ofString());
+            var response=http.send(request.method(method,body==null?HttpRequest.BodyPublishers.noBody():HttpRequest.BodyPublishers.ofString(body)).build(),HttpResponse.BodyHandlers.ofString());
+            if(method.equals("POST")&&path.matches("/api/formations/[^/]+/sessions")&&response.statusCode()==201)createdSessions.add(java.util.UUID.fromString(json.readTree(response.body()).get("id").asString()));
+            return response;
         }
         void refreshCsrf() throws Exception {
             var response=call("GET","/api/auth/csrf",null,false);
@@ -75,6 +86,150 @@ class AccessHttpTest {
     Browser as(String username) throws Exception { var browser=new Browser();browser.login(username);return browser; }
     String people(String session) { return "/api/sessions/"+session+"/participants"; }
     String presence(String session,String participation) { return people(session)+"/"+participation+"/presence"; }
+
+    String offer(Browser manager) throws Exception {
+        var created=manager.call("POST","/api/formations","{\"code\":\"NEXT-"+java.util.UUID.randomUUID()+"\",\"title\":\"Formation suivante\"}",true);
+        assertThat(created.statusCode()).isEqualTo(201);String path="/api/formations/"+json.readTree(created.body()).get("id").asString();
+        assertThat(manager.call("POST",path+"/activation","{\"version\":0}",true).statusCode()).isEqualTo(204);return path;
+    }
+    String scheduled(Browser manager,String formation,String date,Integer capacity) throws Exception {
+        var created=manager.call("POST",formation+"/sessions","{\"title\":\"Session suivante\",\"capacity\":"+capacity+"}",true);
+        assertThat(created.statusCode()).isEqualTo(201);String id=json.readTree(created.body()).get("id").asString();String path="/api/sessions/"+id;
+        assertThat(manager.call("POST",path+"/creneaux","{\"startsAt\":\""+date+"T09:00Z\",\"endsAt\":\""+date+"T10:00Z\",\"version\":0}",true).statusCode()).isEqualTo(201);
+        assertThat(manager.call("POST",path+"/planification","{\"version\":1}",true).statusCode()).isEqualTo(204);return id;
+    }
+    String collaborator(Browser manager) throws Exception {
+        var created=manager.call("POST","/api/collaborateurs","{\"professionalId\":\"NEXT-"+java.util.UUID.randomUUID()+"\",\"firstName\":\"Ada\",\"lastName\":\"Exemple\"}",true);
+        assertThat(created.statusCode()).isEqualTo(201);return json.readTree(created.body()).get("id").asString();
+    }
+    String enroll(Browser manager,String session,String collaborator) throws Exception {
+        var created=manager.call("POST",people(session),"{\"collaboratorId\":\""+collaborator+"\",\"confirmConflicts\":true}",true);
+        assertThat(created.statusCode()).isEqualTo(201);return json.readTree(created.body()).get("id").asString();
+    }
+    @Test void concurrent_enrollments_cannot_exceed_the_last_place() throws Exception {
+        var manager=as("gestionnaire");String session=scheduled(manager,offer(manager),"2001-03-01",1);
+        String first=collaborator(manager),second=collaborator(manager);var other=as("gestionnaire");var start=new java.util.concurrent.CountDownLatch(1);
+        try(var pool=java.util.concurrent.Executors.newFixedThreadPool(2)){
+            var a=pool.submit(()->{start.await();return manager.call("POST",people(session),"{\"collaboratorId\":\""+first+"\"}",true).statusCode();});
+            var b=pool.submit(()->{start.await();return other.call("POST",people(session),"{\"collaboratorId\":\""+second+"\"}",true).statusCode();});
+            start.countDown();assertThat(List.of(a.get(),b.get())).containsExactlyInAnyOrder(201,409);
+        }
+        assertThat(json.readTree(manager.get(people(session)).body()).size()).isEqualTo(1);
+    }
+    @Test void enrollment_conflicts_roll_back_until_confirmed_and_inactive_collaborators_are_refused() throws Exception {
+        var manager=as("gestionnaire");String formation=offer(manager);String first=scheduled(manager,formation,"2001-03-02",null),second=scheduled(manager,formation,"2001-03-02",null);String c=collaborator(manager);
+        enroll(manager,first,c);String body="{\"collaboratorId\":\""+c+"\"}";
+        var warning=manager.call("POST",people(second),body,true);assertThat(warning.statusCode()).isEqualTo(409);assertThat(json.readTree(warning.body()).get("confirmationRequired").asBoolean()).isTrue();
+        assertThat(json.readTree(manager.get(people(second)).body()).size()).isZero();
+        String id=enroll(manager,second,c);
+        assertThat(manager.put(people(second)+"/"+id+"/etat","{\"state\":\"DESISTEE\"}").statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST","/api/collaborateurs/"+c+"/desactivation","{\"version\":0}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.put(people(second)+"/"+id+"/etat","{\"state\":\"INSCRITE\",\"confirmConflicts\":true}").statusCode()).isEqualTo(409);
+        assertThat(json.readTree(manager.get("/api/collaborateurs/"+c+"/participations").body()).get("total").asInt()).isEqualTo(2);
+    }
+    @Test void reporting_counts_by_first_slot_and_keeps_cancellations_separate() throws Exception {
+        var manager=as("gestionnaire");String formation=offer(manager),formationId=formation.substring(formation.lastIndexOf('/')+1);
+        String done=scheduled(manager,formation,"2001-01-31",null),cancelled=scheduled(manager,formation,"2001-01-20",null);
+        assertThat(manager.call("POST","/api/sessions/"+done+"/creneaux","{\"startsAt\":\"2001-02-01T09:00Z\",\"endsAt\":\"2001-02-01T10:00Z\",\"version\":2}",true).statusCode()).isEqualTo(201);
+        String p=enroll(manager,done,collaborator(manager));String withdrawn=enroll(manager,done,collaborator(manager));String absent=enroll(manager,cancelled,collaborator(manager));
+        assertThat(manager.put(presence(done,p),"{\"state\":\"PRESENTE\"}").statusCode()).isEqualTo(204);
+        assertThat(manager.put(people(done)+"/"+withdrawn+"/etat","{\"state\":\"DESISTEE\"}").statusCode()).isEqualTo(204);
+        assertThat(manager.put(presence(cancelled,absent),"{\"state\":\"ABSENTE\"}").statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST","/api/sessions/"+done+"/cloture","{\"version\":3}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST","/api/sessions/"+cancelled+"/annulation","{\"version\":2}",true).statusCode()).isEqualTo(204);
+        String query="?formationId="+formationId+"&from=2001-01-01T00:00Z&until=2001-02-01T00:00Z";
+        var overview=json.readTree(manager.get("/api/pilotage"+query).body());
+        assertThat(overview.get("sessions").get("TERMINEE").asInt()).isEqualTo(1);assertThat(overview.get("sessions").get("ANNULEE").asInt()).isEqualTo(1);
+        assertThat(overview.get("realizedSessions").asInt()).isEqualTo(1);assertThat(overview.get("participations").get("present").asInt()).isEqualTo(1);
+        assertThat(overview.get("participations").get("absent").asInt()).isZero();assertThat(overview.get("participations").get("withdrawn").asInt()).isEqualTo(1);
+        assertThat(overview.get("cancelledParticipations").get("absent").asInt()).isEqualTo(1);
+        assertThat(json.readTree(manager.get("/api/pilotage/sessions"+query).body()).get("total").asInt()).isEqualTo(2);
+        assertThat(json.readTree(manager.get("/api/pilotage/sessions"+query+"&state=ANNULEE").body()).get("total").asInt()).isEqualTo(1);
+        assertThat(json.readTree(manager.get("/api/pilotage/sessions?formationId="+formationId+"&from=2001-02-01T00:00Z&until=2001-03-01T00:00Z").body()).get("total").asInt()).isZero();
+        assertThat(as("intervenant").get("/api/pilotage").statusCode()).isEqualTo(403);
+        assertThat(manager.get("/api/pilotage?from=2001-03-01T00:00Z&until=2001-02-01T00:00Z").statusCode()).isEqualTo(400);
+    }
+    @Test void future_sessions_cannot_be_completed_and_empty_past_sessions_can() throws Exception {
+        var manager=as("gestionnaire");String formation=offer(manager),future=scheduled(manager,formation,"2090-01-01",null),past=scheduled(manager,formation,"2001-01-01",null);
+        assertThat(manager.call("POST","/api/sessions/"+future+"/cloture","{\"version\":2}",true).statusCode()).isEqualTo(409);
+        assertThat(manager.call("POST","/api/sessions/"+past+"/cloture","{\"version\":1}",true).statusCode()).isEqualTo(409);
+        assertThat(manager.call("POST","/api/sessions/"+past+"/cloture","{\"version\":2}",false).statusCode()).isEqualTo(403);
+        assertThat(as("intervenant").call("POST","/api/sessions/"+past+"/cloture","{\"version\":2}",true).statusCode()).isEqualTo(403);
+        assertThat(manager.call("POST","/api/sessions/"+past+"/cloture","{\"version\":2}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.call("POST","/api/sessions/"+past+"/creneaux","{\"startsAt\":\"2001-01-02T09:00Z\",\"endsAt\":\"2001-01-02T10:00Z\",\"version\":3}",true).statusCode()).isEqualTo(409);
+    }
+
+    @Test void session_completion_requires_final_attendance_and_cancellation_preserves_history() throws Exception {
+        var manager=as("gestionnaire");String path="/api/sessions/"+S1;
+        long version=json.readTree(manager.get(path).body()).get("version").asLong();
+        try {
+            assertThat(manager.call("POST",path+"/cloture","{\"version\":"+version+"}",true).statusCode()).isEqualTo(409);
+            assertThat(manager.put(presence(S1,P1),"{\"state\":\"PRESENTE\"}").statusCode()).isEqualTo(204);
+            assertThat(manager.call("POST",path+"/cloture","{\"version\":"+version+"}",true).statusCode()).isEqualTo(204);
+            assertThat(json.readTree(manager.get(path).body()).get("state").asString()).isEqualTo("TERMINEE");
+            assertThat(manager.call("POST",path+"/annulation","{\"version\":"+(version+1)+"}",true).statusCode()).isEqualTo(409);
+        } finally {db.sql("UPDATE training_session SET state='PLANIFIEE' WHERE id='"+S1+"'").update();}
+        String other="/api/sessions/"+S2;long otherVersion=json.readTree(manager.get(other).body()).get("version").asLong();
+        try {
+            assertThat(manager.call("POST",other+"/annulation","{\"version\":"+otherVersion+"}",true).statusCode()).isEqualTo(204);
+            assertThat(json.readTree(manager.get(other).body()).get("instructors").size()).isPositive();
+            assertThat(json.readTree(manager.get(people(S2)).body()).get(0).get("state").asString()).isEqualTo("INSCRITE");
+        } finally {db.sql("UPDATE training_session SET state='PLANIFIEE' WHERE id='"+S2+"'").update();}
+    }
+
+    @Test void enrollment_withdrawal_and_reenrollment_preserve_identity_and_capacity() throws Exception {
+        var manager=as("gestionnaire");String professional="ENR-"+java.util.UUID.randomUUID();
+        var c=manager.call("POST","/api/collaborateurs","{\"professionalId\":\""+professional+"\",\"firstName\":\"Ada\",\"lastName\":\"Exemple\"}",true);
+        String collaborator=json.readTree(c.body()).get("id").asString();
+        String path="/api/sessions/"+S1+"/participants";
+        db.sql("UPDATE training_session SET capacity=1 WHERE id='"+S1+"'").update();
+        assertThat(manager.call("POST",path,"{\"collaboratorId\":\""+collaborator+"\",\"confirmConflicts\":true}",true).statusCode()).isEqualTo(409);
+        db.sql("UPDATE training_session SET capacity=2 WHERE id='"+S1+"'").update();
+        var enrolled=manager.call("POST",path,"{\"collaboratorId\":\""+collaborator+"\",\"confirmConflicts\":true}",true);assertThat(enrolled.statusCode()).isEqualTo(201);
+        String id=json.readTree(enrolled.body()).get("id").asString();
+        assertThat(manager.call("POST",path,"{\"collaboratorId\":\""+collaborator+"\"}",true).statusCode()).isEqualTo(409);
+        assertThat(manager.put(path+"/"+id+"/etat","{\"state\":\"DESISTEE\"}").statusCode()).isEqualTo(204);
+        assertThat(manager.put(path+"/"+id+"/etat","{\"state\":\"INSCRITE\",\"confirmConflicts\":true}").statusCode()).isEqualTo(204);
+        assertThat(json.readTree(manager.get("/api/collaborateurs/"+collaborator+"/participations").body()).get("items").get(0).get("id").asString()).isEqualTo(id);
+        assertThat(as("intervenant").call("POST",path,"{\"collaboratorId\":\""+collaborator+"\"}",true).statusCode()).isEqualTo(403);
+    }
+
+    @Test void collaborators_are_unique_versioned_and_keep_participation_history() throws Exception {
+        var manager=as("gestionnaire");String root="/api/collaborateurs";
+        String professional="COL-"+java.util.UUID.randomUUID();
+        String body="{\"professionalId\":\""+professional+"\",\"firstName\":\"Ada\",\"lastName\":\"Exemple\"}";
+        var created=manager.call("POST",root,body,true);assertThat(created.statusCode()).isEqualTo(201);
+        String path=root+"/"+json.readTree(created.body()).get("id").asString();
+        var duplicate=manager.call("POST",root,body,true);assertThat(duplicate.statusCode()).isEqualTo(409);
+        assertThat(json.readTree(duplicate.body()).get("fieldErrors").get("professionalId").asString()).contains("déjà utilisé");
+        assertThat(manager.put(path,body.substring(0,body.length()-1)+",\"version\":0}").statusCode()).isEqualTo(204);
+        assertThat(manager.put(path,body.substring(0,body.length()-1)+",\"version\":0}").statusCode()).isEqualTo(409);
+        assertThat(manager.call("POST",path+"/desactivation","{\"version\":1}",true).statusCode()).isEqualTo(204);
+        var details=json.readTree(manager.get(path).body());assertThat(details.get("active").asBoolean()).isFalse();assertThat(details.has("profileId")).isFalse();
+        assertThat(manager.get(path+"/participations").statusCode()).isEqualTo(200);
+        assertThat(json.readTree(manager.get(root+"?q="+professional).body()).get("total").asInt()).isEqualTo(1);
+        assertThat(as("intervenant").get(root).statusCode()).isEqualTo(403);
+    }
+
+    @Test void draft_coanimation_is_versioned_and_planned_replacement_is_audited() throws Exception {
+        var manager=as("gestionnaire");
+        var offer=manager.call("POST","/api/formations","{\"code\":\"CO-"+java.util.UUID.randomUUID()+"\",\"title\":\"Coanimation\"}",true);
+        String formation="/api/formations/"+json.readTree(offer.body()).get("id").asString();
+        manager.call("POST",formation+"/activation","{\"version\":0}",true);
+        var created=manager.call("POST",formation+"/sessions","{\"title\":\"Coanimation\"}",true);
+        String path="/api/sessions/"+json.readTree(created.body()).get("id").asString();
+        String first="10000000-0000-0000-0000-000000000001", second="10000000-0000-0000-0000-000000000002";
+        String pair="{\"instructorIds\":[\""+first+"\",\""+second+"\"],\"version\":0}";
+        assertThat(manager.put(path+"/intervenants",pair).statusCode()).isEqualTo(204);
+        assertThat(json.readTree(manager.get(path).body()).get("instructors").size()).isEqualTo(2);
+        assertThat(manager.put(path+"/intervenants",pair).statusCode()).isEqualTo(409);
+        assertThat(manager.put(path+"/intervenants","{\"instructorIds\":[\""+first+"\",\""+first+"\"],\"version\":1}").statusCode()).isEqualTo(400);
+        assertThat(manager.call("POST",path+"/creneaux","{\"startsAt\":\"2035-01-01T09:00Z\",\"endsAt\":\"2035-01-01T10:00Z\",\"version\":1}",true).statusCode()).isEqualTo(201);
+        assertThat(manager.call("POST",path+"/planification","{\"version\":2}",true).statusCode()).isEqualTo(204);
+        assertThat(manager.put(path+"/intervenants","{\"instructorIds\":[\""+second+"\"],\"version\":3}").statusCode()).isEqualTo(204);
+        assertThat(json.readTree(manager.get("/api/audit?sessionId="+json.readTree(created.body()).get("id").asString()).body()).get("items").get(0).get("action").asString()).isEqualTo("REMPLACEMENT_INTERVENANTS");
+        assertThat(as("intervenant").put(path+"/intervenants","{\"instructorIds\":[],\"version\":4}").statusCode()).isEqualTo(403);
+    }
 
     @Test void session_planning_requires_a_slot_but_neither_capacity_nor_instructor() throws Exception {
         var manager=as("gestionnaire");

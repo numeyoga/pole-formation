@@ -18,5 +18,6 @@ public final class SessionService {
         return store.create(formation,TrainingSession.title(title),capacity,TrainingSession.modalities(modalities));
     }
     public TrainingSession.Slot addSlot(String user,UUID id,Instant start,Instant end,Long version,boolean confirm){authorize(user);return store.addSlot(user,id,start,end,version,confirm,clock.instant());}
+    public void transition(String user,UUID id,Long version,String target){authorize(user);store.transition(user,id,version,target,clock.instant());}
     public void plan(String user,UUID id,Long version){authorize(user);store.plan(id,version);}
 }

@@ -8,4 +8,4 @@ export interface AuditEventView {
   after:string[];
 }
 export interface AuditPageView { items:AuditEventView[]; nextCursor:string|null }
-export interface AuditFilters { subjectType?:'COMPTE'|'PARTICIPATION'|'CRENEAU'|'AFFECTATIONS'|'FORMATION'; subjectId?:string; sessionId?:string }
+export interface AuditFilters { subjectType?:'COMPTE'|'PARTICIPATION'|'CRENEAU'|'AFFECTATIONS'|'FORMATION'|'SESSION'; subjectId?:string; sessionId?:string }

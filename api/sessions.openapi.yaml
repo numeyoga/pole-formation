@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Planification des sessions — US-05.01
-  version: 1.2.0
+  version: 1.3.0
 paths:
   /api/sessions/{id}:
     parameters:
@@ -83,6 +83,49 @@ paths:
         '403': {description: Gestion ou CSRF interdit}
         '404': {description: Session inconnue}
         '409': {description: Version périmée ou conditions de planification non réunies}
+  /api/sessions/{id}/cloture:
+    parameters: [{$ref: '#/components/parameters/id'}]
+    post:
+      description: Planifiée vers Terminée après le dernier créneau, sans participation Inscrite ; zéro participant autorisé. Version obligatoire, incrémentée ; audit atomique.
+      parameters: [{$ref: '#/components/parameters/csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [version]
+              properties:
+                version: {type: integer, minimum: 0}
+      responses:
+        '204': {description: Transition effectuée}
+        '400': {description: Version invalide}
+        '401': {description: Non authentifié}
+        '403': {description: Gestion ou CSRF interdit}
+        '404': {description: Session inconnue}
+        '409': {description: Version périmée ou conditions métier non réunies}
+  /api/sessions/{id}/annulation:
+    parameters: [{$ref: '#/components/parameters/id'}]
+    post:
+      description: Brouillon ou Planifiée vers Annulée ; créneaux, intervenants et états de participations conservés. Version obligatoire, incrémentée ; audit atomique.
+      parameters: [{$ref: '#/components/parameters/csrf'}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [version]
+              properties:
+                version: {type: integer, minimum: 0}
+      responses:
+        '204': {description: Transition effectuée}
+        '400': {description: Version invalide}
+        '401': {description: Non authentifié}
+        '403': {description: Gestion ou CSRF interdit}
+        '404': {description: Session inconnue}
+        '409': {description: Version périmée ou conditions métier non réunies}
+
 components:
   parameters:
     id:

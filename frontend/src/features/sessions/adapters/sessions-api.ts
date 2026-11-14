@@ -19,6 +19,9 @@ export function sessionView(dto:components['schemas']['Session']):SessionView{
  capacityLabel:dto.capacity===null?m.unlimited:`${dto.capacity} ${m.places}`,slots:dto.slots.map(slot=>({id:slot.id,start:dateFormat.format(new Date(slot.startsAt))+' UTC',end:dateFormat.format(new Date(slot.endsAt))+' UTC',startInput:new Date(slot.startsAt).toISOString().replace(/Z$/,''),endInput:new Date(slot.endsAt).toISOString().replace(/Z$/,'')}))};
 }
 export const sessionsApi={
+ async finish(item:SessionView){await unwrap(await client.POST('/api/sessions/{id}/cloture',{params:{path:{id:item.id},header:await csrfHeaders()},body:{version:item.version}}));},
+ async cancel(item:SessionView){await unwrap(await client.POST('/api/sessions/{id}/annulation',{params:{path:{id:item.id},header:await csrfHeaders()},body:{version:item.version}}));},
+ async assign(item:SessionView,instructorIds:string[],confirmConflicts=false){await unwrap(await audit.PUT('/api/sessions/{session}/intervenants',{params:{path:{session:item.id},header:await csrfHeaders()},body:{instructorIds,version:item.version,confirmConflicts}}));},
  async list(formationId:string):Promise<SessionSummary[]>{return (await unwrap(await formations.GET('/api/formations/{id}/sessions',{params:{path:{id:formationId}}}))).map(item=>({id:item.id,title:item.title,status:states[item.state]}));},
  async create(formationId:string,fields:SessionFields){return unwrap(await formations.POST('/api/formations/{id}/sessions',{params:{path:{id:formationId},header:await csrfHeaders()},body:fields}));},
  async get(id:string){return sessionView(await unwrap(await client.GET('/api/sessions/{id}',{params:{path:{id}}})));},

@@ -57,3 +57,32 @@ test('planned slots warn about real conflicts, allow cancellation and explicit c
  expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);await page.keyboard.press('Escape');await page.getByRole('button',{name:'Journal',exact:true}).click();
  const journal=page.getByRole('region',{name:'Journal des changements sensibles',exact:true});await journal.getByLabel('Type d’objet',{exact:true}).selectOption('CRENEAU');await journal.getByLabel('Session',{exact:true}).selectOption(target.id);await journal.getByRole('button',{name:'Filtrer le journal',exact:true}).click();await expect(journal.getByRole('heading',{name:'Ajout de créneau',exact:true})).toHaveCount(2);await expect(journal.getByRole('heading',{name:'Modification de créneau',exact:true})).toBeVisible();
 });
+
+test('coanimation selects several instructors with keyboard and saves the entire session assignment',async({page})=>{
+ await login(page);const {dialog,code,headers}=await fixture(page);
+ const first=await(await page.request.post('/api/intervenants',{headers,data:{firstName:'Alpha',lastName:code}})).json();
+ const second=await(await page.request.post('/api/intervenants',{headers,data:{firstName:'Beta',lastName:code}})).json();
+ await dialog.getByLabel('Intitulé de session (obligatoire)',{exact:true}).fill('Coanimation '+code);await dialog.getByRole('button',{name:'Créer un brouillon de session',exact:true}).click();
+ const assignments=dialog.getByRole('region',{name:'Gérer la coanimation',exact:true});
+ await assignments.getByLabel('Rechercher un intervenant actif',{exact:true}).fill(code);await assignments.getByRole('button',{name:'Rechercher les intervenants actifs',exact:true}).click();
+ const alpha=assignments.getByRole('checkbox',{name:'Alpha '+code,exact:true});await alpha.focus();await page.keyboard.press('Space');await expect(alpha).toBeChecked();
+ await assignments.getByRole('checkbox',{name:'Beta '+code,exact:true}).check();
+ await assignments.getByRole('button',{name:'Enregistrer les affectations',exact:true}).click();await expect(dialog.getByRole('status').first()).toHaveText('Affectations enregistrées.');
+ const assigned=dialog.getByRole('region',{name:'Intervenants de la session',exact:true});await expect(assigned.getByRole('listitem')).toHaveCount(2);
+ await page.setViewportSize({width:375,height:812});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
+ await assignments.getByRole('checkbox',{name:'Alpha '+code,exact:true}).uncheck();await assignments.getByRole('button',{name:'Enregistrer les affectations',exact:true}).click();await expect(assigned.getByRole('listitem')).toHaveCount(1);await expect(assigned).toContainText('Beta '+code);
+ expect(first.id).not.toBe(second.id);
+});
+
+test('coanimation warns, rolls back, and supports explicit confirmation on a planned session',async({page})=>{
+ await login(page);const {dialog,headers,formation,code}=await fixture(page);
+ const instructor=await(await page.request.post('/api/intervenants',{headers,data:{firstName:'Conflit',lastName:code}})).json();
+ async function scheduled(title:string){const s=await(await page.request.post(`/api/formations/${formation.id}/sessions`,{headers,data:{title}})).json();expect((await page.request.post(`/api/sessions/${s.id}/creneaux`,{headers,data:{startsAt:'2036-01-10T09:00Z',endsAt:'2036-01-10T10:00Z',version:0}})).status()).toBe(201);expect((await page.request.post(`/api/sessions/${s.id}/planification`,{headers,data:{version:1}})).status()).toBe(204);return s;}
+ const first=await scheduled('Déjà affectée '+code),target=await scheduled('Coanimation cible '+code);
+ expect((await page.request.put(`/api/sessions/${first.id}/intervenants`,{headers,data:{instructorIds:[instructor.id],version:2,confirmConflicts:true}})).status()).toBe(204);
+ await dialog.getByRole('button',{name:'Actualiser les sessions',exact:true}).click();await dialog.getByRole('button',{name:'Ouvrir la session Coanimation cible '+code,exact:true}).click();
+ const assignments=dialog.getByRole('region',{name:'Gérer la coanimation',exact:true});await assignments.getByLabel('Rechercher un intervenant actif',{exact:true}).fill(code);await assignments.getByRole('button',{name:'Rechercher les intervenants actifs',exact:true}).click();await assignments.getByRole('checkbox',{name:'Conflit '+code,exact:true}).check();await assignments.getByRole('button',{name:'Enregistrer les affectations',exact:true}).click();
+ await expect(assignments.getByRole('alert')).toBeFocused();expect((await(await page.request.get(`/api/sessions/${target.id}`)).json()).instructors).toHaveLength(0);expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
+ await assignments.getByRole('button',{name:'Abandonner les affectations',exact:true}).click();await expect(assignments.getByLabel('Rechercher un intervenant actif',{exact:true})).toBeFocused();await assignments.getByRole('button',{name:'Enregistrer les affectations',exact:true}).click();await assignments.getByRole('button',{name:'Confirmer les affectations malgré les conflits',exact:true}).click();await expect(dialog.getByRole('region',{name:'Intervenants de la session',exact:true})).toContainText('Conflit '+code);
+ expect((await(await page.request.get(`/api/audit?sessionId=${target.id}&subjectType=AFFECTATIONS`)).json()).items).toHaveLength(1);
+});

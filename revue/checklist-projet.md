@@ -41,3 +41,8 @@
 - Pour un test de planning visant l’audit ou la concurrence, traiter les conflits préexistants de la session entière et vérifier le motif d’un refus ; tester l’avertissement séparément (DEF-026).
 
 - Après une mutation, contrôler les sources restaurées avant toute reconstruction ; un script de mutation temporaire doit nettoyer aussi sur SIGTERM/SIGINT et ne jamais compter une interruption comme mutation détectée (DEF-027).
+
+- Conserver l’identité DOM des contrôles sélectionnés au clavier ; vérifier immédiatement la sélection après Espace et le résultat enregistré (DEF-028).
+- Chaque session créée en test possède un nettoyage des liens et de la session ; rejouer la suite complète pour détecter les fuites entre scénarios (DEF-029).
+
+- Pour lancer une commande applicative, éviter les shells de connexion et leurs effets de profil ; ne jamais recopier une sortie sensible dans les preuves (DEF-030).

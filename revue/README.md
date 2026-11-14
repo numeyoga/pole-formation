@@ -49,3 +49,8 @@ Le [suivi](suivi.md) contient les statuts courants et la [checklist](checklist-p
 | [DEF-026](defauts/2026-11-13-DEF-026-conflits-preexistants-tests.md) | 2026-11-13 | Conflits préexistants masquant les tests d’audit et concurrence | Réponse ProblemDetail et scénarios HTTP | corrigé localement, US-05.02 |
 
 | [DEF-027](defauts/2026-11-13-DEF-027-interruption-mutation.md) | 2026-11-13 | Mutation temporaire non restaurée après interruption | Contrôle des sources après code d’arrêt 143 | corrigé localement, US-05.03 |
+
+| [DEF-028](defauts/2026-11-14-DEF-028-selection-coanimation.md) | 2026-11-14 | Sélection de coanimateurs perdue au clavier | Identité DOM stable, contrôle après Espace et persistance | corrigé localement, US-05.04 |
+| [DEF-029](defauts/2026-11-14-DEF-029-isolation-sessions-tests.md) | 2026-11-14 | Fuite de sessions entre tests HTTP | Nettoyage des créations et suite complète | corrigé localement, US-05.04 à US-07.02 |
+
+| [DEF-030](defauts/2026-11-14-DEF-030-sortie-shell-connexion.md) | 2026-11-14 | Sortie sensible d’un shell de connexion | Mise directement, sans profil de connexion | corrigé localement |

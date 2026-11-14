@@ -9,6 +9,11 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @RestControllerAdvice
 public class ApiErrors {
+    @ExceptionHandler(fr.intformation.collaborateurs.domain.Collaborator.DuplicateProfessionalId.class)
+    ProblemDetail duplicateCollaborator(fr.intformation.collaborateurs.domain.Collaborator.DuplicateProfessionalId error){
+        var problem=ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,error.getMessage());problem.setProperty("fieldErrors",java.util.Map.of("professionalId",error.getMessage()));return problem;
+    }
+
     @ExceptionHandler(fr.intformation.intervenants.domain.Instructor.InvalidField.class)
     ProblemDetail instructorField(fr.intformation.intervenants.domain.Instructor.InvalidField error){
         var problem=ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,error.getMessage());problem.setProperty("fieldErrors",java.util.Map.of(error.field(),error.getMessage()));return problem;

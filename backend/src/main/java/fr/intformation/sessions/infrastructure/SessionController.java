@@ -31,4 +31,9 @@ public class SessionController {
     }
     @PostMapping("/{id}/planification") @ResponseStatus(HttpStatus.NO_CONTENT)
     void plan(Principal user,@PathVariable UUID id,@RequestBody Version body){service.plan(user.getName(),id,version(body.version()));}
+    @PostMapping("/{id}/cloture") @ResponseStatus(HttpStatus.NO_CONTENT)
+    void complete(Principal user,@PathVariable UUID id,@RequestBody Version body){service.transition(user.getName(),id,version(body.version()),"TERMINEE");}
+    @PostMapping("/{id}/annulation") @ResponseStatus(HttpStatus.NO_CONTENT)
+    void cancel(Principal user,@PathVariable UUID id,@RequestBody Version body){service.transition(user.getName(),id,version(body.version()),"ANNULEE");}
+
 }

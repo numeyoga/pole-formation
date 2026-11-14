@@ -60,6 +60,14 @@ public class PostgresSessionStore implements SessionStore {
         return new Slot(slot,start,end);
     }
     @Transactional
+    public void transition(String actor,UUID id,Long version,String target,Instant now){
+        conflicts.lock();var current=find(id,true);
+        boolean pending=db.sql("SELECT EXISTS(SELECT 1 FROM participation WHERE session_id=:id AND state='INSCRITE')").param("id",id).query(Boolean.class).single();
+        current.requireTransition(version,target,now,pending);
+        db.sql("UPDATE training_session SET state=:state,version=version+1 WHERE id=:id").param("state",target).param("id",id).update();
+        audit.record(actor,target.equals("TERMINEE")?"CLOTURE_SESSION":"ANNULATION_SESSION","SESSION",id.toString(),id,Map.of("state",current.state()),Map.of("state",target),now);
+    }
+    @Transactional
     public void plan(UUID id,Long version){
         conflicts.lock();var session=find(id,true);session.requirePlannable(version);
         db.sql("UPDATE training_session SET state='PLANIFIEE',version=version+1 WHERE id=:id").param("id",id).update();

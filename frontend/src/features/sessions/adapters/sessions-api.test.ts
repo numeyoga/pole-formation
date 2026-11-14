@@ -28,3 +28,8 @@ test('slot edits send the displayed version and explicit confirmation to the aud
  vi.stubGlobal('fetch',fetch);const {sessionsApi}=await import('./sessions-api');await sessionsApi.editSlot(sessionView(dto),'c','2027-01-10T09:00','2027-01-10T10:00','+01:00',true);
  const request=fetch.mock.calls[1][0] as Request;expect(request.method).toBe('PUT');expect(request.url).toBe('http://localhost/api/sessions/s/creneaux/c');expect(request.headers.get('X-CSRF-TOKEN')).toBe('csrf');expect(await request.json()).toEqual({startsAt:'2027-01-10T09:00+01:00',endsAt:'2027-01-10T10:00+01:00',version:3,confirmConflicts:true});
 });
+test('coanimation sends the complete selection with version, CSRF and conflict confirmation',async()=>{
+ const fetch=vi.fn().mockImplementation((request:Request)=>Promise.resolve(request.url.endsWith('/api/auth/csrf')?Response.json({token:'csrf'}):new Response(null,{status:204})));
+ vi.stubGlobal('fetch',fetch);const {sessionsApi}=await import('./sessions-api');await sessionsApi.assign(sessionView(dto),['one','two'],true);
+ const request=fetch.mock.calls[1][0] as Request;expect(request.url).toBe('http://localhost/api/sessions/s/intervenants');expect(request.headers.get('X-CSRF-TOKEN')).toBe('csrf');expect(await request.json()).toEqual({instructorIds:['one','two'],version:3,confirmConflicts:true});
+});

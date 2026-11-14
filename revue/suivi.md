@@ -41,3 +41,8 @@
 | DEF-026 | 🟠 | Conflits préexistants masquant la barrière testée | [fiche](defauts/2026-11-13-DEF-026-conflits-preexistants-tests.md) | `AccessHttpTest.java`, `sessions.spec.ts` | corrigé localement | Confirmation des préconditions de fixture ; avertissement testé séparément | 2026-11-13 |
 
 | DEF-027 | 🟠 | Mutation temporaire non restaurée après interruption | [fiche](defauts/2026-11-13-DEF-027-interruption-mutation.md) | exécuteur temporaire de mutation | corrigé localement | Restauration immédiate, signaux gérés et revalidation des sources restaurées | 2026-11-13 |
+
+| DEF-028 | 🟠 | Sélection clavier perdue en coanimation | [fiche](defauts/2026-11-14-DEF-028-selection-coanimation.md) | `session-instructors.ts` | corrigé localement | Cases conservées, clés UUID, assertion après Espace | 2026-11-14 |
+| DEF-029 | 🟠 | Fuite de sessions entre tests HTTP | [fiche](defauts/2026-11-14-DEF-029-isolation-sessions-tests.md) | `AccessHttpTest.java` | corrigé localement | Nettoyage par identifiants créés, suite complète | 2026-11-14 |
+
+| DEF-030 | 🟠 | Sortie sensible d’un shell de connexion | [fiche](defauts/2026-11-14-DEF-030-sortie-shell-connexion.md) | lancement local de l’application | corrigé localement | Exécution directe de Mise avec `login:false`, aucun secret recopié | 2026-11-14 |

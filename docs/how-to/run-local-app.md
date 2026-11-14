@@ -1,12 +1,12 @@
 ---
-title: "Comment lancer et vérifier la première fonctionnalité"
+title: "Comment lancer et vérifier l’application locale"
 created: 2026-11-08
-updated: 2026-11-13
+updated: 2026-11-14
 status: accepted
 type: how-to
 ---
 
-# Comment lancer et vérifier la première fonctionnalité
+# Comment lancer et vérifier l’application locale
 
 ## Sommaire
 
@@ -61,11 +61,21 @@ Si un autre gestionnaire a modifié une fiche, utiliser **Recharger la fiche** d
 
 Avec `admin` ou `gestionnaire`, consulter **Journal des changements sensibles**, puis filtrer par type ou session. Avec `admin`, ouvrir « Exemple — Session clôturée » et changer effectivement la présence de Camille Exemple : le journal affiche la correction avec auteur, date UTC et états avant/après. Un enregistrement du même état n’ajoute pas de changement fictif.
 
-Pour retrouver les deux événements d’une participation, choisir le type « Participations » et renseigner son identifiant dans le filtre d’objet. Les désistements/réactivations et modifications de planning sont actuellement accessibles par les endpoints du [contrat d’audit](../../api/audit.openapi.yaml) ; leurs formulaires complets seront ajoutés dans les stories correspondantes. Les événements antérieurs restent conservés après redémarrage.
+Pour retrouver les deux événements d’une participation, choisir le type « Participations » et renseigner son identifiant dans le filtre d’objet. Enregistrer les désistements et réinscriptions depuis la session dans **Sessions accessibles**, et modifier les créneaux ou intervenants depuis **Gérer les sessions** dans le catalogue de formations. Les mêmes opérations restent accessibles par les endpoints du [contrat d’audit](../../api/audit.openapi.yaml). Les événements antérieurs restent conservés après redémarrage.
 
 Depuis **Formations**, utiliser **Gérer les sessions** sur la formation voulue. Pour une formation active, renseigner l’intitulé du brouillon, éventuellement une capacité entière positive et les modalités, puis créer. Ajouter au moins un créneau avec début, fin et décalage UTC explicite (`Z`, `+01:00`, etc.). Les créneaux enregistrés s’affichent en UTC. Utiliser **Planifier la session** ; aucun intervenant ni capacité n’est obligatoire. En cas de version périmée, utiliser **Recharger la fiche** avant de refaire l’opération. Pour changer un créneau en Brouillon ou Planifiée, utiliser **Modifier ce créneau**, corriger les dates et le décalage puis enregistrer. Un ajout est également possible après planification. En cas de conflit entre sessions, vérifier les dates proposées puis choisir **Confirmer malgré les conflits** ou **Abandonner ce changement**. Les conflits existants sont recalculés à chaque changement. Un chevauchement interne reste bloquant. Les ajouts et modifications des sessions planifiées apparaissent dans le journal, au type Créneau. Les sessions terminées ou annulées sont en lecture seule.
 
 Utiliser **Intervenants**, puis **Créer un intervenant** pour renseigner prénom, nom et coordonnées professionnelles facultatives. Aucun compte n’est nécessaire. Rechercher un nom et filtrer les actifs avec le formulaire. **Modifier** conserve les affectations ; **Désactiver** demande confirmation puis bloque les nouvelles affectations. Ouvrir **Sessions affectées** pour consulter l’historique, y compris après désactivation. Les sessions affichent aussi leurs intervenants affectés et leur statut. Une ancienne fiche sans prénom/nom structurés garde son libellé ; renseigner ces deux champs lors de sa première modification complète.
+
+Depuis la fiche de gestion d’une session Brouillon ou Planifiée, ouvrir **Gérer la coanimation**. Rechercher les intervenants actifs, cocher les personnes voulues, puis **Enregistrer les affectations**. Pour remplacer un coanimateur, décocher sa case ou utiliser **Retirer** et sélectionner son remplaçant. En cas d’avertissement, confirmer les affectations malgré les conflits ou abandonner. Les affectations déjà désactivées restent dans la sélection tant qu’elles ne sont pas retirées.
+
+Utiliser **Collaborateurs**, puis **Créer un collaborateur**, pour renseigner identifiant professionnel, prénom et nom. Rechercher par identifiant ou nom pour retrouver la fiche, la modifier, la désactiver ou ouvrir **Participations**. Aucun profil d’emploi n’est à renseigner.
+
+Dans **Sessions accessibles**, ouvrir une session planifiée, puis **Gérer les inscriptions**. Rechercher un collaborateur actif, le choisir et utiliser **Inscrire un collaborateur**. Confirmer les conflits éventuels seulement après les avoir examinés. Utiliser **Enregistrer le désistement de…** pour libérer sa place ; **Réinscrire…** réactive la même participation si une place est disponible. Après le dernier créneau, utiliser **Présente** ou **Absente** pour saisir la présence globale. Les corrections après clôture nécessitent le compte `admin` dans le jeu fictif.
+
+Depuis **Gérer les sessions**, utiliser **Clôturer la session** après le dernier créneau et après avoir traité toutes les participations Inscrites. Pour une annulation, choisir **Annuler la session**, puis **Confirmer l’annulation** ; les créneaux, intervenants et états de participation restent consultables.
+
+Utiliser **Pilotage** pour consulter les compteurs et l’activité. Rechercher une formation si nécessaire, la sélectionner, renseigner les bornes UTC et l’état, puis **Appliquer les filtres du pilotage**. Ouvrir une session dans l’activité détaillée pour voir créneaux, intervenants et effectifs. Pour comprendre les bornes et les annulations séparées, consulter le [rapport des stories de pilotage](../reference/quality/validation-stories-2026-11-14.md).
 
 ## Réinitialiser les données fictives
 
@@ -81,15 +91,16 @@ Les scénarios de US-04.01 et US-04.02 se parcourent depuis « Profils d’emplo
 
 ## Exécuter les validations
 
-Depuis la racine du dépôt, avec l’application lancée sur 8080 pour Playwright :
+Arrêter l’application avant les compilations backend pour ne pas remplacer son JAR pendant son exécution. Depuis la racine du dépôt :
 
 ```bash
 mise run test:frontend
 mise run test:backend
-mise run test:e2e
 mise exec -- bash -c 'cd backend && python3 check-security-mutations.py'
 mise run test:backend
 ```
+
+Après ces contrôles, lancer `mise run dev` dans un terminal, puis exécuter `mise run test:e2e` dans un autre terminal avec l’application disponible sur 8080.
 
 Le contrôle de mutations restaure les sources même en cas d’échec. Il modifie temporairement les sources : ne pas lancer une autre compilation backend en parallèle. Le dernier `./mvnw test` recompile les sources restaurées.
 

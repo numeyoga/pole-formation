@@ -1,0 +1,123 @@
+openapi: 3.1.0
+info:
+  title: Participations et pilotage — US-06.02, US-07.01, US-07.02
+  version: 1.0.0
+security: [{session: []}]
+paths:
+  /api/sessions/{session}/participants:
+    post:
+      description: Gestionnaire ou administrateur. Session Planifiée, collaborateur actif, couple unique, capacité stricte. Les conflits nécessitent confirmation explicite. Audit atomique.
+      parameters:
+        - {name: session, in: path, required: true, schema: {type: string, format: uuid}}
+        - {name: X-CSRF-TOKEN, in: header, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [collaboratorId]
+              properties:
+                collaboratorId: {type: string, format: uuid}
+                confirmConflicts: {type: boolean, default: false}
+      responses:
+        '201':
+          description: Participation Inscrite créée
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id]
+                properties:
+                  id: {type: string, format: uuid}
+        '400': {description: Requête invalide}
+        '401': {description: Non authentifié}
+        '403': {description: Gestion ou CSRF interdit}
+        '404': {description: Session ou collaborateur inconnu}
+        '409': {description: État, capacité, doublon ou conflit de planning à confirmer}
+  /api/pilotage:
+    get:
+      description: Gestionnaire ou administrateur. Stock courant des formations actives ; sessions rattachées au début du premier créneau dans la période [from,until). Participations hors annulations séparées des participations annulées ; réalisé = session Terminée. Sans période, brouillons sans créneau inclus ; avec période ils sont exclus. Aucun ratio ni score.
+      parameters:
+        - {$ref: '#/components/parameters/From'}
+        - {$ref: '#/components/parameters/Until'}
+        - {$ref: '#/components/parameters/Formation'}
+        - {$ref: '#/components/parameters/State'}
+      responses:
+        '200':
+          description: Compteurs y compris zéro sans résultat
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [activeFormations, sessions, participations, cancelledParticipations, realizedSessions]
+                properties:
+                  activeFormations: {type: integer}
+                  realizedSessions: {type: integer}
+                  sessions:
+                    type: object
+                    required: [BROUILLON, PLANIFIEE, TERMINEE, ANNULEE]
+                    properties:
+                      BROUILLON: {type: integer}
+                      PLANIFIEE: {type: integer}
+                      TERMINEE: {type: integer}
+                      ANNULEE: {type: integer}
+                  participations: {$ref: '#/components/schemas/Counts'}
+                  cancelledParticipations: {$ref: '#/components/schemas/Counts'}
+        '400': {description: Période ou état invalide}
+        '401': {description: Non authentifié}
+        '403': {description: Pilotage interdit}
+  /api/pilotage/sessions:
+    get:
+      description: Même période et filtres que les compteurs ; tri premier créneau décroissant, sans créneau en fin, puis UUID. Pas de jointure multiplicative avec les créneaux, intervenants ou participations.
+      parameters:
+        - {$ref: '#/components/parameters/From'}
+        - {$ref: '#/components/parameters/Until'}
+        - {$ref: '#/components/parameters/Formation'}
+        - {$ref: '#/components/parameters/State'}
+        - {name: page, in: query, schema: {type: integer, minimum: 0, default: 0}}
+        - {name: size, in: query, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+      responses:
+        '200':
+          description: Page d’activité avec états courants, y compris annulations
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total, page, size]
+                properties:
+                  total: {type: integer}
+                  page: {type: integer}
+                  size: {type: integer}
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, formationId, title, state, firstSlotStart, participations]
+                      properties:
+                        id: {type: string, format: uuid}
+                        formationId: {type: [string, 'null'], format: uuid}
+                        title: {type: string}
+                        state: {type: string, enum: [BROUILLON, PLANIFIEE, TERMINEE, ANNULEE]}
+                        firstSlotStart: {type: [string, 'null'], format: date-time}
+                        participations: {$ref: '#/components/schemas/Counts'}
+        '400': {description: Période, état ou pagination invalide}
+        '401': {description: Non authentifié}
+        '403': {description: Pilotage interdit}
+components:
+  securitySchemes:
+    session: {type: apiKey, in: cookie, name: JSESSIONID}
+  parameters:
+    From: {name: from, in: query, schema: {type: string, format: date-time}, description: Début inclusif avec décalage explicite}
+    Until: {name: until, in: query, schema: {type: string, format: date-time}, description: Fin exclusive avec décalage explicite}
+    Formation: {name: formationId, in: query, schema: {type: string, format: uuid}}
+    State: {name: state, in: query, schema: {type: string, enum: [BROUILLON, PLANIFIEE, TERMINEE, ANNULEE]}}
+  schemas:
+    Counts:
+      type: object
+      required: [registered, present, absent, withdrawn]
+      properties:
+        registered: {type: integer}
+        present: {type: integer}
+        absent: {type: integer}
+        withdrawn: {type: integer}

@@ -1,3 +1,4 @@
+import './session-instructors';
 import {LitElement,css,html,nothing} from 'lit';
 import {sessionsApi,SessionError} from '../adapters/sessions-api';
 import type {SessionView,SessionSummary} from '../presentation/models';
@@ -6,7 +7,7 @@ import {messages,sessionMessages as m} from '../../../shared/i18n/fr';
 
 interface SlotProposal {item:SessionView;slotId:string|null;start:string;end:string;offset:string}
 export class FormationSessions extends LitElement {
- static properties={formation:{state:true},items:{state:true},selected:{state:true},busy:{state:true},error:{state:true},notice:{state:true},fields:{state:true},pending:{state:true},editingSlot:{state:true}};
+ static properties={formation:{state:true},items:{state:true},selected:{state:true},busy:{state:true},error:{state:true},notice:{state:true},fields:{state:true},pending:{state:true},editingSlot:{state:true},cancellation:{state:true}};
  declare private formation:FormationView|null;
  declare private items:SessionSummary[];
  declare private selected:SessionView|null;
@@ -15,8 +16,9 @@ export class FormationSessions extends LitElement {
  declare private notice:string;
  declare private fields:Record<string,string>;
  declare private pending:{proposal:SlotProposal;conflicts:string[]}|null;
+ declare private cancellation:SessionView|null;
  declare private editingSlot:string|null;
- constructor(){super();this.formation=null;this.items=[];this.selected=null;this.busy=false;this.error='';this.notice='';this.fields={};this.pending=null;this.editingSlot=null;}
+ constructor(){super();this.formation=null;this.items=[];this.selected=null;this.busy=false;this.error='';this.notice='';this.fields={};this.pending=null;this.editingSlot=null;this.cancellation=null;}
  private generation=0;
  static styles=css`
   :host{display:block;}*{box-sizing:border-box;}
@@ -48,7 +50,7 @@ export class FormationSessions extends LitElement {
   event.preventDefault();const form=event.currentTarget as HTMLFormElement;const values=new FormData(form);const capacity=String(values.get('capacity')).trim();
   await this.perform(async()=>{const created=await sessionsApi.create(this.formation!.id,{title:String(values.get('title')),capacity:capacity?Number(capacity):null,modalities:String(values.get('modalities'))});this.selected=await sessionsApi.get(created.id);form.reset();this.changed();await this.focusElement('#session-detail-title');},m.saved);
  }
- private async open(id:string){this.pending=null;this.editingSlot=null;await this.perform(async()=>{this.selected=await sessionsApi.get(id);await this.updateComplete;this.renderRoot.querySelector<HTMLFormElement>('#session-slot-form')?.reset();await this.focusElement('#session-detail-title');});}
+ private async open(id:string){this.cancellation=null;this.pending=null;this.editingSlot=null;await this.perform(async()=>{this.selected=await sessionsApi.get(id);await this.updateComplete;this.renderRoot.querySelector<HTMLFormElement>('#session-slot-form')?.reset();await this.focusElement('#session-detail-title');});}
  private async back(){this.selected=null;this.pending=null;this.editingSlot=null;await this.load();await this.focusElement('#session-list-title');}
  private async editSlot(slot:SessionView['slots'][number]){
   this.editingSlot=slot.id;this.error='';this.notice='';this.fields={};await this.updateComplete;
@@ -78,6 +80,9 @@ export class FormationSessions extends LitElement {
  }
  private async confirmSlot(){if(!this.pending||this.busy)return;const proposal=this.pending.proposal;this.pending=null;await this.saveSlot(proposal,true);}
  private async cancelConflict(){this.pending=null;await this.focusElement('#session-startsAt');}
+ private async finish(){const item=this.selected!;await this.perform(async()=>{await sessionsApi.finish(item);await this.refreshTransition(item);},m.completed);}
+ private async cancelSession(){const item=this.cancellation!;await this.perform(async()=>{await sessionsApi.cancel(item);this.cancellation=null;await this.refreshTransition(item);},m.cancelled);}
+ private async refreshTransition(item:SessionView){this.selected=await sessionsApi.get(item.id);this.changed();await this.focusElement('#session-detail-title');}
  private async plan(){const item=this.selected!;await this.perform(async()=>{await sessionsApi.plan(item);this.selected=await sessionsApi.get(item.id);this.changed();await this.focusElement('#session-detail-title');},m.planned);}
  private field(name:string,label:string,type='text',required=false,help=''){
   const error=this.fields[name];const described=[help,error?`${name}-error`:''].filter(Boolean).join(' ');
@@ -90,6 +95,7 @@ export class FormationSessions extends LitElement {
   ${this.error?html`<p id="session-error" role="alert" tabindex="-1">${this.error}</p><button type="button" ?disabled=${this.busy} @click=${()=>item?this.open(item.id):this.load()}>${m.refresh}</button>`:nothing}
   ${item?html`<h3 id="session-detail-title" tabindex="-1">${item.title} — ${item.status}</h3><p>${item.capacityLabel}</p><p>${item.modalities}</p>
    ${item.instructors.length?html`<section aria-label=${m.assignedInstructors}><h4>${m.assignedInstructors}</h4><ul>${item.instructors.map(instructor=>html`<li>${instructor.label} — ${instructor.status}</li>`)}</ul></section>`:html`<p>${m.noAssignedInstructor}</p>`}
+   ${editable?html`<session-instructors .session=${item} @instructors-saved=${async()=>{await this.open(item.id);this.notice=m.instructorsSaved;this.changed();}}></session-instructors>`:nothing}
    ${item.slots.length?html`<ol aria-label=${m.slotsTitle}>${item.slots.map(slot=>html`<li>${slot.start} — ${slot.end}${editable?html` <button type="button" ?disabled=${this.busy||!!this.pending} aria-label=${`${m.editSlot} : ${slot.start}`} @click=${()=>this.editSlot(slot)}>${m.editSlot}</button>`:nothing}</li>`)}</ol>`:html`<p>${m.noSlots}</p>`}
    ${editable?html`<p id="session-time-help">${m.timeHelp}</p><form id="session-slot-form" aria-labelledby="session-slot-title" @submit=${this.addSlot}><fieldset ?disabled=${this.busy||!!this.pending}><legend id="session-slot-title">${this.editingSlot?m.editTitle:m.slot}</legend>
     ${this.field('startsAt',m.start,'datetime-local',true,'session-time-help')}${this.field('endsAt',m.end,'datetime-local',true,'session-time-help')}
@@ -97,6 +103,8 @@ export class FormationSessions extends LitElement {
    </fieldset></form>`:nothing}
    ${this.pending?html`<div id="session-conflicts" role="alert" tabindex="-1"><h3>${m.conflictTitle}</h3><p>${m.conflictCount(this.pending.conflicts.length)}</p><p>${m.conflictHelp}</p><p>${this.pending.proposal.start} ${this.pending.proposal.offset} → ${this.pending.proposal.end} ${this.pending.proposal.offset}</p></div><div class="actions"><button type="button" ?disabled=${this.busy} @click=${this.confirmSlot}>${m.confirmSlot}</button><button type="button" ?disabled=${this.busy} @click=${this.cancelConflict}>${m.cancelConflict}</button></div>`:nothing}
    ${item.state==='BROUILLON'?html`<p>${m.noInstructor}</p><button type="button" ?disabled=${this.busy||!!this.pending} @click=${this.plan}>${m.plan}</button>`:nothing}
+   ${editable?html`<div class="actions">${item.state==='PLANIFIEE'?html`<button type="button" ?disabled=${this.busy||!!this.pending} @click=${this.finish}>${m.finish}</button>`:nothing}<button type="button" ?disabled=${this.busy||!!this.pending} @click=${async()=>{this.cancellation=item;await this.focusElement('#session-cancel-title');}}>${m.cancelSession}</button></div>`:nothing}
+   ${this.cancellation?html`<section aria-labelledby="session-cancel-title"><h4 id="session-cancel-title" tabindex="-1">${m.cancelSession}</h4><p>${m.cancelHelp}</p><button type="button" ?disabled=${this.busy} @click=${this.cancelSession}>${m.confirmCancel}</button><button type="button" ?disabled=${this.busy} @click=${async()=>{this.cancellation=null;await this.focusElement('#session-detail-title');}}>${m.keepSession}</button></section>`:nothing}
    <div class="actions"><button type="button" ?disabled=${this.busy||!!this.pending} @click=${this.back}>${m.back}</button><button type="button" ?disabled=${this.busy} @click=${()=>this.open(item.id)}>${m.refresh}</button></div>
   `:html`${this.items.length?html`<ul>${this.items.map(session=>html`<li><button type="button" ?disabled=${this.busy} aria-label=${`${m.details} ${session.title}`} @click=${()=>this.open(session.id)}>${session.title}</button> — ${session.status}</li>`)}</ul>`:this.busy?nothing:html`<p>${m.empty}</p>`}
    <button type="button" ?disabled=${this.busy} @click=${this.load}>${m.reload}</button>

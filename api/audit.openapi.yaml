@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Pôle formation — journal et changements sensibles
-  version: 0.4.0
+  version: 0.5.0
 servers: [{url: /}]
 security: [{session: []}]
 paths:
@@ -9,7 +9,7 @@ paths:
     get:
       description: Gestionnaires et administrateurs uniquement. Ordre décroissant de séquence ; curseur exclusif, sans total instable.
       parameters:
-        - {name: subjectType, in: query, schema: {type: string, enum: [COMPTE, PARTICIPATION, CRENEAU, AFFECTATIONS, FORMATION]}}
+        - {name: subjectType, in: query, schema: {type: string, enum: [COMPTE, PARTICIPATION, CRENEAU, AFFECTATIONS, FORMATION, SESSION]}}
         - {name: subjectId, in: query, schema: {type: string, minLength: 1, maxLength: 100}}
         - {name: sessionId, in: query, schema: {type: string, format: uuid}}
         - {name: beforeSequence, in: query, schema: {type: string, pattern: '^[1-9][0-9]*$', maxLength: 19}}
@@ -65,11 +65,13 @@ paths:
             schema:
               type: object
               required: [instructorIds]
+              description: Remplacement global en Brouillon ou Planifiée. Version obligatoire en Brouillon, optionnelle pour les anciens clients en Planifiée. Les nouvelles affectations exigent des intervenants actifs ; les affectations inactives existantes peuvent être conservées. Incrémente la version, audit en Planifiée.
               properties:
+                version: {type: integer, minimum: 0}
                 instructorIds: {type: array, uniqueItems: true, items: {type: string, format: uuid}}
                 confirmConflicts: {type: boolean, default: false}
       responses:
-        '204': {description: Affectations remplacées et auditées atomiquement}
+        '204': {description: Affectations enregistrées, audit atomique en Planifiée}
         '400': {$ref: '#/components/responses/Error'}
         '401': {$ref: '#/components/responses/Error'}
         '403': {$ref: '#/components/responses/Error'}
@@ -128,7 +130,7 @@ components:
         occurredAt: {type: string, format: date-time}
         actor: {type: string}
         action: {type: string}
-        subjectType: {type: string, enum: [COMPTE, PARTICIPATION, CRENEAU, AFFECTATIONS, FORMATION]}
+        subjectType: {type: string, enum: [COMPTE, PARTICIPATION, CRENEAU, AFFECTATIONS, FORMATION, SESSION]}
         subjectId: {type: string}
         sessionId: {type: [string, 'null'], format: uuid}
         before: {type: object, additionalProperties: true}

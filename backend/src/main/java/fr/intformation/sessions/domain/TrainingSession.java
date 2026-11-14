@@ -22,6 +22,17 @@ public record TrainingSession(UUID id,UUID formationId,String title,String state
         return value;
     }
     public static void capacity(Integer value){if(value!=null&&value<1)throw new InvalidField("capacity","La capacité doit être un entier strictement positif.");}
+    public void requireTransition(Long expected,String target,Instant now,boolean pendingAttendance){
+        if(expected==null||expected<0)throw new InvalidField("version","Version requise.");
+        if(expected!=version)throw new Conflict("La session a changé. Rechargez sa fiche.");
+        if(target.equals("ANNULEE")){
+            if(!state.equals("BROUILLON")&&!state.equals("PLANIFIEE"))throw new Conflict("Seule une session Brouillon ou Planifiée peut être annulée.");
+        }else if(target.equals("TERMINEE")){
+            if(!state.equals("PLANIFIEE"))throw new Conflict("La clôture nécessite une session planifiée.");
+            if(slots.isEmpty()||slots.stream().anyMatch(slot->now.isBefore(slot.endsAt())))throw new Conflict("La clôture est possible après le dernier créneau.");
+            if(pendingAttendance)throw new Conflict("Les participations Inscrites doivent être renseignées avant la clôture.");
+        }else throw new IllegalArgumentException("Transition inconnue.");
+    }
     public void requireDraft(Long expected){
         if(expected==null||expected<0)throw new InvalidField("version","Version requise.");
         if(expected!=version)throw new Conflict("La session a changé. Rechargez sa fiche.");
