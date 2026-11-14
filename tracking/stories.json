@@ -22,7 +22,7 @@
     "commits": [
       "9f2d2d4"
     ],
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -41,7 +41,7 @@
       "9f2d2d4",
       "6925193"
     ],
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -59,7 +59,7 @@
     "commits": [
       "fdc6d04"
     ],
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -78,7 +78,7 @@
       "fdc6d04",
       "7ee132f"
     ],
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -104,7 +104,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
     },
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "commits": [
       "44d06d0b10b65c6b6f754c71ec129801835f0ebf"
     ]
@@ -122,7 +122,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
     },
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "commits": [
       "44d06d0b10b65c6b6f754c71ec129801835f0ebf"
     ]
@@ -144,7 +144,7 @@
       "required": false,
       "reason": "Transition technique demandée explicitement, vérifiée par les contrôles locaux et les suites applicatives."
     },
-    "validated_commit": "44d06d0b10b65c6b6f754c71ec129801835f0ebf",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "commits": [
       "fa508e4"
     ]
@@ -165,7 +165,7 @@
     "commits": [
       "0b538a48a3f35a7df065dba25e1c4b184c7ac455"
     ],
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49"
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903"
   },
   "US-02.02": {
     "implementation": "complete",
@@ -180,7 +180,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
     },
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "commits": [
       "de6aa484452518b17042ce90e7a365c7bb25052f"
     ]
@@ -198,7 +198,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-09.md"
     },
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "commits": [
       "d7cadc40596fa254af9d058a3b329abfe1022ba8"
     ]
@@ -216,7 +216,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-09.md"
     },
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "commits": [
       "d0f37dc5fc5779740eb775352ac6b56001499329"
     ]
@@ -234,7 +234,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
     },
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "commits": [
       "0a2023213655163c6618796dd64b9cc60dbbf5fa"
     ]
@@ -252,7 +252,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-10.md"
     },
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "commits": [
       "4541bfb4e557d2e54e6b507505dc71e4f27bab1d",
       "ec924794f2b1c478bb155aaaa28a3fdfb263a9bf"
@@ -271,7 +271,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-10.md"
     },
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "commits": [
       "109508832577c3a80ec433c3f045201cf22592bb"
     ]
@@ -294,7 +294,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
     },
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "commits": [
       "7986380c3132154464a3385cf7c03803e1a540d8"
     ]
@@ -317,7 +317,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
     },
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "commits": [
       "7986380c3132154464a3385cf7c03803e1a540d8"
     ]
@@ -335,7 +335,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
     },
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "commits": [
       "8ae69185513dfa7313ab3bddb3c3da05b473f0af"
     ]
@@ -353,7 +353,7 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
     },
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "commits": [
       "9f93043f757a0716f2c95430d4ff80da528a9d72"
     ]
@@ -371,13 +371,13 @@
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
     },
-    "validated_commit": "205f79bfe75129ed7c2839544d5a86f6b04def49",
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
     "commits": [
       "205f79bfe75129ed7c2839544d5a86f6b04def49"
     ]
   },
   "US-05.04": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -390,10 +390,14 @@
     ],
     "acceptance": {
       "required": true
-    }
+    },
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
+    "commits": [
+      "8aa353c5fdf8471a646475082526e9cbbb972903"
+    ]
   },
   "US-05.05": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -406,10 +410,14 @@
     ],
     "acceptance": {
       "required": true
-    }
+    },
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
+    "commits": [
+      "8aa353c5fdf8471a646475082526e9cbbb972903"
+    ]
   },
   "US-06.01": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -422,10 +430,14 @@
     ],
     "acceptance": {
       "required": true
-    }
+    },
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
+    "commits": [
+      "8aa353c5fdf8471a646475082526e9cbbb972903"
+    ]
   },
   "US-06.02": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -438,10 +450,14 @@
     ],
     "acceptance": {
       "required": true
-    }
+    },
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
+    "commits": [
+      "8aa353c5fdf8471a646475082526e9cbbb972903"
+    ]
   },
   "US-06.03": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -454,10 +470,14 @@
     ],
     "acceptance": {
       "required": true
-    }
+    },
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
+    "commits": [
+      "8aa353c5fdf8471a646475082526e9cbbb972903"
+    ]
   },
   "US-06.04": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -470,10 +490,14 @@
     ],
     "acceptance": {
       "required": true
-    }
+    },
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
+    "commits": [
+      "8aa353c5fdf8471a646475082526e9cbbb972903"
+    ]
   },
   "US-07.01": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -486,10 +510,14 @@
     ],
     "acceptance": {
       "required": true
-    }
+    },
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
+    "commits": [
+      "8aa353c5fdf8471a646475082526e9cbbb972903"
+    ]
   },
   "US-07.02": {
-    "implementation": "partial",
+    "implementation": "complete",
     "code_paths": [
       "backend/",
       "frontend/",
@@ -502,6 +530,10 @@
     ],
     "acceptance": {
       "required": true
-    }
+    },
+    "validated_commit": "8aa353c5fdf8471a646475082526e9cbbb972903",
+    "commits": [
+      "8aa353c5fdf8471a646475082526e9cbbb972903"
+    ]
   }
 }

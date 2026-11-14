@@ -1,7 +1,7 @@
 ---
 title: "Validation US-05.03 — Administrer les intervenants"
 created: 2026-11-13
-updated: 2026-11-13
+updated: 2026-11-14
 status: accepted
 type: reference
 ---
@@ -9,6 +9,8 @@ type: reference
 # Validation US-05.03 — Administrer les intervenants
 
 ## Sommaire
+
+- [Revalidation technique du 14 novembre 2026](#revalidation-technique-du-14-novembre-2026)
 
 - [Périmètre](#périmètre)
 - [Données et compatibilité](#données-et-compatibilité)
@@ -79,3 +81,9 @@ L’affectation interactive des intervenants relève de US-05.04 ; son endpoint 
 Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
 
 La [confirmation du représentant du projet](acceptance-2026-11-13.md) clôt la recette et les réserves d’accessibilité encore mentionnées dans ce rapport. Les protocoles humains individuels ne sont pas détaillés.
+
+## Revalidation technique du 14 novembre 2026
+
+Le code applicatif `8aa353c5fdf8471a646475082526e9cbbb972903` a été revalidé par les suites complètes backend (105 tests), Vitest (43 tests), scripts (13 tests) et les 59 scénarios Chromium distincts. Le [rapport commun du 14 novembre](validation-stories-2026-11-14.md) détaille les commandes, l’interruption par signal de la longue commande navigateur et le lot de complément réussi. `mise run check` confirme les versions locales et l’accès aux services partagés.
+
+Cette entrée renouvelle uniquement la preuve technique. Les recettes humaines déjà consignées conservent leur périmètre historique ; les huit nouvelles stories restent à recetter séparément.

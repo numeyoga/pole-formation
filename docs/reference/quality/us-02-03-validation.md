@@ -1,7 +1,7 @@
 ---
 title: "Développement et validation de US-02.03"
 created: 2026-11-09
-updated: 2026-11-13
+updated: 2026-11-14
 status: accepted
 type: reference
 ---
@@ -9,6 +9,8 @@ type: reference
 # Développement et validation de US-02.03
 
 ## Sommaire
+
+- [Revalidation technique du 14 novembre 2026](#revalidation-technique-du-14-novembre-2026)
 
 - [Périmètre](#périmètre)
 - [Critères et décisions](#critères-et-décisions)
@@ -67,3 +69,9 @@ Revalidation lors de US-03.01 : la révision `0a2023213655163c6618796dd64b9cc60d
 Le rattachement technique courant est `205f79bfe75129ed7c2839544d5a86f6b04def49` : voir la [validation transversale](validation-transversale-2026-11-13.md), fondée sur les suites complètes déjà exécutées lors de US-05.03. Les résultats de livraison décrits plus haut restent des preuves historiques.
 
 L’acceptation humaine antérieure est conservée dans le manifeste.
+
+## Revalidation technique du 14 novembre 2026
+
+Le code applicatif `8aa353c5fdf8471a646475082526e9cbbb972903` a été revalidé par les suites complètes backend (105 tests), Vitest (43 tests), scripts (13 tests) et les 59 scénarios Chromium distincts. Le [rapport commun du 14 novembre](validation-stories-2026-11-14.md) détaille les commandes, l’interruption par signal de la longue commande navigateur et le lot de complément réussi. `mise run check` confirme les versions locales et l’accès aux services partagés.
+
+Cette entrée renouvelle uniquement la preuve technique. Les recettes humaines déjà consignées conservent leur périmètre historique ; les huit nouvelles stories restent à recetter séparément.

@@ -54,6 +54,8 @@ Les fixtures SQL existantes restent utilisées pour établir les préconditions 
 
 ## Résultats techniques
 
+Commit applicatif validé : `8aa353c5fdf8471a646475082526e9cbbb972903`. Les rapports et le manifeste renouvellent également les preuves techniques des stories antérieures sur ces suites rejouées, sans créer de nouvelle acceptation humaine.
+
 | Contrôle | Résultat du 14 novembre 2026 |
 |---|---|
 | `mise run check` | Java 27.0.1.0.2, Node 26.13.0, Chromium 156.0.8078.80 et connexion PostgreSQL : OK. |

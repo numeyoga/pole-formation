@@ -1,7 +1,7 @@
 ---
 title: "Validation de l’environnement local Mise et Podman"
 created: 2026-11-08
-updated: 2026-11-08
+updated: 2026-11-14
 status: accepted
 type: reference
 ---
@@ -9,6 +9,8 @@ type: reference
 # Validation de l’environnement local Mise et Podman
 
 ## Sommaire
+
+- [Revalidation technique du 14 novembre 2026](#revalidation-technique-du-14-novembre-2026)
 
 - [Configuration](#configuration)
 - [Transition et données](#transition-et-données)
@@ -42,3 +44,9 @@ Les régressions complètes après US-01.04 sont consignées dans son [rapport](
 Cette validation concerne ce poste Linux et les services partagés existants. Les chemins des scripts des skills sont configurables dans Mise ; une autre installation doit fournir ces scripts ou adapter ces chemins. Aucun déploiement de production ni environnement de CI n’est modifié. Le résultat du contrôle réseau ne remplace pas les tests applicatifs d’intégration, exécutés séparément.
 
 Références : [ADR 0013](../../decisions/ADR-0013-local-mise-podman.md), [guide local](../../how-to/local-development.md).
+
+## Revalidation technique du 14 novembre 2026
+
+Le code applicatif `8aa353c5fdf8471a646475082526e9cbbb972903` a été revalidé par les suites complètes backend (105 tests), Vitest (43 tests), scripts (13 tests) et les 59 scénarios Chromium distincts. Le [rapport commun du 14 novembre](validation-stories-2026-11-14.md) détaille les commandes, l’interruption par signal de la longue commande navigateur et le lot de complément réussi. `mise run check` confirme les versions locales et l’accès aux services partagés.
+
+Cette entrée renouvelle uniquement la preuve technique. Les recettes humaines déjà consignées conservent leur périmètre historique ; les huit nouvelles stories restent à recetter séparément.
