@@ -5,14 +5,14 @@ test('administrator can inspect a real correction, filter the journal and naviga
   await page.goto('/');
   await page.getByLabel('Identifiant',{exact:true}).fill('admin');await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');
   await page.getByRole('button',{name:'Se connecter',exact:true}).click();
-  await page.getByRole('heading',{name:'Sessions accessibles',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'Sessions',level:1,exact:true}).waitFor();
   const session='20000000-0000-0000-0000-000000000003';
   const participant='40000000-0000-0000-0000-000000000003';
   const previous=(await (await page.request.get(`/api/sessions/${session}/participants`)).json()).find((item:{id:string;state:string})=>item.id===participant).state;
-  await page.getByRole('button',{name:'Exemple — Session clôturée',exact:true}).click();
+  await page.getByRole('button',{name:'Ouvrir les participations de Exemple — Session clôturée',exact:true}).click();
   await page.getByRole('button',{name:previous==='PRESENTE'?'Marquer Camille Exemple absente':'Marquer Camille Exemple présente',exact:true}).click();
   await expect(page.getByRole('status',{name:'État de l’opération'})).toHaveText('Modification enregistrée.');
-  const journal=page.getByRole('region',{name:'Journal des changements sensibles',exact:true});
+  await page.getByRole('link',{name:'Journal',exact:true}).click();const journal=page.getByRole('region',{name:'Journal des changements sensibles',exact:true});
   await journal.getByLabel('Type d’objet',{exact:true}).selectOption('PARTICIPATION');
   await journal.getByLabel('Session',{exact:true}).selectOption(session);
   await journal.getByLabel('Identifiant de l’objet (facultatif)',{exact:true}).fill(participant);
@@ -36,7 +36,7 @@ test('administrator can inspect a real correction, filter the journal and naviga
 test('instructor has no journal view and cannot access the journal API',async({page})=>{
   await page.goto('/');await page.getByLabel('Identifiant',{exact:true}).fill('intervenant');await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');
   await page.getByRole('button',{name:'Se connecter',exact:true}).click();
-  await page.getByRole('heading',{name:'Sessions accessibles',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'Sessions',level:1,exact:true}).waitFor();
   await expect(page.getByRole('region',{name:'Journal des changements sensibles',exact:true})).toHaveCount(0);
   expect((await page.request.get('/api/audit')).status()).toBe(403);
 });
@@ -45,7 +45,7 @@ test('journal recovers from a network error and paginates without repeating even
   await page.route('**/api/audit*',route=>route.abort());
   await page.goto('/');await page.getByLabel('Identifiant',{exact:true}).fill('admin');await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');
   await page.getByRole('button',{name:'Se connecter',exact:true}).click();
-  const journal=page.getByRole('region',{name:'Journal des changements sensibles',exact:true});
+  await page.getByRole('link',{name:'Journal',exact:true}).click();const journal=page.getByRole('region',{name:'Journal des changements sensibles',exact:true});
   await expect(journal.getByRole('alert')).toHaveText('Le service est indisponible. Réessayez.');
   await expect(journal.getByRole('alert')).toBeFocused();
   await page.unroute('**/api/audit*');

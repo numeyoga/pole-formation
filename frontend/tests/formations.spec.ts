@@ -1,14 +1,14 @@
 import { test,expect,type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 async function login(page:Page,user='gestionnaire'){
- await page.goto('/');await page.getByLabel('Identifiant',{exact:true}).fill(user);await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions accessibles',exact:true}).waitFor();
+ await page.goto('/');await page.getByLabel('Identifiant',{exact:true}).fill(user);await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions',level:1,exact:true}).waitFor();
 }
 async function headers(page:Page){const csrf=await(await page.request.get('/api/auth/csrf')).json();return {[csrf.headerName]:csrf.token};}
 const code=()=>`000-FOR-${9999999999999-Date.now()}`;
-async function catalogue(page:Page){await page.getByRole('button',{name:'Formations',exact:true}).click();return page.getByRole('region',{name:'Formations',exact:true});}
+async function catalogue(page:Page){await page.getByRole('link',{name:'Catalogue',exact:true}).click();return page.getByRole('region',{name:'Formations',exact:true});}
 
 test('manager maintains the training lifecycle with keyboard, archived code reservation, history and audit',async({page})=>{
- await login(page);const nav=page.getByRole('button',{name:'Formations',exact:true});await nav.focus();await page.keyboard.press('Enter');await expect(page.getByRole('heading',{name:'Formations',exact:true})).toBeFocused();
+ await login(page);const nav=page.getByRole('link',{name:'Catalogue',exact:true});await nav.focus();await page.keyboard.press('Enter');await expect(page.getByRole('heading',{name:'Formations',exact:true})).toBeFocused();
  const panel=page.getByRole('region',{name:'Formations',exact:true});const create=panel.getByRole('button',{name:'Créer une formation',exact:true});await create.click();
  const editor=page.getByRole('dialog',{name:'Créer une formation',exact:true});await expect(editor.getByLabel('Code',{exact:true})).toBeFocused();
  await page.keyboard.press('Tab');await expect(editor.getByLabel('Intitulé',{exact:true})).toBeFocused();await page.keyboard.press('Tab');await expect(editor.getByLabel('Objectifs',{exact:true})).toBeFocused();await page.keyboard.press('Shift+Tab');await expect(editor.getByLabel('Intitulé',{exact:true})).toBeFocused();
@@ -26,7 +26,7 @@ test('manager maintains the training lifecycle with keyboard, archived code rese
  expect((await page.request.post(path+'/sessions',{headers:token,data:{title:'Refus après archivage'}})).status()).toBe(409);
  await create.click();await editor.getByLabel('Code',{exact:true}).fill(value.toLowerCase());await editor.getByLabel('Intitulé',{exact:true}).fill('Doublon archivé');await editor.getByRole('button',{name:'Enregistrer la formation',exact:true}).click();await expect(editor.getByRole('alert')).toContainText('déjà utilisé');await expect(editor.getByRole('alert')).toBeFocused();await expect(editor.getByLabel('Code',{exact:true})).toHaveAttribute('aria-invalid','true');expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);await page.keyboard.press('Escape');
  await row.getByRole('button',{name:`Réactiver ${label} modifiée`,exact:true}).click();const reactivation=page.getByRole('dialog',{name:'Réactiver une formation',exact:true});await reactivation.getByRole('button',{name:'Confirmer le changement d’état',exact:true}).click();await expect(reactivation).not.toBeVisible();await expect(row.getByRole('cell',{name:'Active',exact:true})).toBeVisible();expect(await(await page.request.get(path+'/sessions')).json()).toEqual(history);
- await page.getByRole('button',{name:'Journal',exact:true}).click();const journal=page.getByRole('region',{name:'Journal des changements sensibles',exact:true});await journal.getByLabel('Type d’objet',{exact:true}).selectOption('FORMATION');await journal.getByLabel('Identifiant de l’objet (facultatif)',{exact:true}).fill(formation.id);await journal.getByRole('button',{name:'Filtrer le journal',exact:true}).click();await expect(journal.getByRole('heading',{name:'Réactivation de formation',exact:true})).toBeVisible();
+ await page.getByRole('link',{name:'Journal',exact:true}).click();const journal=page.getByRole('region',{name:'Journal des changements sensibles',exact:true});await journal.getByLabel('Type d’objet',{exact:true}).selectOption('FORMATION');await journal.getByLabel('Identifiant de l’objet (facultatif)',{exact:true}).fill(formation.id);await journal.getByRole('button',{name:'Filtrer le journal',exact:true}).click();await expect(journal.getByRole('heading',{name:'Réactivation de formation',exact:true})).toBeVisible();
 });
 
 test('training edits and transitions detect stale versions and reload before saving',async({page})=>{
@@ -46,5 +46,5 @@ test('training catalogue retries network errors, paginates and scrolls by keyboa
 });
 
 test('instructors cannot administer training courses',async({page})=>{
- await login(page,'intervenant');await expect(page.getByRole('button',{name:'Formations',exact:true})).toHaveCount(0);expect((await page.request.get('/api/formations')).status()).toBe(403);
+ await login(page,'intervenant');await expect(page.getByRole('link',{name:'Catalogue',exact:true})).toHaveCount(0);expect((await page.request.get('/api/formations')).status()).toBe(403);
 });

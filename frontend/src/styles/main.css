@@ -2,5 +2,4 @@
 @layer reset { * { box-sizing: border-box; } body { margin: 0; } }
 @layer base {
   body { font-family: var(--text-font); font-size: var(--text-base); line-height: 1.5; color: var(--color-text); background: var(--color-background); }
-  main { max-inline-size: var(--layout-width); margin-inline: auto; padding: var(--space-section); }
 }

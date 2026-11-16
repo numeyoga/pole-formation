@@ -6,28 +6,28 @@ async function login(page:Page,username:string) {
   await page.getByLabel('Identifiant',{exact:true}).fill(username);
   await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');
   await page.getByRole('button',{name:'Se connecter',exact:true}).click();
-  await expect(page.getByRole('heading',{name:'Sessions accessibles',exact:true})).toBeFocused();
+  await expect(page.getByRole('heading',{name:'Sessions',level:1,exact:true})).toBeFocused();
 }
 test('keyboard login, scoped sessions, participants, future presence refusal, axe and logout',async({page})=>{
   await page.goto('/');
   const username=page.getByLabel('Identifiant',{exact:true});
   await expect(username).toBeVisible();
   expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
-  await page.keyboard.press('Tab');
+  await page.keyboard.press('Tab');await page.keyboard.press('Tab');
   await expect(username).toBeFocused();
   await page.keyboard.type('intervenant');await page.keyboard.press('Tab');
   await expect(page.getByLabel('Mot de passe',{exact:true})).toBeFocused();
   await page.keyboard.type('Dev-only-2026!');await page.keyboard.press('Tab');
   await expect(page.getByRole('button',{name:'Se connecter',exact:true})).toBeFocused();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('heading',{name:'Sessions accessibles',exact:true})).toBeFocused();
-  await expect(page.getByRole('button',{name:'Exemple — Prévention',exact:true})).toHaveCount(0);
+  await expect(page.getByRole('heading',{name:'Sessions',level:1,exact:true})).toBeFocused();
+  await expect(page.getByRole('button',{name:'Ouvrir les participations de Exemple — Prévention',exact:true})).toHaveCount(0);
   await expect(page.getByRole('heading',{name:'Habilitations',exact:true})).toHaveCount(0);
-  await page.getByRole('button',{name:'Exemple — Accueil',exact:true}).focus();
+  await page.getByRole('button',{name:'Ouvrir les participations de Exemple — Accueil',exact:true}).focus();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('heading',{name:'Participants — Exemple — Accueil',exact:true})).toBeFocused();
-  await expect(page.getByText(/Camille Exemple · EXEMPLE-001/)).toBeVisible();
-  await page.getByRole('button',{name:'Exemple — Session à venir',exact:true}).click();
+  await expect(page.getByRole('row').filter({hasText:'Camille Exemple'})).toContainText('EXEMPLE-001');await page.getByRole('button',{name:'Retour à la liste des sessions',exact:true}).click();
+  await page.getByRole('button',{name:'Ouvrir les participations de Exemple — Session à venir',exact:true}).click();
   await page.getByRole('button',{name:'Marquer Camille Exemple présente',exact:true}).click();
   await expect(page.getByRole('alert')).toHaveText('La saisie est possible après le dernier créneau.');
   await expect(page.getByRole('alert')).toBeFocused();
@@ -48,7 +48,7 @@ test('invalid login announces the error and focuses it',async({page})=>{
   expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
 });
 test('administrator can review and confirm roles, dialog supports Escape and restores focus',async({page})=>{
-  await login(page,'admin');
+  await login(page,'admin');await page.goto('/acces');
   await page.getByLabel('Rôle de sans-affectation',{exact:true}).selectOption('GESTIONNAIRE');
   const save=page.getByRole('button',{name:'Enregistrer le rôle de sans-affectation',exact:true});
   await save.click();

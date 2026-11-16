@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 
 async function login(page:Page,user='gestionnaire'){
   await page.goto('/');await page.getByLabel('Identifiant',{exact:true}).fill(user);await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');
-  await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions accessibles',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions',level:1,exact:true}).waitFor();if(user!=="intervenant")await page.goto('/referentiel/sous-domaines');
 }
 test('subdomain catalog supports retry, pagination and keyboard navigation with inactive parents',async({page})=>{
   await page.route('**/api/referentiels/sous-domaines?*',route=>route.abort());
@@ -20,7 +20,7 @@ test('subdomain catalog supports retry, pagination and keyboard navigation with 
   await panel.getByRole('button',{name:'Actualiser les sous-domaines',exact:true}).click();
   await expect(panel.getByRole('alert')).toHaveCount(0);await expect(panel.getByRole('row')).toHaveCount(11);
   const row=panel.getByRole('row').nth(1);await expect(row).toContainText(`${prefix}-00`);await expect(row.getByRole('cell',{name:'Désactivé',exact:true})).toBeVisible();
-  await page.getByRole('button',{name:'Sous-domaines',exact:true}).focus();await page.keyboard.press('Enter');
+  await page.getByRole('link',{name:'Sous-domaines',exact:true}).focus();await page.keyboard.press('Enter');
   await expect(panel.getByRole('heading',{name:'Sous-domaines de compétences',exact:true})).toBeFocused();
   await panel.getByRole('button',{name:'Sous-domaines suivants',exact:true}).click();await expect(panel.getByText('Page 2',{exact:true})).toBeVisible();
   await expect(panel.getByRole('row').nth(1)).toContainText(`${prefix}-10`);
@@ -36,7 +36,7 @@ test('subdomain catalog supports retry, pagination and keyboard navigation with 
 
 test('instructor has no subdomain catalog in navigation or API',async({page})=>{
   await login(page,'intervenant');await expect(page.getByRole('heading',{name:'Sous-domaines de compétences',exact:true})).toHaveCount(0);
-  await expect(page.getByRole('button',{name:'Sous-domaines',exact:true})).toHaveCount(0);
+  await expect(page.getByRole('link',{name:'Sous-domaines',exact:true})).toHaveCount(0);
   expect((await page.request.get('/api/referentiels/sous-domaines')).status()).toBe(403);
 });
 

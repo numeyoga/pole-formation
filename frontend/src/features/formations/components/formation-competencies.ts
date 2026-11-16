@@ -6,11 +6,12 @@ import { ApiError } from '../../../shared/http/session';
 import { messages,coverageMessages as m } from '../../../shared/i18n/fr';
 
 export class FormationCompetencies extends LitElement {
-  static properties={formation:{state:true},coverage:{state:true},choices:{state:true},loading:{state:true},saving:{state:true},error:{state:true},notice:{state:true}};
+  static properties={inline:{type:Boolean},formation:{state:true},coverage:{state:true},choices:{state:true},loading:{state:true},saving:{state:true},error:{state:true},notice:{state:true}};
+  declare inline:boolean;
   declare formation:FormationView|null;declare coverage:CoveragePage|null;declare choices:CompetencyChoices|null;
   declare loading:boolean;declare saving:boolean;declare error:string;declare notice:string;
   private query='';private generation=0;
-  constructor(){super();this.formation=null;this.coverage=null;this.choices=null;this.loading=false;this.saving=false;this.error='';this.notice='';}
+  constructor(){super();this.inline=false;this.formation=null;this.coverage=null;this.choices=null;this.loading=false;this.saving=false;this.error='';this.notice='';}
   static styles=css`
     *{box-sizing:border-box;}h2{font-size:var(--text-section);margin:0;}p{margin-block:var(--space-small);}
     dialog{max-block-size:calc(100% - var(--space-page));overflow:auto;inline-size:var(--control-width);max-inline-size:calc(100% - var(--space-page));padding:var(--space-section);border:var(--border-width) solid var(--color-border);border-radius:var(--control-radius);color:var(--color-text);background:var(--color-surface);}
@@ -24,12 +25,16 @@ export class FormationCompetencies extends LitElement {
     [role=alert]{color:var(--color-danger);}[role=status]{color:var(--color-success);}
     :focus-visible{outline:var(--focus-width) solid var(--color-focus);outline-offset:var(--focus-width);}
   `;
+  protected updated(changes:Map<PropertyKey,unknown>){
+    const previous=changes.get('formation') as FormationView|null|undefined;
+    if(this.inline&&changes.has('formation')&&this.formation&&previous?.id!==this.formation.id)void this.show(this.formation);
+  }
   disconnectedCallback(){super.disconnectedCallback();this.generation++;}
   private dialog(){return this.renderRoot.querySelector<HTMLDialogElement>('dialog')!;}
   private message(error:unknown){return error instanceof ApiError?error.message:messages.network;}
   async show(formation:FormationView){
     this.formation=formation;this.query='';this.coverage=null;this.choices=null;this.error='';this.notice='';
-    await this.updateComplete;this.renderRoot.querySelectorAll<HTMLFormElement>('form').forEach(form=>form.reset());this.dialog().showModal();
+    await this.updateComplete;this.renderRoot.querySelectorAll<HTMLFormElement>('form').forEach(form=>form.reset());if(!this.inline)this.dialog().showModal();
     await this.load();
   }
   private async load(coveragePage=0,choicePage=0){
@@ -68,8 +73,8 @@ export class FormationCompetencies extends LitElement {
       <button type="button" ?disabled=${this.loading||this.saving||(page.page+1)*page.size>=page.total} @click=${()=>this.changePage(kind,page.page+1)}>${m.next}</button>
     </nav>`;
   }
-  render(){return html`<dialog aria-labelledby="coverage-title" @close=${()=>{this.generation++;this.loading=false;}} @cancel=${(event:Event)=>{if(this.saving)event.preventDefault();}}>
-    <h2 id="coverage-title" tabindex="-1" autofocus>${m.title}</h2><p>${this.formation?.title}</p><p>${m.help}</p>
+  render(){const content=html`
+    <h2 id="coverage-title" tabindex="-1" ?autofocus=${!this.inline}>${m.title}</h2><p>${this.formation?.title}</p><p>${m.help}</p>
     <p role="status" aria-label=${m.status}>${this.loading?m.loading:this.saving?m.saving:this.notice}</p>
     ${this.error?html`<p id="coverage-error" role="alert" tabindex="-1">${this.error}</p><button type="button" ?disabled=${this.loading||this.saving} @click=${()=>this.load()}>${m.retry}</button>`:nothing}
     <section aria-labelledby="associated-title"><h3 id="associated-title" tabindex="-1">${m.associatedTitle}</h3>
@@ -87,7 +92,9 @@ export class FormationCompetencies extends LitElement {
         <button type="submit" ?disabled=${!this.choices?.items.length}>${m.add}</button>
       </fieldset></form>
     </section>`:nothing}
-    <div class="actions"><button type="button" ?disabled=${this.loading||this.saving} @click=${()=>this.load(this.coverage?.page??0,this.choices?.page??0)}>${m.refresh}</button><button type="button" ?disabled=${this.saving} @click=${()=>this.dialog().close()}>${m.close}</button></div>
-  </dialog>`;}
+    <div class="actions"><button type="button" ?disabled=${this.loading||this.saving} @click=${()=>this.load(this.coverage?.page??0,this.choices?.page??0)}>${m.refresh}</button>${!this.inline?html`<button type="button" ?disabled=${this.saving} @click=${()=>this.dialog().close()}>${m.close}</button>`:nothing}</div>
+  `;
+    return this.inline?html`<section aria-labelledby="coverage-title">${content}</section>`:html`<dialog aria-labelledby="coverage-title" @close=${()=>{this.generation++;this.loading=false;}} @cancel=${(event:Event)=>{if(this.saving)event.preventDefault();}}>${content}</dialog>`;
+  }
 }
 customElements.define('formation-competencies',FormationCompetencies);

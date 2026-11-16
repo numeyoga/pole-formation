@@ -46,3 +46,9 @@
 | DEF-029 | 🟠 | Fuite de sessions entre tests HTTP | [fiche](defauts/2026-11-14-DEF-029-isolation-sessions-tests.md) | `AccessHttpTest.java` | corrigé localement | Nettoyage par identifiants créés, suite complète | 2026-11-14 |
 
 | DEF-030 | 🟠 | Sortie sensible d’un shell de connexion | [fiche](defauts/2026-11-14-DEF-030-sortie-shell-connexion.md) | lancement local de l’application | corrigé localement | Exécution directe de Mise avec `login:false`, aucun secret recopié | 2026-11-14 |
+
+| DEF-031 | 🟠 | Navigation et focus dans le Shadow DOM et les onglets | [fiche](defauts/2026-11-15-DEF-031-navigation-shadow-onglets.md) | shell et fiche session | corrigé localement, parcours Chromium réussis | Contrôles natifs et clavier explicite | 2026-11-15 |
+
+| DEF-032 | 🟠 | Dialogue et focus hors contexte de navigation | [fiche](defauts/2026-11-15-DEF-032-contexte-navigation-asynchrone.md) | access-app.ts | corrigé localement, parcours Chromium réussis | Annulation dialogue et révision navigation | 2026-11-15 |
+
+| DEF-033 | 🟠 | Dialogue imbriqué conservé après retour de rubrique | [fiche](defauts/2026-11-15-DEF-033-dialogues-rubriques.md) | shell et fiches | corrigé localement, 7 scénarios réussis | Fermeture récursive et contexte du focus | 2026-11-15 |

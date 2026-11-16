@@ -2,7 +2,7 @@
 title: "Structure frontend feature-first"
 description: "Organisation des composants Lit, UI et ports/adaptateurs HTTP."
 created: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-15
 status: accepted
 type: reference
 tags:
@@ -79,3 +79,5 @@ Le port ne doit ni mentionner `fetch` ni exposer des DTO OpenAPI. Exemple indica
 - État Lit local par défaut. Contexte de session au niveau application si requis ; **pas de store global automatique**.
 - Les vues doivent être résilientes aux retours d'API asynchrones, états vides/erreurs et autorisations refusées.
 - Voir [composants](../frontend/component-conventions.md), [conventions CSS](../frontend/css-conventions.md) et [explication](../../explanation/frontend-design.md).
+
+Les pages et comportements livrés sont décrits dans la [référence de navigation](../frontend/navigation.md).

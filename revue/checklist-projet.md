@@ -46,3 +46,9 @@
 - Chaque session créée en test possède un nettoyage des liens et de la session ; rejouer la suite complète pour détecter les fuites entre scénarios (DEF-029).
 
 - Pour lancer une commande applicative, éviter les shells de connexion et leurs effets de profil ; ne jamais recopier une sortie sensible dans les preuves (DEF-030).
+
+- [ ] Vérifier cible d’évitement dans le Shadow DOM et comportement clavier réel des onglets ; la présence d’une propriété expérimentale ne suffit pas (DEF-031).
+
+- [ ] Tester retour navigateur avec dialogue ouvert et erreur réseau tardive : le dialogue quitte son contexte et le focus reste sur la destination (DEF-032).
+
+- [ ] Tester Retour entre rubriques avec un dialogue imbriqué ouvert et un enregistrement en vol ; vérifier fermeture et focus de destination (DEF-033).

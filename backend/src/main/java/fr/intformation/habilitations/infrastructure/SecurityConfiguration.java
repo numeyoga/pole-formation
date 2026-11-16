@@ -9,6 +9,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import java.time.Clock;
+import org.springframework.http.HttpMethod;
+import fr.intformation.shared.infrastructure.UiNavigationConfiguration;
 
 @Configuration
 public class SecurityConfiguration {
@@ -23,6 +25,7 @@ public class SecurityConfiguration {
         return http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/csrf", "/api/auth/login", "/", "/index.html", "/assets/**", "/error").permitAll()
+                .requestMatchers(HttpMethod.GET, UiNavigationConfiguration.PATHS).permitAll()
                 .requestMatchers("/api/**").authenticated().anyRequest().denyAll())
             .requestCache(cache -> cache.disable())
             .formLogin(login -> login.loginProcessingUrl("/api/auth/login")

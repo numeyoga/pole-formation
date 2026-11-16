@@ -3,7 +3,7 @@ import { test,expect,type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 async function login(page:Page,user:string){
   await page.goto('/');await page.getByLabel('Identifiant',{exact:true}).fill(user);await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');
-  await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions accessibles',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions',level:1,exact:true}).waitFor();
 }
 async function fixture(page:Page,count=1){
   await login(page,'admin');const csrf=await(await page.request.get('/api/auth/csrf')).json();const headers={[csrf.headerName]:csrf.token};
@@ -17,7 +17,7 @@ async function fixture(page:Page,count=1){
   const second=await create('classifications',{code:profileCode.replace('PROF','CL')+'-B',label:'Classification exemple B',sortOrder:0});
   const profile=await create('profils-emploi',{code:profileCode,label:unique+' profil'});
   await page.getByRole('button',{name:'Se déconnecter',exact:true}).click();await login(page,'gestionnaire');
-  await page.getByRole('button',{name:'Profils d’emploi',exact:true}).click();
+  await page.getByRole('link',{name:'Profils d’emploi',exact:true}).click();
   const row=await revealProfile(page,profileCode);
   const token=await(await page.request.get('/api/auth/csrf')).json();
   return {unique,row,profile,competencies,first,second,headers:{[token.headerName]:token.token}};
@@ -36,7 +36,7 @@ test('manager associates and reclassifies a competency, rejects duplicate and pr
   await page.setViewportSize({width:375,height:812});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await editor.screenshot({path:'test-results/requirement-editor-mobile.png'});expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
   await editor.getByRole('button',{name:'Enregistrer l’exigence',exact:true}).click();
-  await expect(page.getByRole('heading',{name:'Profils d’emploi',exact:true})).toBeFocused();
+  await expect(page.getByRole('heading',{name:'Profils d’emploi',level:2,exact:true})).toBeFocused();
   await page.setViewportSize({width:1440,height:900});
   await f.row.getByText(`Exigences de ${f.profile.label}`,{exact:true}).click();
   await expect(f.row.getByText(`${f.competencies[0].label} — ${f.first.label}`,{exact:false})).toBeVisible();
@@ -84,7 +84,7 @@ test('profile requirements can be filtered by historical classification with key
   await page.getByRole('button',{name:'Se déconnecter',exact:true}).click();await login(page,'admin');
   const csrf=await(await page.request.get('/api/auth/csrf')).json();
   expect((await page.request.put(`/api/referentiels/classifications/${f.first.id}`,{headers:{[csrf.headerName]:csrf.token},data:{code:f.first.code,label:f.first.label,sortOrder:0,active:false,version:0}})).status()).toBe(204);
-  await page.getByRole('button',{name:'Se déconnecter',exact:true}).click();await login(page,'gestionnaire');await page.getByRole('button',{name:'Profils d’emploi',exact:true}).click();
+  await page.getByRole('button',{name:'Se déconnecter',exact:true}).click();await login(page,'gestionnaire');await page.getByRole('link',{name:'Profils d’emploi',exact:true}).click();
   await revealProfile(page,f.profile.code);const details=f.row.locator('details').filter({has:page.getByText(`Exigences de ${f.profile.label}`,{exact:true})});const summary=details.locator('summary');await summary.focus();await page.keyboard.press('Enter');
   await expect(details.getByRole('listitem')).toHaveCount(3);
   const filter=details.getByLabel('Filtrer les exigences par classification',{exact:true});

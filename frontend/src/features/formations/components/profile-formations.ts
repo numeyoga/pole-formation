@@ -7,12 +7,12 @@ import { messages,matchingMessages as m } from '../../../shared/i18n/fr';
 
 /** Lazy, read-only matches for an existing profile. Inputs: profileId, profileLabel. */
 export class ProfileFormations extends LitElement {
-  static properties={profileId:{type:String},profileLabel:{type:String},data:{state:true},busy:{state:true},error:{state:true}};
-  declare profileId:string;declare profileLabel:string;
+  static properties={embedded:{type:Boolean},profileId:{type:String},profileLabel:{type:String},data:{state:true},busy:{state:true},error:{state:true}};
+  declare embedded:boolean;declare profileId:string;declare profileLabel:string;
   declare data:ProfileFormationsPage|null;declare busy:boolean;declare error:string;
   private generation=0;
   private requestedPage=0;
-  constructor(){super();this.profileId='';this.profileLabel='';this.data=null;this.busy=false;this.error='';}
+  constructor(){super();this.embedded=false;this.profileId='';this.profileLabel='';this.data=null;this.busy=false;this.error='';}
   static styles=css`
     :host{display:block;margin-block:var(--space-small);}
     *{box-sizing:border-box;}
@@ -30,7 +30,7 @@ export class ProfileFormations extends LitElement {
   protected updated(changed:PropertyValues){
     if(changed.has('profileId')){
       this.generation++;this.data=null;this.error='';this.busy=false;
-      const details=this.renderRoot.querySelector('details');if(details)details.open=false;
+      const details=this.renderRoot.querySelector('details');if(details)details.open=false;if(this.embedded&&this.profileId)void this.load();
     }
   }
   disconnectedCallback(){super.disconnectedCallback();this.generation++;}
@@ -51,9 +51,7 @@ export class ProfileFormations extends LitElement {
     }catch(error){if(generation===this.generation)this.error=error instanceof ApiError?error.message:messages.network;}
     finally{if(generation===this.generation)this.busy=false;}
   }
-  render(){return html`
-    <details @toggle=${this.toggle}>
-      <summary>${m.forProfile(this.profileLabel)}</summary>
+  private renderContent(){return html`
       <h3 id="matches-title" tabindex="-1">${m.title}</h3>
       <p>${m.help}</p>
       <button type="button" ?disabled=${this.busy} @click=${()=>this.load(this.data?.page??0)}>${m.refresh}</button>
@@ -68,6 +66,7 @@ export class ProfileFormations extends LitElement {
         <span aria-current="page">Page ${this.data.page+1}</span>
         <button type="button" ?disabled=${this.busy||(this.data.page+1)*this.data.size>=this.data.total} @click=${()=>this.load(this.data!.page+1,true)}>${m.next}</button>
       </nav>`:nothing}
-    </details>`;}
+    `;}
+  render(){return this.embedded?html`<section aria-label=${m.title}>${this.renderContent()}</section>`:html`<details @toggle=${this.toggle}><summary>${m.forProfile(this.profileLabel)}</summary>${this.renderContent()}</details>`;}
 }
 customElements.define('profile-formations',ProfileFormations);

@@ -4,15 +4,15 @@ import AxeBuilder from '@axe-core/playwright';
 
 async function login(page:Page,user='gestionnaire'){
   await page.goto('/');await page.getByLabel('Identifiant',{exact:true}).fill(user);await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');
-  await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions accessibles',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions',level:1,exact:true}).waitFor();if(user!=="intervenant")await page.goto('/profils');
 }
 async function headers(page:Page){const token=await(await page.request.get('/api/auth/csrf')).json();return {[token.headerName]:token.token};}
 const code=()=>`000-PROF-${9999999999999-Date.now()}`;
 
 test('manager creates, edits and deactivates a profile with keyboard focus and responsive table',async({page})=>{
   await login(page);
-  await page.getByRole('button',{name:'Profils d’emploi',exact:true}).focus();await page.keyboard.press('Enter');
-  await expect(page.getByRole('heading',{name:'Profils d’emploi',exact:true})).toBeFocused();
+  await page.getByRole('link',{name:'Profils d’emploi',exact:true}).focus();await page.keyboard.press('Enter');
+  await expect(page.getByRole('heading',{name:'Profils d’emploi',level:2,exact:true})).toBeFocused();
   const panel=page.getByRole('region',{name:'Profils d’emploi',exact:true});
   await panel.getByRole('button',{name:'Créer un profil',exact:true}).click();
   const editor=page.getByRole('dialog',{name:'Créer un profil',exact:true});
@@ -33,7 +33,7 @@ test('manager creates, edits and deactivates a profile with keyboard focus and r
   const response=page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/api/referentiels/profils-emploi'));
   await editor.getByRole('button',{name:'Enregistrer le profil',exact:true}).click();const created=await(await response).json();
   await expect(panel.getByRole('status',{name:'État des profils'})).toHaveText('Profil enregistré.');
-  await expect(page.getByRole('heading',{name:'Profils d’emploi',exact:true})).toBeFocused();
+  await expect(page.getByRole('heading',{name:'Profils d’emploi',level:2,exact:true})).toBeFocused();
   await panel.getByRole('button',{name:'Créer un profil',exact:true}).click();
   await editor.getByLabel('Code',{exact:true}).fill(initialCode.toLowerCase());await editor.getByLabel('Libellé',{exact:true}).fill('Doublon');
   await editor.getByRole('button',{name:'Enregistrer le profil',exact:true}).click();
@@ -89,8 +89,8 @@ test('stale edit is rejected and can reload the current version',async({page})=>
 });
 
 test('instructor cannot manage profiles or see their management section',async({page})=>{
-  await login(page,'intervenant');await expect(page.getByRole('heading',{name:'Profils d’emploi',exact:true})).toHaveCount(0);
-  await expect(page.getByRole('button',{name:'Profils d’emploi',exact:true})).toHaveCount(0);expect((await page.request.get('/api/referentiels/profils-emploi')).status()).toBe(403);
+  await login(page,'intervenant');await expect(page.getByRole('heading',{name:'Profils d’emploi',level:2,exact:true})).toHaveCount(0);
+  await expect(page.getByRole('link',{name:'Profils d’emploi',exact:true})).toHaveCount(0);expect((await page.request.get('/api/referentiels/profils-emploi')).status()).toBe(403);
 });
 
 test('profile pagination and network retry keep the list usable',async({page})=>{

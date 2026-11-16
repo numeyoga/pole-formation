@@ -1,7 +1,7 @@
 import { test,expect,type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 async function login(page:Page){
- await page.goto('/');await page.getByLabel('Identifiant',{exact:true}).fill('gestionnaire');await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions accessibles',exact:true}).waitFor();
+ await page.goto('/');await page.getByLabel('Identifiant',{exact:true}).fill('gestionnaire');await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions',level:1,exact:true}).waitFor();
 }
 async function fixture(page:Page,count=1){
  const csrf=await(await page.request.get('/api/auth/csrf')).json();const headers={[csrf.headerName]:csrf.token};
@@ -17,7 +17,7 @@ async function fixture(page:Page,count=1){
  return {headers,formation,competencies,tag};
 }
 async function open(page:Page,title:string){
- await page.getByRole('button',{name:'Formations',exact:true}).click();await page.getByRole('button',{name:'Actualiser les formations',exact:true}).click();const trigger=page.getByRole('button',{name:`Compétences de la formation : ${title}`,exact:true});await trigger.focus();await page.keyboard.press('Enter');
+ await page.getByRole('link',{name:'Catalogue',exact:true}).click();await page.getByRole('button',{name:'Actualiser les formations',exact:true}).click();const trigger=page.getByRole('button',{name:`Compétences de la formation : ${title}`,exact:true});await trigger.focus();await page.keyboard.press('Enter');
  const dialog=page.getByRole('dialog',{name:'Compétences de la formation',exact:true});await expect(dialog.getByRole('heading',{name:'Compétences de la formation',exact:true})).toBeFocused();return {dialog,trigger};
 }
 

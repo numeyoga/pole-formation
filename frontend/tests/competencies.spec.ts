@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 
 async function login(page:Page,user='gestionnaire'){
   await page.goto('/');await page.getByLabel('Identifiant',{exact:true}).fill(user);await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');
-  await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions accessibles',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions',level:1,exact:true}).waitFor();if(user!=="intervenant")await page.goto('/referentiel/competences');
 }
 async function fixture(page:Page){
   const csrf=await(await page.request.get('/api/auth/csrf')).json();const headers={[csrf.headerName]:csrf.token};
@@ -56,7 +56,7 @@ test('competency catalog supports retry filter pagination and keyboard scrolling
   await panel.getByRole('button',{name:'Actualiser les compétences',exact:true}).click();await expect(panel.getByRole('alert')).toHaveCount(0);
   await panel.getByLabel('Filtrer par sous-domaine parent',{exact:true}).selectOption(parent.id);await expect(panel.getByRole('row')).toHaveCount(11);
   await expect(panel.getByRole('row').nth(1)).toContainText('Compétence 00');await expect(panel.getByRole('row').nth(1).getByRole('cell',{name:'Désactivé',exact:true})).toBeVisible();
-  await page.getByRole('button',{name:'Compétences',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.getByRole('heading')).toBeFocused();
+  await page.getByRole('link',{name:'Compétences',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.getByRole('heading')).toBeFocused();
   await panel.getByRole('button',{name:'Compétences suivantes',exact:true}).click();await expect(panel.getByText('Page 2',{exact:true})).toBeVisible();await expect(panel.getByRole('row').nth(1)).toContainText('Compétence 10');
   await panel.getByRole('button',{name:'Compétences précédentes',exact:true}).click();await expect(panel.getByRole('row').nth(1)).toContainText('Compétence 00');
   for(const width of [2048,1440,1024,375]){
@@ -67,6 +67,6 @@ test('competency catalog supports retry filter pagination and keyboard scrolling
 });
 
 test('instructor cannot navigate to or query competencies',async({page})=>{
-  await login(page,'intervenant');await expect(page.getByRole('heading',{name:'Compétences du référentiel',exact:true})).toHaveCount(0);await expect(page.getByRole('button',{name:'Compétences',exact:true})).toHaveCount(0);
+  await login(page,'intervenant');await expect(page.getByRole('heading',{name:'Compétences du référentiel',exact:true})).toHaveCount(0);await expect(page.getByRole('link',{name:'Compétences',exact:true})).toHaveCount(0);
   expect((await page.request.get('/api/referentiels/competences')).status()).toBe(403);
 });

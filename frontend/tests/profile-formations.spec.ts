@@ -5,7 +5,7 @@ async function fixture(page:Page,count=1,requirementCount=2,coveredCount=require
   await page.goto('/');await page.getByLabel('Identifiant',{exact:true}).fill(user);
   await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');
   await page.getByRole('button',{name:'Se connecter',exact:true}).click();
-  await page.getByRole('heading',{name:'Sessions accessibles',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'Sessions',level:1,exact:true}).waitFor();
   const csrf=await(await page.request.get('/api/auth/csrf')).json();const headers={[csrf.headerName]:csrf.token};
   const tag=`MATCH-${Date.now()}`;const code=`000-000MATCH-${9999999999999-Date.now()}`;
   async function create(path:string,data:unknown){const response=await page.request.post(path,{headers,data});expect(response.status()).toBe(201);return response.json();}
@@ -22,7 +22,7 @@ async function fixture(page:Page,count=1,requirementCount=2,coveredCount=require
     for(const competency of competencies.slice(0,coveredCount))await create(`/api/formations/${formation.id}/competences`,{competencyId:competency.id});
     formations.push(formation);
   }
-  await page.getByRole('button',{name:'Profils d’emploi',exact:true}).click();
+  await page.getByRole('link',{name:'Profils d’emploi',exact:true}).click();
   await page.getByRole('button',{name:'Actualiser les profils',exact:true}).click();
   const row=page.getByRole('row').filter({hasText:code});await expect(row).toBeVisible();
   const matches=row.locator('profile-formations');const summary=matches.locator('summary').filter({hasText:/^Formations pertinentes pour /});

@@ -1498,6 +1498,42 @@ class AccessHttpTest {
         assertThat(json.readTree(manager.get("/api/audit?sessionId="+S1).body()).get("items").size()).isEqualTo(1);
     }
 
+    @Test void ui_routes_allow_direct_navigation_without_opening_api_or_arbitrary_resources() throws Exception {
+        var anonymous=new Browser();
+        for(String path:List.of("/sessions","/collaborateurs","/intervenants","/pilotage","/catalogue","/profils",
+                "/referentiel/domaines","/referentiel/sous-domaines","/referentiel/competences","/referentiel/explorateur",
+                "/parametres/classifications","/acces","/journal",
+                "/catalogue/50000000-0000-0000-0000-000000000001",
+                "/catalogue/50000000-0000-0000-0000-000000000001/presentation",
+                "/catalogue/50000000-0000-0000-0000-000000000001/competences",
+                "/catalogue/50000000-0000-0000-0000-000000000001/sessions",
+                "/profils/50000000-0000-0000-0000-000000000001",
+                "/profils/50000000-0000-0000-0000-000000000001/presentation",
+                "/profils/50000000-0000-0000-0000-000000000001/exigences",
+                "/profils/50000000-0000-0000-0000-000000000001/formations",
+                "/collaborateurs/50000000-0000-0000-0000-000000000001",
+                "/collaborateurs/50000000-0000-0000-0000-000000000001/informations",
+                "/collaborateurs/50000000-0000-0000-0000-000000000001/participations")) {
+            var response=anonymous.get(path);
+            assertThat(response.statusCode()).as(path).isEqualTo(200);
+            assertThat(response.body()).as(path).contains("<access-app>");
+            assertThat(response.headers().firstValue("Content-Type")).hasValueSatisfying(v->assertThat(v).contains("text/html"));
+        }
+        for(String path:List.of("/api/sessions","/api/catalogue","/catalogue/unknown","/private.txt",
+                "/catalogue/50000000-0000-0000-0000-000000000001/inconnue",
+                "/profils/50000000-0000-0000-0000-000000000001/competences",
+                "/collaborateurs/50000000-0000-0000-0000-000000000001/sessions")) {
+            var response=anonymous.get(path);
+            assertThat(response.statusCode()).as(path).isIn(401,403);
+            assertThat(response.body()).doesNotContain("<access-app>");
+        }
+        var manager=as("gestionnaire");
+        assertThat(manager.get("/api/habilitations/comptes").statusCode()).isEqualTo(403);
+        for(String path:List.of("/private.txt","/catalogue/unknown")) {
+            assertThat(manager.get(path).statusCode()).isEqualTo(403);
+        }
+    }
+
     @Test void anonymous_access_and_missing_csrf_are_rejected() throws Exception {
         var anonymous=new Browser();
         assertThat(anonymous.get("/api/sessions").statusCode()).isEqualTo(401);

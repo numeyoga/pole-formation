@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 
 async function login(page:Page,user='gestionnaire'){
   await page.goto('/');await page.getByLabel('Identifiant',{exact:true}).fill(user);await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');
-  await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions accessibles',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions',level:1,exact:true}).waitFor();if(user!=="intervenant")await page.goto('/referentiel/explorateur');
 }
 async function fixture(page:Page){
   const csrf=await(await page.request.get('/api/auth/csrf')).json();const headers={[csrf.headerName]:csrf.token};
@@ -29,7 +29,7 @@ async function findDomain(panel:Locator,label:string){
 test('reference navigation reveals all three levels by keyboard and retains inactive history in search',async({page})=>{
   await login(page);const {headers,code,label,domain,parent,child}=await fixture(page);
   const panel=page.getByRole('region',{name:'Explorer le référentiel',exact:true});await panel.getByRole('button',{name:'Actualiser le référentiel',exact:true}).click();
-  await page.getByRole('button',{name:'Explorer le référentiel',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.getByRole('heading',{name:'Explorer le référentiel',exact:true})).toBeFocused();
+  await page.getByRole('link',{name:'Explorer le référentiel',exact:true}).focus();await page.keyboard.press('Enter');await expect(panel.getByRole('heading',{name:'Explorer le référentiel',level:2,exact:true})).toBeFocused();
   const domainSummary=await findDomain(panel,label);await domainSummary.focus();await page.keyboard.press('Enter');
   const parentSummary=panel.locator('summary').filter({hasText:'Sous-domaine de navigation'});await expect(parentSummary).toBeVisible();await parentSummary.focus();await page.keyboard.press('Space');
   await expect(panel.getByText(`Compétence : ${code}-COMP — Compétence historique de navigation (Actif)`,{exact:true})).toBeVisible();
@@ -81,6 +81,6 @@ test('hierarchy retries a failed branch and paginates competencies while keeping
 });
 
 test('instructor cannot access reference exploration in the interface or by HTTP',async({page})=>{
-  await login(page,'intervenant');await expect(page.getByRole('button',{name:'Explorer le référentiel',exact:true})).toHaveCount(0);await expect(page.getByRole('heading',{name:'Explorer le référentiel',exact:true})).toHaveCount(0);
+  await login(page,'intervenant');await expect(page.getByRole('link',{name:'Explorer le référentiel',exact:true})).toHaveCount(0);await expect(page.getByRole('heading',{name:'Explorer le référentiel',level:2,exact:true})).toHaveCount(0);
   expect((await page.request.get('/api/referentiels/exploration/competences?q=SEC')).status()).toBe(403);
 });

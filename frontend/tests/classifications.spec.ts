@@ -2,13 +2,13 @@ import { test,expect,type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 async function login(page:Page,user='admin'){
   await page.goto('/');await page.getByLabel('Identifiant',{exact:true}).fill(user);await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');
-  await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions accessibles',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions',level:1,exact:true}).waitFor();if(user!=="intervenant"&&user!=="gestionnaire")await page.goto('/parametres/classifications');
 }
 async function headers(page:Page){const token=await(await page.request.get('/api/auth/csrf')).json();return {[token.headerName]:token.token};}
 const code=()=>`000-CL-${9999999999999-Date.now()}`;
 test('administrator configures classifications with keyboard focus, activation, duplicate feedback and axe',async({page})=>{
-  await login(page);await page.getByRole('button',{name:'Classifications',exact:true}).focus();await page.keyboard.press('Enter');
-  await expect(page.getByRole('heading',{name:'Classifications',exact:true})).toBeFocused();
+  await login(page);await page.getByRole('link',{name:'Paramètres',exact:true}).focus();await page.keyboard.press('Enter');
+  await expect(page.getByRole('heading',{name:'Classifications',level:2,exact:true})).toBeFocused();
   const panel=page.getByRole('region',{name:'Classifications',exact:true});
   await panel.getByRole('button',{name:'Créer une classification',exact:true}).click();
   const editor=page.getByRole('dialog');await expect(editor.getByLabel('Code',{exact:true})).toBeFocused();
@@ -21,7 +21,7 @@ test('administrator configures classifications with keyboard focus, activation, 
   await editor.getByLabel('Code',{exact:true}).fill(value);await editor.getByLabel('Libellé',{exact:true}).fill(label);await editor.getByLabel('Ordre',{exact:true}).fill('0');
   await editor.getByRole('button',{name:'Enregistrer la classification',exact:true}).click();
   await expect(panel.getByRole('status')).toHaveText('Classification enregistrée.');
-  await expect(page.getByRole('heading',{name:'Classifications',exact:true})).toBeFocused();
+  await expect(page.getByRole('heading',{name:'Classifications',level:2,exact:true})).toBeFocused();
   await panel.getByRole('button',{name:`Modifier ${label}`,exact:true}).click();
   await expect(editor.getByLabel('Active',{exact:true})).toBeChecked();await editor.getByLabel('Active',{exact:true}).uncheck();
   await editor.getByRole('button',{name:'Enregistrer la classification',exact:true}).click();
@@ -47,7 +47,7 @@ test('concurrent classification edit can reload and save the current version',as
   await expect(editor.getByLabel('Code',{exact:true})).toBeFocused();await editor.getByRole('button',{name:'Enregistrer la classification',exact:true}).click();await expect(editor).not.toBeVisible();
 });
 for(const user of ['gestionnaire','intervenant'])test(`${user} cannot configure classifications`,async({page})=>{
-  await login(page,user);await expect(page.getByRole('button',{name:'Classifications',exact:true})).toHaveCount(0);await expect(page.getByRole('heading',{name:'Classifications',exact:true})).toHaveCount(0);
+  await login(page,user);await expect(page.getByRole('link',{name:'Paramètres',exact:true})).toHaveCount(0);await expect(page.getByRole('heading',{name:'Classifications',level:2,exact:true})).toHaveCount(0);
   expect((await page.request.post('/api/referentiels/classifications',{headers:await headers(page),data:{code:'FORBIDDEN',label:'Interdit',sortOrder:0}})).status()).toBe(403);
 });
 test('classification list retries network failures and supports pagination',async({page})=>{

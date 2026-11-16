@@ -2,7 +2,7 @@
 title: "Pôle formation INT — référentiel du projet"
 description: "Entrée humaine et IA vers le monorepo et les documents Diátaxis."
 created: 2026-11-07
-updated: 2026-11-14
+updated: 2026-11-15
 status: accepted
 type: index
 tags:
@@ -15,6 +15,8 @@ tags:
 Application interne de centralisation du pôle formation INT : référentiels, formations, sessions, participations et pilotage de l'activité formation.
 
 > **Statut** : les fonctionnalités du backlog MVP sont implémentées localement : référentiels, catalogue et correspondances, sessions et intervenants, collaborateurs et participations, pilotage, habilitations et audit. Les huit nouvelles stories de coanimation, clôture, participations et pilotage restent à recetter humainement. Voir le [registre d’avancement](docs/generated/development-progress.md), le [rapport technique du 14 novembre](docs/reference/quality/validation-stories-2026-11-14.md) et le [guide de lancement](docs/how-to/run-local-app.md). Les intégrations et règles organisationnelles encore ouvertes ne sont pas présentées comme livrées.
+
+La refonte locale du 15 novembre introduit une navigation par pages et des onglets de session ; voir les [écrans livrés](docs/reference/frontend/navigation.md) et la [validation technique](docs/reference/quality/interface-refonte-2026-11-15.md). Elle reste à recetter humainement.
 
 ## Sommaire
 

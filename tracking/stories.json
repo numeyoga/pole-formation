@@ -29,7 +29,9 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-08-01-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
@@ -48,7 +50,9 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-08-02-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
@@ -66,7 +70,9 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-01-01-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
@@ -85,7 +91,9 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-01-02-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
@@ -99,7 +107,9 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-01-03-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
@@ -117,7 +127,9 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-01-04-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-08.md"
@@ -157,7 +169,9 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-02-01-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
@@ -175,7 +189,9 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-02-02-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
@@ -193,7 +209,9 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-02-03-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-09.md"
@@ -211,7 +229,9 @@
       "frontend/tests/requirements.spec.ts"
     ],
     "report": "docs/reference/quality/us-02-04-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-09.md"
@@ -229,7 +249,9 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-03-01-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
@@ -247,7 +269,9 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-03-02-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-10.md"
@@ -266,7 +290,9 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-03-03-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-10.md"
@@ -289,7 +315,9 @@
       "api/formations.openapi.yaml"
     ],
     "report": "docs/reference/quality/us-04-01-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
@@ -312,7 +340,9 @@
       "api/formations.openapi.yaml"
     ],
     "report": "docs/reference/quality/us-04-02-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
@@ -330,7 +360,9 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-05-01-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
@@ -348,7 +380,9 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-05-02-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
@@ -366,7 +400,9 @@
       "api/"
     ],
     "report": "docs/reference/quality/us-05-03-validation.md",
-    "remaining": [],
+    "remaining": [
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
+    ],
     "acceptance": {
       "required": true,
       "evidence": "docs/reference/quality/acceptance-2026-11-13.md"
@@ -386,7 +422,8 @@
     "report": "docs/reference/quality/us-05-04-validation.md",
     "remaining": [
       "Recette métier humaine des critères d’acceptation.",
-      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %."
+      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %.",
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
     ],
     "acceptance": {
       "required": true
@@ -406,7 +443,8 @@
     "report": "docs/reference/quality/us-05-05-validation.md",
     "remaining": [
       "Recette métier humaine des critères d’acceptation.",
-      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %."
+      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %.",
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
     ],
     "acceptance": {
       "required": true
@@ -426,7 +464,8 @@
     "report": "docs/reference/quality/us-06-01-validation.md",
     "remaining": [
       "Recette métier humaine des critères d’acceptation.",
-      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %."
+      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %.",
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
     ],
     "acceptance": {
       "required": true
@@ -446,7 +485,8 @@
     "report": "docs/reference/quality/us-06-02-validation.md",
     "remaining": [
       "Recette métier humaine des critères d’acceptation.",
-      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %."
+      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %.",
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
     ],
     "acceptance": {
       "required": true
@@ -466,7 +506,8 @@
     "report": "docs/reference/quality/us-06-03-validation.md",
     "remaining": [
       "Recette métier humaine des critères d’acceptation.",
-      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %."
+      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %.",
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
     ],
     "acceptance": {
       "required": true
@@ -486,7 +527,8 @@
     "report": "docs/reference/quality/us-06-04-validation.md",
     "remaining": [
       "Recette métier humaine des critères d’acceptation.",
-      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %."
+      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %.",
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
     ],
     "acceptance": {
       "required": true
@@ -506,7 +548,8 @@
     "report": "docs/reference/quality/us-07-01-validation.md",
     "remaining": [
       "Recette métier humaine des critères d’acceptation.",
-      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %."
+      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %.",
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
     ],
     "acceptance": {
       "required": true
@@ -526,7 +569,8 @@
     "report": "docs/reference/quality/us-07-02-validation.md",
     "remaining": [
       "Recette métier humaine des critères d’acceptation.",
-      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %."
+      "Contrôle avec un lecteur d’écran et zoom navigateur réel à 200 %.",
+      "Refonte des 15–16 novembre : recette humaine de la navigation et des fiches autonomes ; preuves locales dans docs/reference/quality/interface-refonte-2026-11-15.md et docs/reference/quality/interface-fiches-2026-11-16.md."
     ],
     "acceptance": {
       "required": true

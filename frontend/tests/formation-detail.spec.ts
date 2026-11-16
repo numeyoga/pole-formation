@@ -1,0 +1,82 @@
+import {test,expect,type Page} from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+
+async function login(page:Page){
+  await page.goto('/catalogue');
+  await page.getByLabel('Identifiant',{exact:true}).fill('gestionnaire');
+  await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');
+  await page.getByRole('button',{name:'Se connecter',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Catalogue',level:1,exact:true})).toBeVisible();
+}
+
+test('formation record has shareable sections, existing actions and a return to the filtered catalogue',async({page})=>{
+  await login(page);
+  const csrf=await(await page.request.get('/api/auth/csrf')).json();const headers={[csrf.headerName]:csrf.token};
+  const code=`FICHE-${Date.now()}`;
+  const created=await page.request.post('/api/formations',{headers,data:{code,title:code,objectives:'Objectif de la fiche',description:'Présentation détaillée',durationMinutes:90}});
+  expect(created.status()).toBe(201);const formation=await created.json();
+  expect((await page.request.post(`/api/formations/${formation.id}/activation`,{headers,data:{version:0}})).status()).toBe(204);
+  const catalogue=page.getByRole('region',{name:'Formations',exact:true});
+  await catalogue.getByRole('searchbox').fill(code);
+  await catalogue.getByRole('search').getByRole('button',{name:'Rechercher les formations',exact:true}).click();
+  await catalogue.getByRole('link',{name:code,exact:true}).click();
+  await expect(page).toHaveURL(new RegExp(`/catalogue/${formation.id}/presentation$`));
+  await expect(page.getByRole('heading',{name:code,level:2,exact:true})).toBeFocused();
+  const presentation=page.getByRole('region',{name:'Présentation de la formation',exact:true});
+  await expect(presentation).toContainText('Objectif de la fiche');await expect(presentation).toContainText('90 min');
+  await page.screenshot({path:'test-results/formation-detail-desktop.png'});
+  await presentation.getByRole('button',{name:'Modifier',exact:true}).click();
+  const editor=page.getByRole('dialog',{name:'Modifier une formation',exact:true});
+  await editor.getByLabel('Intitulé',{exact:true}).fill(`${code} modifiée`);
+  await editor.getByRole('button',{name:'Enregistrer la formation',exact:true}).click();
+  await expect(page.getByRole('heading',{name:`${code} modifiée`,level:2,exact:true})).toBeVisible();
+  const sections=page.getByRole('navigation',{name:'Rubriques de la formation',exact:true});
+  await sections.getByRole('link',{name:'Compétences',exact:true}).click();
+  await expect(page).toHaveURL(new RegExp(`/catalogue/${formation.id}/competences$`));
+  await expect(page.getByRole('heading',{name:'Compétences de la formation',exact:true})).toBeVisible();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await sections.getByRole('link',{name:'Sessions',exact:true}).click();
+  await expect(page).toHaveURL(new RegExp(`/catalogue/${formation.id}/sessions$`));
+  await page.getByLabel('Intitulé de session (obligatoire)',{exact:true}).fill(`Session ${code}`);
+  await page.getByRole('button',{name:'Créer un brouillon de session',exact:true}).click();
+  await expect(page.getByRole('heading',{name:`Session ${code} — Brouillon`,exact:true})).toBeVisible();
+  await page.goBack();await expect(sections.getByRole('link',{name:'Compétences',exact:true})).toHaveAttribute('aria-current','page');
+  await page.getByRole('link',{name:'Retour au catalogue',exact:true}).click();
+  await expect(catalogue.getByRole('searchbox')).toHaveValue(code);
+  await expect(catalogue.getByRole('link',{name:`${code} modifiée`,exact:true})).toBeVisible();
+  await page.goto(`/catalogue/${formation.id}/sessions`);
+  await expect(page.getByRole('button',{name:`Ouvrir la session Session ${code}`,exact:true})).toBeVisible();
+  await page.setViewportSize({width:375,height:812});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
+});
+
+test('editing a formation preserves the unfinished slot in its previously visited sessions section',async({page})=>{
+  await login(page);
+  const csrf=await(await page.request.get('/api/auth/csrf')).json();const headers={[csrf.headerName]:csrf.token};
+  const code=`SAISIE-FICHE-${Date.now()}`;
+  const response=await page.request.post('/api/formations',{headers,data:{code,title:code}});
+  expect(response.status()).toBe(201);const formation=await response.json();
+  expect((await page.request.post(`/api/formations/${formation.id}/activation`,{headers,data:{version:0}})).status()).toBe(204);
+  const session=await page.request.post(`/api/formations/${formation.id}/sessions`,{headers,data:{title:`Session ${code}`}});
+  expect(session.status()).toBe(201);
+  await page.goto(`/catalogue/${formation.id}/sessions`);
+  await page.getByRole('button',{name:`Ouvrir la session Session ${code}`,exact:true}).click();
+  await page.getByRole('tab',{name:'Créneaux',exact:true}).click();
+  await page.getByLabel('Début (obligatoire)',{exact:true}).fill('2037-02-12T09:00');
+  await page.getByLabel('Fin (obligatoire)',{exact:true}).fill('2037-02-12T12:00');
+  await page.getByLabel('Décalage UTC (obligatoire)',{exact:true}).fill('+01:00');
+  const sections=page.getByRole('navigation',{name:'Rubriques de la formation',exact:true});
+  await sections.getByRole('link',{name:'Présentation',exact:true}).click();
+  const presentation=page.getByRole('region',{name:'Présentation de la formation',exact:true});
+  await presentation.getByRole('button',{name:'Modifier',exact:true}).click();
+  const editor=page.getByRole('dialog',{name:'Modifier une formation',exact:true});
+  await editor.getByLabel('Description',{exact:true}).fill('Description modifiée en conservant le créneau en cours');
+  await editor.getByRole('button',{name:'Enregistrer la formation',exact:true}).click();
+  await expect(presentation.getByText('Description modifiée en conservant le créneau en cours',{exact:true})).toBeVisible();
+  await sections.getByRole('link',{name:'Sessions',exact:true}).click();
+  await expect(page.getByRole('tab',{name:'Créneaux',exact:true})).toHaveAttribute('aria-selected','true');
+  await expect(page.getByLabel('Début (obligatoire)',{exact:true})).toHaveValue('2037-02-12T09:00');
+  await expect(page.getByLabel('Fin (obligatoire)',{exact:true})).toHaveValue('2037-02-12T12:00');
+  await expect(page.getByLabel('Décalage UTC (obligatoire)',{exact:true})).toHaveValue('+01:00');
+});

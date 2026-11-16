@@ -1,3 +1,6 @@
+import './formation-detail';
+import type {FormationDetail} from './formation-detail';
+import {navigate,subscribeNavigation} from '../../../app/navigation';
 import '../../sessions/components/formation-sessions';
 import type {FormationSessions} from '../../sessions/components/formation-sessions';
 import {sessionMessages} from '../../../shared/i18n/fr';
@@ -10,15 +13,19 @@ import { messages,coverageMessages,formationMessages as m } from '../../../share
 
 interface SessionState {busy:boolean;items:FormationSession[];error:string}
 export class FormationsPanel extends LitElement {
-  static properties={data:{state:true},busy:{state:true},error:{state:true},notice:{state:true},editing:{state:true},pending:{state:true},formError:{state:true},fields:{state:true},stale:{state:true},sessionViews:{state:true}};
+  static properties={entityId:{attribute:false},section:{attribute:false},data:{state:true},busy:{state:true},error:{state:true},notice:{state:true},editing:{state:true},pending:{state:true},formError:{state:true},fields:{state:true},stale:{state:true},sessionViews:{state:true}};
+  declare entityId:string|undefined;declare section:string|undefined;
   declare data:FormationPage|null;declare busy:boolean;declare error:string;declare notice:string;
   declare editing:FormationView|null;declare pending:{item:FormationView;action:FormationAction}|null;
   declare formError:string;declare fields:Record<string,string>;declare stale:boolean;declare sessionViews:Record<string,SessionState>;
   private generation=0;
   private query='';
-  constructor(){super();this.data=null;this.busy=false;this.error='';this.notice='';this.editing=null;this.pending=null;this.formError='';this.fields={};this.stale=false;this.sessionViews={};}
+  private navigationRevision=0;
+  private unsubscribeNavigation?:()=>void;
+  constructor(){super();this.entityId=undefined;this.section=undefined;this.data=null;this.busy=false;this.error='';this.notice='';this.editing=null;this.pending=null;this.formError='';this.fields={};this.stale=false;this.sessionViews={};}
   static styles=css`
     :host{display:block;margin-block-start:var(--space-section);padding:var(--space-section);background:var(--color-surface);border:var(--border-width) solid var(--color-border);border-radius:var(--control-radius);}
+    [hidden]{display:none;}a{color:var(--color-primary);}
     *{box-sizing:border-box;}h2{font-size:var(--text-section);margin:0;}p{margin-block:var(--space-small);}
     header,.actions,nav{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-small);}
     form,fieldset,label{display:grid;gap:var(--space-small);}fieldset{border:0;padding:0;margin:0;min-inline-size:0;}
@@ -36,9 +43,17 @@ export class FormationsPanel extends LitElement {
     summary{cursor:pointer;min-block-size:var(--control-height);padding-block:var(--space-small);}
     dialog{max-block-size:calc(100% - var(--space-page));overflow:auto;inline-size:var(--control-width);max-inline-size:calc(100% - var(--space-page));padding:var(--space-section);border:var(--border-width) solid var(--color-border);border-radius:var(--control-radius);color:var(--color-text);background:var(--color-surface);}
   `;
-  connectedCallback(){super.connectedCallback();void this.load();}
-  disconnectedCallback(){super.disconnectedCallback();this.generation++;}
-  async focusHeading(){await this.updateComplete;this.renderRoot.querySelector<HTMLElement>('#formations-title')?.focus();}
+  connectedCallback(){super.connectedCallback();this.unsubscribeNavigation=subscribeNavigation(()=>{this.navigationRevision++;});void this.load();}
+  protected updated(changes:Map<PropertyKey,unknown>){
+    if(changes.has('entityId'))this.renderRoot.querySelectorAll<HTMLDialogElement>('dialog[open]').forEach(dialog=>dialog.close());
+  }
+  disconnectedCallback(){super.disconnectedCallback();this.generation++;this.navigationRevision++;this.unsubscribeNavigation?.();}
+  async focusHeading(){await this.updateComplete;if(this.entityId)await this.renderRoot.querySelector<FormationDetail>('formation-detail')?.focusHeading();else this.renderRoot.querySelector<HTMLElement>('#formations-title')?.focus();}
+  private async focusIfCurrent(revision:number,selector?:string){
+    await this.updateComplete;
+    if(!this.isConnected||revision!==this.navigationRevision)return;
+    if(selector)this.renderRoot.querySelector<HTMLElement>(selector)?.focus();else await this.focusHeading();
+  }
   private message(error:unknown){return error instanceof ApiError?error.message:messages.network;}
   private async load(page=0){
     const generation=++this.generation;this.busy=true;this.error='';this.sessionViews={};
@@ -63,13 +78,14 @@ export class FormationsPanel extends LitElement {
   private changed(){this.dispatchEvent(new CustomEvent('formations-changed',{bubbles:true,composed:true}));}
   private async submit(event:SubmitEvent){
     event.preventDefault();if(this.busy)return;
+    const revision=this.navigationRevision;const editedId=this.editing?.id;
     const data=new FormData(event.currentTarget as HTMLFormElement);const duration=String(data.get('durationMinutes')).trim();
     const values:FormationFields={code:String(data.get('code')),title:String(data.get('title')),objectives:String(data.get('objectives')),description:String(data.get('description')),durationMinutes:duration?Number(duration):null};
     this.busy=true;this.formError='';this.fields={};this.stale=false;
     try{
       if(this.editing)await formationsApi.update(this.editing,values);else await formationsApi.create(values);
-      this.dialog('#formation-editor').close();await this.load(this.data?.page??0);this.notice=m.saved;this.changed();await this.focusHeading();
-    }catch(error){this.formError=this.message(error);this.fields=error instanceof FormationError?error.fields:{};this.stale=error instanceof FormationError&&error.status===409&&!Object.keys(error.fields).length;await this.updateComplete;this.renderRoot.querySelector<HTMLElement>('#formation-form-error')?.focus();}
+      this.dialog('#formation-editor').close();await this.load(this.data?.page??0);this.notice=m.saved;this.changed();if(this.entityId===editedId)await this.renderRoot.querySelector<FormationDetail>('formation-detail')?.refresh(false);await this.focusIfCurrent(revision);
+    }catch(error){this.formError=this.message(error);this.fields=error instanceof FormationError?error.fields:{};this.stale=error instanceof FormationError&&error.status===409&&!Object.keys(error.fields).length;await this.focusIfCurrent(revision,'#formation-form-error');}
     finally{this.busy=false;}
   }
   private async reloadEditing(){
@@ -81,9 +97,9 @@ export class FormationsPanel extends LitElement {
   private transitionTitle(action:FormationAction){return action==='activation'?m.activateTitle:action==='archivage'?m.archiveTitle:m.reactivateTitle;}
   private async confirm(item:FormationView,action:FormationAction){this.pending={item,action};this.formError='';this.stale=false;this.notice='';await this.updateComplete;this.dialog('#formation-transition').showModal();}
   private async transition(){
-    if(!this.pending||this.busy)return;this.busy=true;this.formError='';this.stale=false;
-    try{await formationsApi.transition(this.pending.item,this.pending.action);this.dialog('#formation-transition').close();await this.load(this.data?.page??0);this.notice=m.changed;this.changed();await this.focusHeading();}
-    catch(error){this.formError=this.message(error);this.stale=error instanceof ApiError&&error.status===409;await this.updateComplete;this.renderRoot.querySelector<HTMLElement>('#transition-error')?.focus();}
+    if(!this.pending||this.busy)return;const revision=this.navigationRevision;const transitionedId=this.pending.item.id;this.busy=true;this.formError='';this.stale=false;
+    try{await formationsApi.transition(this.pending.item,this.pending.action);this.dialog('#formation-transition').close();await this.load(this.data?.page??0);this.notice=m.changed;this.changed();if(this.entityId===transitionedId)await this.renderRoot.querySelector<FormationDetail>('formation-detail')?.refresh(false);await this.focusIfCurrent(revision);}
+    catch(error){this.formError=this.message(error);this.stale=error instanceof ApiError&&error.status===409;await this.focusIfCurrent(revision,'#transition-error');}
     finally{this.busy=false;}
   }
   private async reloadPending(){
@@ -104,14 +120,14 @@ export class FormationsPanel extends LitElement {
     return html`<label for=${`formation-${name}`}>${label}</label>${type==='textarea'?html`<textarea id=${`formation-${name}`} name=${name} maxlength=${maxlength} rows="3" aria-invalid=${error?'true':'false'} aria-describedby=${described||nothing}></textarea>`:html`<input id=${`formation-${name}`} name=${name} type=${type} ?required=${required} maxlength=${maxlength} min=${type==='number'?'1':nothing} max=${type==='number'?'2147483647':nothing} step=${type==='number'?'1':nothing} aria-invalid=${error?'true':'false'} aria-describedby=${described||nothing}>`}${error?html`<p class="field-error" id=${`formation-${name}-error`}>${error}</p>`:nothing}`;
   }
   render(){return html`
-    <section aria-labelledby="formations-title"><header><h2 id="formations-title" tabindex="-1">${m.title}</h2><button type="button" ?disabled=${this.busy} @click=${()=>this.open(null)}>${m.create}</button><button type="button" ?disabled=${this.busy} @click=${()=>this.load(this.data?.page??0)}>${m.refresh}</button></header>
+    <section aria-labelledby="formations-title" ?hidden=${Boolean(this.entityId)} ?inert=${Boolean(this.entityId)}><header><h2 id="formations-title" tabindex="-1">${m.title}</h2><button type="button" ?disabled=${this.busy} @click=${()=>this.open(null)}>${m.create}</button><button type="button" ?disabled=${this.busy} @click=${()=>this.load(this.data?.page??0)}>${m.refresh}</button></header>
       <form id="formation-search" class="search" role="search" aria-label=${m.searchTitle} @submit=${this.search}>
         <label for="formation-query">${m.searchLabel}</label><input id="formation-query" name="q" type="search" maxlength="200" aria-describedby="formation-search-help">
         <p id="formation-search-help">${m.searchHelp}</p><div class="actions"><button type="submit" ?disabled=${this.busy}>${m.searchButton}</button><button type="button" ?disabled=${this.busy} @click=${this.clearSearch}>${m.clearSearch}</button></div>
       </form>
       ${this.error?html`<p role="alert">${this.error}</p>`:nothing}<p role="status" aria-label=${m.status}>${this.busy?m.loading:this.notice||(this.data?`${this.data.total} ${m.resultCount}`:'')}</p>
       ${this.data&&!this.data.items.length?html`<p>${this.query?m.noResults:m.empty}</p>`:nothing}
-      ${this.data?.items.length?html`<div class="table-container" tabindex="0" role="region" aria-label=${m.table}><table><caption>${m.caption}</caption><thead><tr><th scope="col">${m.code}</th><th scope="col">${m.label}</th><th scope="col">${m.state}</th><th scope="col">${m.actions}</th></tr></thead><tbody>${this.data.items.map(item=>html`<tr><td>${item.code}</td><td>${item.title}<p>${item.objectives}</p><p>${item.description}</p><p>${item.durationMinutes===null?'':`${item.durationMinutes} min`}</p></td><td>${item.status}</td><td><div class="actions">
+      ${this.data?.items.length?html`<div class="table-container" tabindex="0" role="region" aria-label=${m.table}><table><caption>${m.caption}</caption><thead><tr><th scope="col">${m.code}</th><th scope="col">${m.label}</th><th scope="col">${m.state}</th><th scope="col">${m.actions}</th></tr></thead><tbody>${this.data.items.map(item=>html`<tr><td>${item.code}</td><td><a href=${`/catalogue/${item.id}/presentation`} @click=${(event:MouseEvent)=>navigate(event)}>${item.title}</a><p>${item.objectives}</p><p>${item.description}</p><p>${item.durationMinutes===null?'':`${item.durationMinutes} min`}</p></td><td>${item.status}</td><td><div class="actions">
         <button type="button" ?disabled=${this.busy} aria-label=${`${sessionMessages.manage} : ${item.title}`} @click=${()=>this.renderRoot.querySelector<FormationSessions>('formation-sessions')!.show(item)}>${sessionMessages.manage}</button>
         <button type="button" ?disabled=${this.busy} aria-label=${`${coverageMessages.title} : ${item.title}`} @click=${()=>this.renderRoot.querySelector<FormationCompetencies>('formation-competencies')!.show(item)}>${coverageMessages.title}</button>
         <button type="button" ?disabled=${this.busy} aria-label=${`${m.modify} ${item.title}`} @click=${()=>this.open(item)}>${m.modify}</button>
@@ -120,6 +136,7 @@ export class FormationsPanel extends LitElement {
       </div><details @toggle=${(event:Event)=>this.showSessions(event,item)}><summary>${m.sessions} ${item.title}</summary>${this.sessionViews[item.id]?.busy?html`<p role="status">${m.sessionsLoading}</p>`:this.sessionViews[item.id]?.error?html`<p role="alert">${this.sessionViews[item.id].error}</p><button type="button" @click=${()=>this.loadSessions(item)}>${m.sessionsRetry}</button>`:this.sessionViews[item.id]?.items.length?html`<ul>${this.sessionViews[item.id].items.map(session=>html`<li>${session.title} — ${session.status}</li>`)}</ul>`:html`<p>${m.sessionsEmpty}</p>`}</details></td></tr>`)}</tbody></table></div>`:nothing}
       ${this.data&&this.data.total>this.data.size?html`<nav aria-label=${m.pagination}><button type="button" ?disabled=${this.busy||this.data.page===0} @click=${()=>this.load(this.data!.page-1)}>${m.previous}</button><span aria-current="page">Page ${this.data.page+1}</span><button type="button" ?disabled=${this.busy||(this.data.page+1)*this.data.size>=this.data.total} @click=${()=>this.load(this.data!.page+1)}>${m.next}</button></nav>`:nothing}
     </section>
+    ${this.entityId?html`<formation-detail .entityId=${this.entityId} .section=${this.section||'presentation'} .saving=${this.busy} @formation-edit=${(event:CustomEvent<FormationView>)=>this.open(event.detail)} @formation-transition=${(event:CustomEvent<{item:FormationView;action:FormationAction}>)=>this.confirm(event.detail.item,event.detail.action)}></formation-detail>`:nothing}
     <formation-sessions></formation-sessions>
     <formation-competencies></formation-competencies>
     <dialog id="formation-editor" aria-labelledby="formation-editor-title" @cancel=${(event:Event)=>{if(this.busy)event.preventDefault();}}><h2 id="formation-editor-title">${this.editing?m.edit:m.create}</h2><p role="status" aria-label=${m.formStatus}>${this.busy?m.saving:''}</p>

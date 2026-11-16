@@ -1,3 +1,4 @@
+import {navigate} from '../../../app/navigation';
 import { LitElement,html,css,nothing } from 'lit';
 import { profilesApi,ProfileError } from '../adapters/profiles-api';
 import type { ProfileView,ProfilePage,RequirementView } from '../presentation/models';
@@ -10,14 +11,21 @@ import { messages,profileMessages as m } from '../../../shared/i18n/fr';
 
 interface ChildrenState {busy:boolean;items:RequirementView[];error:string;selected:{id:string;label:string}|null}
 export class ProfilesPanel extends LitElement {
-  static properties={data:{state:true},busy:{state:true},error:{state:true},notice:{state:true},editing:{state:true},pending:{state:true},formError:{state:true},fields:{state:true},childViews:{state:true},stale:{state:true}};
+  static properties={matchesVisited:{state:true},entityId:{type:String},section:{type:String},detail:{state:true},detailBusy:{state:true},detailError:{state:true},data:{state:true},busy:{state:true},error:{state:true},notice:{state:true},editing:{state:true},pending:{state:true},formError:{state:true},fields:{state:true},childViews:{state:true},stale:{state:true}};
+  declare entityId:string|undefined;declare section:string|undefined;
+  declare detail:ProfileView|null;declare detailBusy:boolean;declare detailError:string;
+  private detailGeneration=0;
+  declare matchesVisited:boolean;
   declare data:ProfilePage|null;
   declare busy:boolean;declare error:string;declare notice:string;
   declare editing:ProfileView|null;declare pending:ProfileView|null;
   declare formError:string;declare fields:Record<string,string>;declare childViews:Record<string,ChildrenState>;declare stale:boolean;
   private generation=0;
-  constructor(){super();this.data=null;this.busy=false;this.error='';this.notice='';this.editing=null;this.pending=null;this.formError='';this.fields={};this.childViews={};this.stale=false;}
+  constructor(){super();this.matchesVisited=false;this.entityId=undefined;this.section=undefined;this.detail=null;this.detailBusy=false;this.detailError='';this.data=null;this.busy=false;this.error='';this.notice='';this.editing=null;this.pending=null;this.formError='';this.fields={};this.childViews={};this.stale=false;}
   static styles=css`
+    [hidden]{display:none;}a{color:var(--color-primary);}.detail-nav{border-block-end:var(--border-width) solid var(--color-border);margin-block:var(--space-section);}.detail-nav a{padding:var(--space-control);min-block-size:var(--control-height);}.detail-nav a[aria-current]{font-weight:var(--font-weight-strong);border-block-end:var(--focus-width) solid var(--color-primary);text-decoration:none;}
+    .detail-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--control-width)),1fr));gap:var(--space-normal);}.detail-summary div{padding:var(--space-normal);background:var(--color-background);border-radius:var(--control-radius);}.detail-summary dt{color:var(--color-muted);}.detail-summary dd{margin:0;font-weight:var(--font-weight-strong);overflow-wrap:anywhere;}
+
     :host{display:block;margin-block-start:var(--space-section);padding:var(--space-section);background:var(--color-surface);border:var(--border-width) solid var(--color-border);border-radius:var(--control-radius);}
     *{box-sizing:border-box;}h2{font-size:var(--text-section);margin:0;}p{margin-block:var(--space-small);}
     header,.actions,nav{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-small);}
@@ -38,8 +46,19 @@ export class ProfilesPanel extends LitElement {
     dialog{inline-size:var(--control-width);max-inline-size:calc(100% - var(--space-page));padding:var(--space-section);border:var(--border-width) solid var(--color-border);border-radius:var(--control-radius);color:var(--color-text);background:var(--color-surface);}
   `;
   connectedCallback(){super.connectedCallback();void this.load();}
-  disconnectedCallback(){super.disconnectedCallback();this.generation++;}
-  async focusHeading(){await this.updateComplete;this.renderRoot.querySelector<HTMLElement>('#profiles-title')?.focus();}
+  disconnectedCallback(){super.disconnectedCallback();this.generation++;this.detailGeneration++;}
+  protected updated(changed:Map<PropertyKey,unknown>){
+    if(changed.has('section')&&this.section==='formations')this.matchesVisited=true;
+    if(changed.has('entityId')){for(const dialog of this.renderRoot.querySelectorAll<HTMLDialogElement>('dialog[open]'))dialog.close();this.matchesVisited=this.section==='formations';this.detail=null;void this.loadDetail();}
+    else if(changed.has('section')&&this.section==='exigences'&&this.detail&&!this.childViews[this.detail.id])void this.loadChildren(this.detail);
+  }
+  private async loadDetail(){
+    const id=this.entityId,generation=++this.detailGeneration;this.detailError='';if(!id){this.detailBusy=false;return;}this.detailBusy=true;
+    try{const item=await profilesApi.get(id);if(generation!==this.detailGeneration)return;this.detail=item;if(this.section==='exigences')await this.loadChildren(item);}
+    catch(error){if(generation===this.detailGeneration){this.detail=null;this.detailError=error instanceof ApiError&&error.status===404?'Ce profil est introuvable.':this.message(error);}}
+    finally{if(generation===this.detailGeneration)this.detailBusy=false;}
+  }
+  async focusHeading(){const path=window.location.pathname;await this.updateComplete;if(window.location.pathname===path)this.renderRoot.querySelector<HTMLElement>(this.entityId?'#profile-detail-title':'#profiles-title')?.focus();}
   private message(error:unknown){return error instanceof ApiError?error.message:messages.network;}
   private async load(page=0){
     const generation=++this.generation;this.busy=true;this.error='';this.childViews={};
@@ -59,13 +78,13 @@ export class ProfilesPanel extends LitElement {
     await this.prepareForm();this.dialog('#profile-editor').showModal();
   }
   private async submit(event:SubmitEvent){
-    event.preventDefault();if(this.busy)return;
+    event.preventDefault();if(this.busy)return;const path=window.location.pathname;
     const data=new FormData(event.currentTarget as HTMLFormElement);this.busy=true;this.formError='';this.fields={};this.stale=false;
     try{
       if(this.editing)await profilesApi.update(this.editing,String(data.get('code')),String(data.get('label')),String(data.get('description')));
       else await profilesApi.create(String(data.get('code')),String(data.get('label')),String(data.get('description')));
-      this.dialog('#profile-editor').close();await this.load();this.notice=m.saved;
-      await this.updateComplete;this.renderRoot.querySelector<HTMLElement>('#profiles-title')?.focus();
+      this.dialog('#profile-editor').close();await this.load(this.data?.page??0);if(this.entityId)await this.loadDetail();this.notice=m.saved;
+      await this.updateComplete;if(window.location.pathname===path)this.renderRoot.querySelector<HTMLElement>(this.entityId?'#profile-detail-title':'#profiles-title')?.focus();
     }catch(error){
       this.formError=this.message(error);this.fields=error instanceof ProfileError?error.fields:{};
       this.stale=error instanceof ProfileError && error.status===409 && !Object.keys(error.fields).length;
@@ -80,9 +99,9 @@ export class ProfilesPanel extends LitElement {
   }
   private async confirm(profile:ProfileView){this.pending=profile;this.formError='';this.notice='';await this.updateComplete;this.dialog('#profile-disable').showModal();}
   private async deactivate(){
-    if(!this.pending || this.busy)return;this.busy=true;this.formError='';
-    try{await profilesApi.deactivate(this.pending);this.dialog('#profile-disable').close();await this.load(this.data?.page??0);this.notice=m.disabled;
-      await this.updateComplete;this.renderRoot.querySelector<HTMLElement>('#profiles-title')?.focus();}
+    if(!this.pending || this.busy)return;const path=window.location.pathname;this.busy=true;this.formError='';
+    try{await profilesApi.deactivate(this.pending);this.dialog('#profile-disable').close();await this.load(this.data?.page??0);if(this.entityId)await this.loadDetail();this.notice=m.disabled;
+      await this.updateComplete;if(window.location.pathname===path)this.renderRoot.querySelector<HTMLElement>(this.entityId?'#profile-detail-title':'#profiles-title')?.focus();}
     catch(error){this.formError=this.message(error);await this.updateComplete;this.renderRoot.querySelector<HTMLElement>('#disable-error')?.focus();}
     finally{this.busy=false;}
   }
@@ -97,8 +116,9 @@ export class ProfilesPanel extends LitElement {
     catch(error){if(generation===this.generation)this.childViews={...this.childViews,[profile.id]:{busy:false,items:[],error:this.message(error),selected}};}
   }
   private async requirementSaved(event:CustomEvent<{profile:ProfileView}>){
+    const path=window.location.pathname;
     await this.loadChildren(event.detail.profile);this.notice=r.saved;
-    await this.updateComplete;this.renderRoot.querySelector<HTMLElement>('#profiles-title')?.focus();
+    await this.updateComplete;if(window.location.pathname===path)this.renderRoot.querySelector<HTMLElement>(this.entityId?'#profile-detail-title':'#profiles-title')?.focus();
   }
   private showRequirement(profile:ProfileView,requirement:RequirementView|null=null){void this.renderRoot.querySelector<RequirementsEditor>('requirements-editor')!.show(profile,requirement);}
   private selectClassification(profileId:string,event:Event){
@@ -107,7 +127,7 @@ export class ProfilesPanel extends LitElement {
     const selected=item?{id:item.classificationId,label:item.classificationLabel}:null;
     this.childViews={...this.childViews,[profileId]:{...state,selected}};
   }
-  private renderRequirements(profile:ProfileView){
+  private renderRequirements(profile:ProfileView,prefix=''){
     const state=this.childViews[profile.id];if(!state)return nothing;
     if(state.busy)return html`<p role="status">${m.requirementsLoading}</p>`;
     if(state.error)return html`<p role="alert">${state.error}</p><button type="button" @click=${()=>this.loadChildren(profile)}>${m.requirementsRetry}</button>`;
@@ -116,8 +136,8 @@ export class ProfilesPanel extends LitElement {
     if(state.selected&&!classifications.has(state.selected.id))classifications.set(state.selected.id,state.selected.label);
     const visible=state.selected?state.items.filter(item=>item.classificationId===state.selected!.id):state.items;
     return html`
-      <div class="requirements-filter"><label for=${`requirement-filter-${profile.id}`}>${m.requirementsFilter}</label>
-        <select id=${`requirement-filter-${profile.id}`} @change=${(event:Event)=>this.selectClassification(profile.id,event)}>
+      <div class="requirements-filter"><label for=${`requirement-filter-${prefix}${profile.id}`}>${m.requirementsFilter}</label>
+        <select id=${`requirement-filter-${prefix}${profile.id}`} @change=${(event:Event)=>this.selectClassification(profile.id,event)}>
           <option value="" ?selected=${!state.selected}>${m.requirementsAll}</option>
           ${[...classifications].map(([id,label])=>html`<option value=${id} ?selected=${state.selected?.id===id}>${label}</option>`)}
         </select>
@@ -126,16 +146,27 @@ export class ProfilesPanel extends LitElement {
       ${visible.length?html`<ul>${visible.map(child=>html`<li>${child.competencyLabel} — ${child.classificationLabel} <button type="button" aria-label=${`${r.reclassify} ${child.competencyLabel}`} @click=${()=>this.showRequirement(profile,child)}>${r.reclassify}</button></li>`)}</ul>`:html`<p>${m.requirementsNoMatch}</p>`}
     `;
   }
+  private renderDetail(){const item=this.detail;const section=this.section??'presentation';return html`
+    <section aria-labelledby="profile-detail-title"><a href="/profils" @click=${navigate}>Retour aux profils</a><header><h2 id="profile-detail-title" tabindex="-1">${item?.label??'Fiche du profil'}</h2>${item?html`<button type="button" ?disabled=${this.busy} @click=${()=>this.open(item)}>${m.modify}</button><button type="button" ?disabled=${this.busy||!item.active} @click=${()=>this.confirm(item)}>${m.deactivate}</button>`:nothing}</header>
+    ${this.detailBusy?html`<p role="status">Chargement du profil…</p>`:nothing}${this.detailError?html`<p role="alert">${this.detailError}</p><button type="button" @click=${this.loadDetail}>Réessayer</button>`:nothing}
+    ${item?html`<p>${item.code} · ${item.status}</p><nav class="detail-nav" aria-label="Rubriques du profil">${[['presentation','Présentation'],['exigences','Exigences'],['formations','Formations correspondantes']].map(([key,label])=>html`<a href=${`/profils/${item.id}/${key}`} aria-current=${section===key?'page':nothing} @click=${navigate}>${label}</a>`)}</nav>
+    <p role="status">${this.notice}</p>
+    <div ?hidden=${section!=='presentation'} ?inert=${section!=='presentation'}><dl class="detail-summary"><div><dt>Code</dt><dd>${item.code}</dd></div><div><dt>État</dt><dd>${item.status}</dd></div></dl><h3>Description</h3><p>${item.description||'Aucune description renseignée.'}</p></div>
+    <div ?hidden=${section!=='exigences'} ?inert=${section!=='exigences'}><h3>Exigences du profil</h3><div class="actions"><button type="button" ?disabled=${this.busy||!item.active} @click=${()=>this.showRequirement(item)}>${r.add}</button><button type="button" @click=${()=>this.loadChildren(item)}>Actualiser les exigences</button></div>${!item.active?html`<p>${r.inactiveProfile}</p>`:nothing}${this.renderRequirements(item,'detail-')}</div>
+    ${this.matchesVisited?html`<div ?hidden=${section!=='formations'} ?inert=${section!=='formations'}><profile-formations .profileId=${item.id} .profileLabel=${`${item.code} — ${item.label}`} embedded></profile-formations></div>`:nothing}`:nothing}</section>`;}
   render(){return html`
+    ${this.entityId?this.renderDetail():nothing}
+    <div ?hidden=${Boolean(this.entityId)} ?inert=${Boolean(this.entityId)}>
     <section aria-labelledby="profiles-title"><header><h2 id="profiles-title" tabindex="-1">${m.title}</h2><button ?disabled=${this.busy} @click=${()=>this.open(null)}>${m.create}</button><button ?disabled=${this.busy} @click=${()=>this.load(this.data?.page??0)}>${m.refresh}</button></header>
       ${this.error?html`<p role="alert">${this.error}</p>`:nothing}
       <p role="status" aria-label=${m.status}>${this.busy?m.loading:this.notice}</p>
       ${this.data&&!this.data.items.length?html`<p>${m.empty}</p>`:nothing}
-      ${this.data?.items.length?html`<div class="table-container" tabindex="0" role="region" aria-label=${m.table}><table><caption>${m.caption}</caption><thead><tr><th scope="col">${m.code}</th><th scope="col">${m.label}</th><th scope="col">${m.state}</th><th scope="col">${m.actions}</th></tr></thead><tbody>${this.data.items.map(profile=>html`<tr><td>${profile.code}</td><td>${profile.label}<p>${profile.description}</p></td><td>${profile.status}</td><td><div class="actions"><button ?disabled=${this.busy} aria-label=${`${m.modify} ${profile.label}`} @click=${()=>this.open(profile)}>${m.modify}</button><button ?disabled=${this.busy||!profile.active} aria-label=${`${m.deactivate} ${profile.label}`} @click=${()=>this.confirm(profile)}>${m.deactivate}</button></div>
+      ${this.data?.items.length?html`<div class="table-container" tabindex="0" role="region" aria-label=${m.table}><table><caption>${m.caption}</caption><thead><tr><th scope="col">${m.code}</th><th scope="col">${m.label}</th><th scope="col">${m.state}</th><th scope="col">${m.actions}</th></tr></thead><tbody>${this.data.items.map(profile=>html`<tr><td>${profile.code}</td><td><a href=${`/profils/${profile.id}/presentation`} @click=${navigate}>${profile.label}</a><p>${profile.description}</p></td><td>${profile.status}</td><td><div class="actions"><button ?disabled=${this.busy} aria-label=${`${m.modify} ${profile.label}`} @click=${()=>this.open(profile)}>${m.modify}</button><button ?disabled=${this.busy||!profile.active} aria-label=${`${m.deactivate} ${profile.label}`} @click=${()=>this.confirm(profile)}>${m.deactivate}</button></div>
         <p>${!profile.active?r.inactiveProfile:nothing}</p><button type="button" ?disabled=${this.busy||!profile.active} aria-label=${`${r.add} à ${profile.label}`} @click=${()=>this.showRequirement(profile)}>${r.add}</button><details @toggle=${(event:Event)=>this.showChildren(event,profile)}><summary>${m.requirements} ${profile.label}</summary>${this.renderRequirements(profile)}</details><profile-formations .profileId=${profile.id} .profileLabel=${`${profile.code} — ${profile.label}`}></profile-formations>
       </td></tr>`)}</tbody></table></div>`:nothing}
       ${this.data&&this.data.total>this.data.size?html`<nav aria-label=${m.pagination}><button ?disabled=${this.busy||this.data.page===0} @click=${()=>this.load(this.data!.page-1)}>${m.previous}</button><span aria-current="page">Page ${this.data.page+1}</span><button ?disabled=${this.busy||(this.data.page+1)*this.data.size>=this.data.total} @click=${()=>this.load(this.data!.page+1)}>${m.next}</button></nav>`:nothing}
     </section>
+    </div>
     <requirements-editor @requirement-saved=${this.requirementSaved}></requirements-editor>
     <dialog id="profile-editor" aria-labelledby="profile-editor-title" @cancel=${(event:Event)=>{if(this.busy)event.preventDefault();}}><h2 id="profile-editor-title">${this.editing?m.edit:m.create}</h2><p role="status" aria-label=${m.formStatus}>${this.busy?m.saving:''}</p>
       ${this.formError?html`<p id="profile-form-error" role="alert" tabindex="-1">${this.formError}</p>`:nothing}

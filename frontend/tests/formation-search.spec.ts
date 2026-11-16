@@ -1,10 +1,10 @@
 import { test,expect,type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 async function login(page:Page){
- await page.goto('/');await page.getByLabel('Identifiant',{exact:true}).fill('gestionnaire');await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions accessibles',exact:true}).waitFor();
+ await page.goto('/');await page.getByLabel('Identifiant',{exact:true}).fill('gestionnaire');await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions',level:1,exact:true}).waitFor();
  const csrf=await(await page.request.get('/api/auth/csrf')).json();return {[csrf.headerName]:csrf.token};
 }
-async function catalogue(page:Page){await page.getByRole('button',{name:'Formations',exact:true}).click();return page.getByRole('region',{name:'Formations',exact:true});}
+async function catalogue(page:Page){await page.getByRole('link',{name:'Catalogue',exact:true}).click();return page.getByRole('region',{name:'Formations',exact:true});}
 
 test('catalogue searches by code and title and keeps sessionless and archived offers with their associations',async({page},testInfo)=>{
  const headers=await login(page);const tag=`FIND-${Date.now()}`;const title=`Atelier de recherche ${tag}`;

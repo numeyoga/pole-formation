@@ -3,14 +3,14 @@ import AxeBuilder from '@axe-core/playwright';
 
 async function login(page:Page,user='gestionnaire'){
   await page.goto('/');await page.getByLabel('Identifiant',{exact:true}).fill(user);await page.getByLabel('Mot de passe',{exact:true}).fill('Dev-only-2026!');
-  await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions accessibles',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Se connecter',exact:true}).click();await page.getByRole('heading',{name:'Sessions',level:1,exact:true}).waitFor();if(user!=="intervenant")await page.goto('/referentiel/domaines');
 }
 async function headers(page:Page){const token=await(await page.request.get('/api/auth/csrf')).json();return {[token.headerName]:token.token};}
 const code=()=>`000-DOM-${9999999999999-Date.now()}`;
 
 test('manager creates, edits and deactivates a domain while preserving its children',async({page})=>{
   await login(page);
-  await page.getByRole('button',{name:'Domaines',exact:true}).focus();await page.keyboard.press('Enter');
+  await page.getByRole('link',{name:'Domaines',exact:true}).focus();await page.keyboard.press('Enter');
   await expect(page.getByRole('heading',{name:'Domaines de compétences',exact:true})).toBeFocused();
   const panel=page.getByRole('region',{name:'Domaines de compétences',exact:true});
   await panel.getByRole('button',{name:'Créer un domaine',exact:true}).click();
@@ -69,7 +69,7 @@ test('stale edit is rejected and can reload the current version',async({page})=>
 
 test('instructor cannot manage domains or see their management section',async({page})=>{
   await login(page,'intervenant');await expect(page.getByRole('heading',{name:'Domaines de compétences',exact:true})).toHaveCount(0);
-  await expect(page.getByRole('button',{name:'Domaines',exact:true})).toHaveCount(0);expect((await page.request.get('/api/referentiels/domaines')).status()).toBe(403);
+  await expect(page.getByRole('link',{name:'Domaines',exact:true})).toHaveCount(0);expect((await page.request.get('/api/referentiels/domaines')).status()).toBe(403);
 });
 
 test('domain pagination and network retry keep the list usable',async({page})=>{

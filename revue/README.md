@@ -54,3 +54,9 @@ Le [suivi](suivi.md) contient les statuts courants et la [checklist](checklist-p
 | [DEF-029](defauts/2026-11-14-DEF-029-isolation-sessions-tests.md) | 2026-11-14 | Fuite de sessions entre tests HTTP | Nettoyage des créations et suite complète | corrigé localement, US-05.04 à US-07.02 |
 
 | [DEF-030](defauts/2026-11-14-DEF-030-sortie-shell-connexion.md) | 2026-11-14 | Sortie sensible d’un shell de connexion | Mise directement, sans profil de connexion | corrigé localement |
+
+| [DEF-031](defauts/2026-11-15-DEF-031-navigation-shadow-onglets.md) | 2026-11-15 | Navigation Shadow DOM et onglets | Axe et parcours clavier | corrigé localement, parcours Chromium réussis |
+
+| [DEF-032](defauts/2026-11-15-DEF-032-contexte-navigation-asynchrone.md) | 2026-11-15 | Dialogue et focus hors contexte de navigation | Tests navigateur en échec avant correction | corrigé localement, parcours Chromium réussis |
+
+- [DEF-033 — Dialogues imbriqués après changement de rubrique](defauts/2026-11-15-DEF-033-dialogues-rubriques.md).
