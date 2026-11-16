@@ -8,7 +8,8 @@ type: reference
 
 # Validation de la livraison Podman du 16 novembre 2026
 
-Preuves locales sur les modifications non commitées de TECH-PODMAN-LIVRAISON.
+Preuves locales du code de TECH-PODMAN-LIVRAISON, figé dans le commit
+`3628bf9b62e15db4877fa61888a1ab1f6077dd78` sans modification des sources après les contrôles décrits.
 Cette validation ne constitue ni une recette humaine ni un déploiement sur une
 machine distante. [Procédure opérateur](../../how-to/build-deploy-container.md).
 
@@ -91,7 +92,9 @@ poste de développement. Les ressources proposées dans le guide sont un point
 de départ, pas une mesure de charge. Le contrôle HTTP ne sonde pas continuellement
 la base après démarrage. Aucun test de SSO, de reverse proxy HTTPS ou de mise à
 niveau majeure PostgreSQL n’est revendiqué. Le paquet est local et non publié ;
-un commit propre et sa preuve restent à enregistrer avant une livraison figée.
+le commit source du paquet de recette construit avant commit reste accompagné
+de sa liste de modifications locales. Reconstruire depuis le commit figé pour
+produire un paquet destiné à une livraison identifiée par ce commit.
 
 Le premier mode permet une recette avec l’administrateur local. Le provisionnement
 des autres comptes, la confidentialité, la conservation des données et la recette

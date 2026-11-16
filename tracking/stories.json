@@ -596,12 +596,15 @@
     ],
     "report": "docs/reference/quality/podman-delivery-2026-11-16.md",
     "remaining": [
-      "Enregistrer le commit figé et son hash de validation ; preuves actuelles sur les modifications locales.",
       "Vérifier installation et restauration sur la machine cible, puis redémarrage réel avec systemd et linger."
     ],
     "acceptance": {
       "required": false,
       "reason": "Socle technique de livraison ; recette fonctionnelle humaine conservée dans les stories métier."
-    }
+    },
+    "commits": [
+      "3628bf9b62e15db4877fa61888a1ab1f6077dd78"
+    ],
+    "validated_commit": "3628bf9b62e15db4877fa61888a1ab1f6077dd78"
   }
 }
