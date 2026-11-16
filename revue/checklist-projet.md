@@ -52,3 +52,5 @@
 - [ ] Tester retour navigateur avec dialogue ouvert et erreur réseau tardive : le dialogue quitte son contexte et le focus reste sur la destination (DEF-032).
 
 - [ ] Tester Retour entre rubriques avec un dialogue imbriqué ouvert et un enregistrement en vol ; vérifier fermeture et focus de destination (DEF-033).
+
+- [ ] Vérifier que l’image exportée conserve son contrôle de santé et rejouer le démarrage depuis le paquet chargé, après tout changement de constructeur ou de format (DEF-034).

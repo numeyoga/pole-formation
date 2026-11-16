@@ -2,7 +2,7 @@
 title: "Journal des décisions (ADR)"
 description: "Décisions structurantes et alternatives."
 created: 2026-11-07
-updated: 2026-11-09
+updated: 2026-11-16
 status: accepted
 type: index
 tags:
@@ -32,3 +32,5 @@ tags:
 - [ADR 0016 – Association et reclassement des exigences](ADR-0016-profile-requirements.md)
 
 - [ADR 0017 – Catalogue et cycle de vie des formations](ADR-0017-formations.md)
+
+- [ADR 0018 – Première livraison autonome sous Podman](ADR-0018-standalone-podman.md)

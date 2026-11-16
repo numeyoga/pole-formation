@@ -52,3 +52,5 @@
 | DEF-032 | 🟠 | Dialogue et focus hors contexte de navigation | [fiche](defauts/2026-11-15-DEF-032-contexte-navigation-asynchrone.md) | access-app.ts | corrigé localement, parcours Chromium réussis | Annulation dialogue et révision navigation | 2026-11-15 |
 
 | DEF-033 | 🟠 | Dialogue imbriqué conservé après retour de rubrique | [fiche](defauts/2026-11-15-DEF-033-dialogues-rubriques.md) | shell et fiches | corrigé localement, 7 scénarios réussis | Fermeture récursive et contexte du focus | 2026-11-15 |
+
+| DEF-034 | 🟠 | Contrôle de santé perdu dans le format d’image OCI | [fiche](defauts/2026-11-16-DEF-034-healthcheck-podman.md) | construction du paquet Podman | corrigé localement | Format Docker explicite, inspection avant export et scénario réel du paquet | 2026-11-16 |

@@ -2,7 +2,7 @@
 title: "Pôle formation INT — référentiel du projet"
 description: "Entrée humaine et IA vers le monorepo et les documents Diátaxis."
 created: 2026-11-07
-updated: 2026-11-15
+updated: 2026-11-16
 status: accepted
 type: index
 tags:
@@ -34,6 +34,7 @@ La refonte locale du 15 novembre introduit une navigation par pages et des ongle
 | Comprendre le métier | [Modèle métier](docs/reference/domain/domain-model.md), [règles](docs/reference/domain/business-rules.md), [workflows](docs/reference/domain/workflows.md) |
 | Appliquer les conventions | [Structure frontend](docs/reference/architecture/frontend-structure.md), [backend](docs/reference/architecture/backend-structure.md) et [CSS](docs/reference/frontend/css-conventions.md) |
 | Développer localement | [Guide Mise et services Podman](docs/how-to/local-development.md) |
+| Livrer sur une machine Podman | [Installation, sauvegarde et mise à jour](docs/how-to/build-deploy-container.md) |
 | Suivre l’avancement | [Registre généré](docs/generated/development-progress.md), [fonctionnement et preuves](docs/reference/development-tracking.md) |
 | Voir ce qui n'est pas décidé | [Registre des décisions ouvertes](docs/reference/architecture/open-questions.md) |
 | Comprendre les choix | [ADR](docs/decisions/README.md) |

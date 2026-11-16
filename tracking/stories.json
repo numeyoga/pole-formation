@@ -579,5 +579,29 @@
     "commits": [
       "8aa353c5fdf8471a646475082526e9cbbb972903"
     ]
+  },
+  "TECH-PODMAN-LIVRAISON": {
+    "title": "Livraison autonome sur machine Linux avec Podman",
+    "implementation": "partial",
+    "code_paths": [
+      "Containerfile",
+      ".containerignore",
+      "deploy/podman/",
+      "scripts/package-podman.sh",
+      "scripts/smoke-podman-delivery.py",
+      "scripts/tests/test_podman_configuration.py",
+      "backend/src/main/java/fr/intformation/habilitations/infrastructure/StandaloneAdministrator.java",
+      "backend/src/main/java/fr/intformation/shared/infrastructure/ContainerHealthcheck.java",
+      "backend/src/test/java/fr/intformation/StandaloneDeliveryTest.java"
+    ],
+    "report": "docs/reference/quality/podman-delivery-2026-11-16.md",
+    "remaining": [
+      "Enregistrer le commit figé et son hash de validation ; preuves actuelles sur les modifications locales.",
+      "Vérifier installation et restauration sur la machine cible, puis redémarrage réel avec systemd et linger."
+    ],
+    "acceptance": {
+      "required": false,
+      "reason": "Socle technique de livraison ; recette fonctionnelle humaine conservée dans les stories métier."
+    }
   }
 }

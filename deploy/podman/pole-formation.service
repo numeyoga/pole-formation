@@ -1,0 +1,16 @@
+[Unit]
+Description=Pôle formation — application et PostgreSQL sous Podman
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=%h/pole-formation
+ExecStart=/usr/bin/bash %h/pole-formation/deploy.sh up
+ExecStop=/usr/bin/bash %h/pole-formation/deploy.sh stop
+TimeoutStartSec=300
+TimeoutStopSec=90
+
+[Install]
+WantedBy=default.target

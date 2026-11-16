@@ -1,0 +1,11 @@
+**
+!Containerfile
+!backend/
+!backend/target/
+!backend/target/*.jar
+!backend/target/classes/
+!backend/target/classes/fr/
+!backend/target/classes/fr/intformation/
+!backend/target/classes/fr/intformation/shared/
+!backend/target/classes/fr/intformation/shared/infrastructure/
+!backend/target/classes/fr/intformation/shared/infrastructure/ContainerHealthcheck.class

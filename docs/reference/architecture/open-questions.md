@@ -2,7 +2,7 @@
 title: "Registre des décisions ouvertes"
 description: "Questions à trancher et conventions provisoires sans fausse validation."
 created: 2026-11-07
-updated: 2026-11-14
+updated: 2026-11-16
 status: proposed
 type: reference
 tags:
@@ -22,7 +22,7 @@ tags:
 
 | Sujet | État | Position de travail | Déclencheur |
 |---|---|---|---|
-| Fournisseur d'identité | Ouvert | Spring Security session, SSO si disponible | Avant authentification réelle |
+| Fournisseur d'identité | Ouvert | Spring Security session, SSO si disponible ; première recette Podman avec administrateur local explicite ([ADR 0018](../../decisions/ADR-0018-standalone-podman.md)), sans arbitrage du SSO | Avant authentification réelle |
 | Rôles et permissions | Matrice arbitrée | [Trois rôles fixes et matrice validée](roles-permissions.md) ; provisionnement de production ouvert | Avant authentification de production |
 | Données personnelles, confidentialité, conservation | Ouvert | Minimisation, traçabilité, contrôle d'accès | Avant stockage de données réelles |
 | Versions exactes Spring Boot/Slab/Lit/Node/PostgreSQL | Bootstrap réalisé | [Versions applicatives verrouillées](../../decisions/ADR-0007-bootstrap-habilitations.md) ; Slab différé jusqu’à un besoin complexe | Premier usage Slab / mises à jour |

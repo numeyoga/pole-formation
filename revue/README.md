@@ -60,3 +60,5 @@ Le [suivi](suivi.md) contient les statuts courants et la [checklist](checklist-p
 | [DEF-032](defauts/2026-11-15-DEF-032-contexte-navigation-asynchrone.md) | 2026-11-15 | Dialogue et focus hors contexte de navigation | Tests navigateur en échec avant correction | corrigé localement, parcours Chromium réussis |
 
 - [DEF-033 — Dialogues imbriqués après changement de rubrique](defauts/2026-11-15-DEF-033-dialogues-rubriques.md).
+
+- [DEF-034 — Contrôle de santé supprimé par le format d’image](defauts/2026-11-16-DEF-034-healthcheck-podman.md).

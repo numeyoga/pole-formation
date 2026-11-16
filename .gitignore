@@ -6,6 +6,11 @@ frontend/playwright-report/
 *.log
 .env
 mise.local.toml
+dist/
+deploy/podman/instance.env
+deploy/podman/release.env
+deploy/podman/secrets/
+deploy/podman/backups/
 docs/generated/
 __pycache__/
 
